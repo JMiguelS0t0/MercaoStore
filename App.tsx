@@ -1,15 +1,17 @@
 import React from 'react';
-import {View, Text, FlatList, StyleSheet} from 'react-native';
+import {View, Text, StyleSheet} from 'react-native';
 import NavBar from './src/components/NavBar';
 import HeaderApp from './src/components/HeaderApp';
 import Login from './src/screens/Login';
+import Register from './src/screens/Register';
 
 const App = () => {
   return (
     <View style={styles.container}>
-      {/* <HeaderApp />
-      <NavBar /> */}
-      <Login />
+      <HeaderApp />
+      <NavBar />
+      {/* <Login /> */}
+      {/* <Register /> */}
     </View>
   );
 };

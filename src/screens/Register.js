@@ -1,18 +1,16 @@
 import React from 'react';
 import {ScrollView, KeyboardAvoidingView} from 'react-native';
 import loginStyles from '../styles/screens/Login/loginStyles';
-import LogoSection from '../components/LogoSection';
-import SignInForm from '../components/SingInForm';
+import RegisterForm from '../components/RegisterForm';
 
-const Login = () => {
+const Register = () => {
   return (
     <KeyboardAvoidingView style={loginStyles.container}>
       <ScrollView contentContainerStyle={{flexGrow: 1}}>
-        <LogoSection />
-        <SignInForm />
+        <RegisterForm />
       </ScrollView>
     </KeyboardAvoidingView>
   );
 };
 
-export default Login;
+export default Register;
