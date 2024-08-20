@@ -1,11 +1,25 @@
 import {StyleSheet} from 'react-native';
 
-const NavBarStyles = StyleSheet.create({
+const navBarStyles = StyleSheet.create({
   container: {
-    flex: 1,
-    justifyContent: 'flex-end',
+    position: 'absolute',
+    bottom: 2,
+    left: 0,
+    right: 0,
+    justifyContent: 'center',
     alignItems: 'center',
-    paddingBottom: 10,
+    zIndex: 1,
+    backgroundColor: 'transparent',
+  },
+  gradientContainer: {
+    width: '100%',
+    position: 'absolute',
+    bottom: 0,
+    left: 0,
+    right: 0,
+    paddingVertical: 20,
+    justifyContent: 'center',
+    alignItems: 'center',
   },
   navBarContainer: {
     flexDirection: 'row',
@@ -20,4 +34,4 @@ const NavBarStyles = StyleSheet.create({
   },
 });
 
-export default NavBarStyles;
+export default navBarStyles;
