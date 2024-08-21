@@ -15,7 +15,8 @@ const registerFormStyles = StyleSheet.create({
   backText: {
     color: '#fff',
     marginLeft: 10,
-    fontSize: 18,
+    fontSize: 16,
+    fontFamily: 'Lato-Regular',
   },
   registerText: {
     fontSize: 24,
@@ -26,6 +27,9 @@ const registerFormStyles = StyleSheet.create({
   },
   borderButton: {
     backgroundColor: '#7b5bbd',
+  },
+  backgroundInput: {
+    backgroundColor: '#120b34',
   },
 });
 

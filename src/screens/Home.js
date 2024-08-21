@@ -1,16 +1,18 @@
 import React from 'react';
 import {View, StyleSheet} from 'react-native';
-import NavBar from '../components/NavBar';
-import HeaderApp from '../components/HeaderApp';
-import Detail from '../components/Detail';
-import Cards from '../components/Cards';
+import NavBar from '../components/Layout/NavBar';
+import HeaderApp from '../components/Layout/HeaderApp';
+import Detail from '../components/Product/Detail';
+import Cards from '../components/Product/Cards';
+import Cart from './Cart';
 
 const Home = () => {
   return (
     <View style={styles.container}>
       <HeaderApp />
-      <Detail />
+      {/* <Detail /> */}
       {/* <Cards /> */}
+      <Cart />
       <NavBar />
     </View>
   );

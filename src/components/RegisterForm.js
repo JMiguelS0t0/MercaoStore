@@ -21,22 +21,49 @@ const RegisterForm = () => (
 
     <View style={globalStyles.containerForm}>
       <Text style={registerFormStyles.registerText}>Register</Text>
-      <CustomInput placeholder="Username" iconName="user" />
-      <CustomInput placeholder="Password" iconName="key" secureTextEntry />
+      <CustomInput
+        placeholder="Username"
+        iconName="user"
+        containerStyle={registerFormStyles.backgroundInput}
+      />
+      <CustomInput
+        placeholder="Password"
+        iconName="key"
+        secureTextEntry
+        containerStyle={registerFormStyles.backgroundInput}
+      />
       <CustomInput
         placeholder="Email"
         iconName="envelope"
         keyboardType="email-address"
+        containerStyle={registerFormStyles.backgroundInput}
       />
       <CustomInput
         placeholder="Birthday"
         iconName="calendar"
         keyboardType="numeric"
+        containerStyle={registerFormStyles.backgroundInput}
       />
-      <CustomInput placeholder="Country" iconName="map-marker-alt" />
-      <CustomInput placeholder="Department" iconName="map-marker-alt" />
-      <CustomInput placeholder="City" iconName="map-marker-alt" />
-      <CustomInput placeholder="Address" iconName="crosshairs" />
+      <CustomInput
+        placeholder="Country"
+        iconName="map-marker-alt"
+        containerStyle={registerFormStyles.backgroundInput}
+      />
+      <CustomInput
+        placeholder="Department"
+        iconName="map-marker-alt"
+        containerStyle={registerFormStyles.backgroundInput}
+      />
+      <CustomInput
+        placeholder="City"
+        iconName="map-marker-alt"
+        containerStyle={registerFormStyles.backgroundInput}
+      />
+      <CustomInput
+        placeholder="Address"
+        iconName="crosshairs"
+        containerStyle={registerFormStyles.backgroundInput}
+      />
 
       <Button
         title="REGISTER"

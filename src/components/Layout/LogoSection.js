@@ -1,6 +1,6 @@
 import React from 'react';
 import {View, Image} from 'react-native';
-import logoSectionStyles from '../styles/screens/Login/logoSectionStyles';
+import logoSectionStyles from '../../styles/screens/Login/logoSectionStyles';
 
 const LogoSection = () => {
   return (

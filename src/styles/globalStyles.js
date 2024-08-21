@@ -29,6 +29,7 @@ const globalStyles = StyleSheet.create({
     justifyContent: 'center',
     alignItems: 'center',
     borderRadius: 10,
+    fontFamily: 'Lato-Bold',
   },
   containerForm: {
     flex: 4,

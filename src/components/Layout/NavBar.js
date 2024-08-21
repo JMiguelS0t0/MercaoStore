@@ -1,7 +1,7 @@
 import React from 'react';
 import {View} from 'react-native';
 import {Icon} from '@rneui/themed';
-import navBarStyles from '../styles/components/navBarStyles';
+import navBarStyles from '../../styles/components/navBarStyles';
 import LinearGradient from 'react-native-linear-gradient';
 
 const NavBar = () => {

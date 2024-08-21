@@ -15,6 +15,7 @@ const SignInForm = () => (
       keyboardType="email-address"
       textColor="#000"
       iconColor="#beb5c5"
+      containerStyle={signInFormStyles.inputContainer}
     />
 
     <CustomInput
@@ -23,12 +24,16 @@ const SignInForm = () => (
       secureTextEntry
       textColor="#000"
       iconColor="#beb5c5"
+      containerStyle={signInFormStyles.inputContainer}
     />
 
     <Button title="LOGIN" buttonStyle={globalStyles.buttonStyle} />
 
     <Text style={signInFormStyles.createText}>
-      Don't have an account? Create a new account
+      Don't have an account?{' '}
+      <Text style={signInFormStyles.createTextHighlight}>
+        Create a new account
+      </Text>
     </Text>
   </View>
 );

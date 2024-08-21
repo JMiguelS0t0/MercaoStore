@@ -21,7 +21,10 @@ const CustomInput = ({
     leftIcon={
       <Icon name={iconName} type={iconType} color={iconColor} size={20} />
     }
-    inputStyle={[{color: textColor}, inputStyle]}
+    inputStyle={[
+      {color: textColor, fontFamily: 'Lato-Regular', fontSize: 15}, 
+      inputStyle,
+    ]}
     inputContainerStyle={[globalStyles.inputContainer, containerStyle]}
     keyboardType={keyboardType}
     secureTextEntry={secureTextEntry}

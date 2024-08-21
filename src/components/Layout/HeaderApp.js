@@ -1,14 +1,14 @@
 import React from 'react';
 import {View, Image, Text} from 'react-native';
-import globalStyles from '../styles/globalStyles';
-import headerStyle from '../styles/components/headerStyle';
+import globalStyles from '../../styles/globalStyles';
+import headerStyle from '../../styles/components/headerStyle';
 import {Icon} from '@rneui/themed';
 
 const HeaderApp = () => {
   return (
     <View style={headerStyle.headerContainer}>
       <Image
-        source={require('../assets/Mercao.png')}
+        source={require('../../assets/Mercao.png')}
         style={globalStyles.smallLogo}
       />
       <View style={headerStyle.iconContainer}>
@@ -20,7 +20,7 @@ const HeaderApp = () => {
           style={headerStyle.cartIcon}
         />
         <Image
-          source={require('../assets/IconPerson.jpg')}
+          source={require('../../assets/IconPerson.jpg')}
           style={globalStyles.profileImage}
         />
       </View>

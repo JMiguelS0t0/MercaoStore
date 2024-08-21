@@ -1,56 +1,56 @@
 import React from 'react';
 import {Card, Text, Icon} from '@rneui/themed';
 import {FlatList, View} from 'react-native';
-import CardStyles from '../styles/components/cardStyles';
+import CardStyles from '../../styles/components/cardStyles';
 
 const data = [
   {
     id: 1,
     title: 'Case iPhone 1',
     price: 'US$ 25,00',
-    image: require('../assets/CaseIphone.webp'),
+    image: require('../../assets/CaseIphone.webp'),
   },
   {
     id: 2,
     title: 'iPhone 13 ',
     price: 'US$ 600,00',
-    image: require('../assets/Iphone.webp'),
+    image: require('../../assets/Iphone.webp'),
   },
   {
     id: 3,
     title: 'Case iPhone 3',
     price: 'US$ 20,00',
-    image: require('../assets/CaseIphone.webp'),
+    image: require('../../assets/CaseIphone.webp'),
   },
   {
     id: 4,
     title: 'Case iPhone 3',
     price: 'US$ 20,00',
-    image: require('../assets/CaseIphone.webp'),
+    image: require('../../assets/CaseIphone.webp'),
   },
   {
     id: 5,
     title: 'Case iPhone 3',
     price: 'US$ 20,00',
-    image: require('../assets/CaseIphone.webp'),
+    image: require('../../assets/CaseIphone.webp'),
   },
   {
     id: 6,
     title: 'Case iPhone 3',
     price: 'US$ 20,00',
-    image: require('../assets/CaseIphone.webp'),
+    image: require('../../assets/CaseIphone.webp'),
   },
   {
     id: 7,
     title: 'Case iPhone 3',
     price: 'US$ 20,00',
-    image: require('../assets/CaseIphone.webp'),
+    image: require('../../assets/CaseIphone.webp'),
   },
   {
     id: 8,
     title: 'Case iPhone 3',
     price: 'US$ 20,00',
-    image: require('../assets/CaseIphone.webp'),
+    image: require('../../assets/CaseIphone.webp'),
   },
 ];
 
@@ -71,7 +71,7 @@ const renderItem = ({item}) => (
           containerStyle={CardStyles.heartIcon}
         />
       </View>
-      <Card.Title style={CardStyles.cardTitle}>{item.title}</Card.Title>
+      <Text style={CardStyles.cardTitle}>{item.title}</Text>
       <Text style={CardStyles.cardText}>{item.price}</Text>
     </Card>
   </View>

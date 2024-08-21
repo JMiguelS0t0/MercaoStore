@@ -1,7 +1,8 @@
 import React from 'react';
 import {View, ScrollView} from 'react-native';
-import {Text, Image, Icon, Divider, Card} from '@rneui/themed';
-import detailStyles from '../styles/components/detailStyles';
+import {Text, Image, Icon, Divider, Card, Button} from '@rneui/themed';
+import detailStyles from '../../styles/components/detailStyles';
+import globalStyles from '../../styles/globalStyles';
 
 const Detail = () => {
   const renderPriceSection = () => (
@@ -10,7 +11,7 @@ const Detail = () => {
       <Icon
         name="heart"
         type="font-awesome-5"
-        color="#120b34"
+        color="#fff"
         size={15}
         containerStyle={detailStyles.heartIcon}
       />
@@ -39,7 +40,7 @@ const Detail = () => {
           <Icon
             name="credit-card"
             type="font-awesome-5"
-            color="#120b34"
+            color="#fff"
             size={24}
           />
         </View>
@@ -47,7 +48,7 @@ const Detail = () => {
           <Icon
             name="dollar-sign"
             type="font-awesome-5"
-            color="#120b34"
+            color="#fff"
             size={24}
           />
         </View>
@@ -55,7 +56,7 @@ const Detail = () => {
           <Icon
             name="money-bill-alt"
             type="font-awesome-5"
-            color="#120b34"
+            color="#fff"
             size={24}
           />
         </View>
@@ -66,11 +67,11 @@ const Detail = () => {
   const renderComments = () => (
     <ScrollView horizontal showsHorizontalScrollIndicator={false}>
       <Card containerStyle={detailStyles.horizontalCardContainer}>
-        <Card.Title style={detailStyles.cardTitle}>Comments:</Card.Title>
+        <Text style={detailStyles.cardTitle}>Comments:</Text>
         <Text style={detailStyles.cardText}>Muy buen producto</Text>
       </Card>
       <Card containerStyle={detailStyles.horizontalCardContainer}>
-        <Card.Title style={detailStyles.cardTitle}>Comments:</Card.Title>
+        <Text style={detailStyles.cardTitle}>Comments:</Text>
         <Text style={detailStyles.cardText}>Muy buen producto 2</Text>
       </Card>
     </ScrollView>
@@ -80,7 +81,7 @@ const Detail = () => {
     <ScrollView contentContainerStyle={detailStyles.scrollContainer}>
       <View style={detailStyles.imageContainer}>
         <Image
-          source={require('../assets/Iphone.webp')}
+          source={require('../../assets/Iphone.webp')}
           style={detailStyles.image}
           resizeMode="contain"
         />
@@ -93,6 +94,11 @@ const Detail = () => {
       {renderDescriptionSection()}
       <Divider style={detailStyles.dividerStyle} />
       {renderPaymentMethods()}
+      <Divider style={detailStyles.dividerStyle} />
+      <Button
+        title="ADD TO CART"
+        buttonStyle={[globalStyles.buttonStyle, detailStyles.borderButton]}
+      />
       <Divider style={detailStyles.dividerStyle} />
       {renderComments()}
     </ScrollView>

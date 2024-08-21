@@ -1,7 +1,7 @@
 import React from 'react';
 import {ScrollView, KeyboardAvoidingView} from 'react-native';
 import loginStyles from '../styles/screens/Login/loginStyles';
-import LogoSection from '../components/LogoSection';
+import LogoSection from '../components/Layout/LogoSection';
 import SignInForm from '../components/SingInForm';
 
 const Login = () => {
