@@ -25,12 +25,6 @@ const registerFormStyles = StyleSheet.create({
     paddingBottom: 5,
     margin: 0,
   },
-  borderButton: {
-    backgroundColor: '#7b5bbd',
-  },
-  backgroundInput: {
-    backgroundColor: '#120b34',
-  },
 });
 
 export default registerFormStyles;

@@ -5,6 +5,9 @@ import HeaderApp from '../components/Layout/HeaderApp';
 import Detail from '../components/Product/Detail';
 import Cards from '../components/Product/Cards';
 import Cart from './Cart';
+import AccountScreen from './Account/AccountScreen';
+import EditAccount from './Account/EditAccount';
+import Support from './Support';
 
 const Home = () => {
   return (
@@ -12,7 +15,10 @@ const Home = () => {
       <HeaderApp />
       {/* <Detail /> */}
       {/* <Cards /> */}
-      <Cart />
+      {/* <Cart /> */}
+      {/* <AccountScreen /> */}
+      {/* <EditAccount /> */}
+      <Support />
       <NavBar />
     </View>
   );
