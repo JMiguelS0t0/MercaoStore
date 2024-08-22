@@ -20,7 +20,7 @@ const globalStyles = StyleSheet.create({
     borderColor: '#beb5c5',
     borderRadius: 10,
     paddingHorizontal: 10,
-    marginTop: 10,
+    marginTop: 1,
   },
   buttonStyle: {
     backgroundColor: '#120b34',
@@ -40,6 +40,19 @@ const globalStyles = StyleSheet.create({
     paddingTop: 10,
     borderTopLeftRadius: 30,
     borderTopRightRadius: 30,
+  },
+  backgroundInput: {
+    backgroundColor: '#120b34',
+  },
+  borderButton: {
+    backgroundColor: '#7b5bbd',
+  },
+  inputStyles: {
+    borderColor: '#7b5bbd',
+  },
+  avatar: {
+    backgroundColor: '#ccc',
+    marginBottom: 15,
   },
 });
 export default globalStyles;

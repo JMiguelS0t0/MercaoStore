@@ -24,53 +24,50 @@ const RegisterForm = () => (
       <CustomInput
         placeholder="Username"
         iconName="user"
-        containerStyle={registerFormStyles.backgroundInput}
+        containerStyle={globalStyles.backgroundInput}
       />
       <CustomInput
         placeholder="Password"
         iconName="key"
         secureTextEntry
-        containerStyle={registerFormStyles.backgroundInput}
+        containerStyle={globalStyles.backgroundInput}
       />
       <CustomInput
         placeholder="Email"
         iconName="envelope"
         keyboardType="email-address"
-        containerStyle={registerFormStyles.backgroundInput}
+        containerStyle={globalStyles.backgroundInput}
       />
       <CustomInput
         placeholder="Birthday"
         iconName="calendar"
         keyboardType="numeric"
-        containerStyle={registerFormStyles.backgroundInput}
+        containerStyle={globalStyles.backgroundInput}
       />
       <CustomInput
         placeholder="Country"
         iconName="map-marker-alt"
-        containerStyle={registerFormStyles.backgroundInput}
+        containerStyle={globalStyles.backgroundInput}
       />
       <CustomInput
         placeholder="Department"
         iconName="map-marker-alt"
-        containerStyle={registerFormStyles.backgroundInput}
+        containerStyle={globalStyles.backgroundInput}
       />
       <CustomInput
         placeholder="City"
         iconName="map-marker-alt"
-        containerStyle={registerFormStyles.backgroundInput}
+        containerStyle={globalStyles.backgroundInput}
       />
       <CustomInput
         placeholder="Address"
         iconName="crosshairs"
-        containerStyle={registerFormStyles.backgroundInput}
+        containerStyle={globalStyles.backgroundInput}
       />
 
       <Button
         title="REGISTER"
-        buttonStyle={[
-          globalStyles.buttonStyle,
-          registerFormStyles.borderButton,
-        ]}
+        buttonStyle={[globalStyles.buttonStyle, globalStyles.borderButton]}
       />
     </View>
   </View>
