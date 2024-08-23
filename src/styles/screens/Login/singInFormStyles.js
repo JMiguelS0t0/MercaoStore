@@ -24,6 +24,10 @@ const signInFormStyles = StyleSheet.create({
     color: '#7b5bbd',
     fontFamily: 'Poppins-Bold',
   },
+  createAccountButton: {
+    fontFamily: 'Poppins-Regular',
+    borderRadius: 10,
+  },
 });
 
 export default signInFormStyles;

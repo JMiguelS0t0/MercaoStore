@@ -12,7 +12,7 @@ const globalStyles = StyleSheet.create({
     width: 90,
     height: 90,
     resizeMode: 'contain',
-    marginLeft: '5%',
+    marginLeft: '10%',
     padding: 0,
   },
   inputContainer: {

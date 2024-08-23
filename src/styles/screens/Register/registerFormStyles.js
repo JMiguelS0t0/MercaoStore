@@ -25,6 +25,15 @@ const registerFormStyles = StyleSheet.create({
     paddingBottom: 5,
     margin: 0,
   },
+  backButton: {
+    borderWidth: 0,
+    backgroundColor: 'transparent',
+    padding: 0,
+  },
+  backButtonText: {
+    marginLeft: 10,
+    paddingVertical: 6,
+  },
 });
 
 export default registerFormStyles;

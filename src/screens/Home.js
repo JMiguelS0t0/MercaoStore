@@ -12,19 +12,11 @@ import Purchases from './Purchase/Purchases';
 import Favorites from './Favorites';
 import SearchScreen from './Search/SearchScreen';
 
-const Home = () => {
+const Home = ({navigation}) => {
   return (
     <View style={styles.container}>
       <HeaderApp />
-      {/* <Detail /> */}
-      {/* <Cards /> */}
-      {/* <Cart /> */}
-      {/* <AccountScreen /> */}
-      {/* <EditAccount /> */}
-      {/* <Support /> */}
-      {/* <Purchases /> */}
-      {/* <Favorites /> */}
-      <SearchScreen />
+      <Cards />
       <NavBar />
     </View>
   );

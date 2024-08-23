@@ -1,16 +1,33 @@
 import React from 'react';
-import {View, Image, Text} from 'react-native';
+import {View, Image, Pressable} from 'react-native';
 import globalStyles from '../../styles/globalStyles';
 import headerStyle from '../../styles/components/headerStyle';
 import {Icon} from '@rneui/themed';
+import {useNavigation} from '@react-navigation/native';
 
 const HeaderApp = () => {
+  const navigation = useNavigation();
+
+  const handleCartPress = () => {
+    navigation.navigate('Cart');
+  };
+
+  const handleProfilePress = () => {
+    navigation.navigate('Account');
+  };
+
+  const handleLogoPress = () => {
+    navigation.navigate('Home');
+  };
+
   return (
     <View style={headerStyle.headerContainer}>
-      <Image
-        source={require('../../assets/Mercao.png')}
-        style={globalStyles.smallLogo}
-      />
+      <Pressable onPress={handleLogoPress}>
+        <Image
+          source={require('../../assets/Mercao.png')}
+          style={globalStyles.smallLogo}
+        />
+      </Pressable>
       <View style={headerStyle.iconContainer}>
         <Icon
           name="shopping-cart"
@@ -18,13 +35,19 @@ const HeaderApp = () => {
           color="#fff"
           size={17}
           style={headerStyle.cartIcon}
+          onPress={handleCartPress}
         />
-        <Image
-          source={require('../../assets/IconPerson.jpg')}
-          style={globalStyles.profileImage}
+        <Icon
+          name="user"
+          type="font-awesome-5"
+          color="#fff"
+          size={17}
+          style={headerStyle.cartIcon}
+          onPress={handleProfilePress}
         />
       </View>
     </View>
   );
 };
+
 export default HeaderApp;

@@ -1,6 +1,5 @@
 import React from 'react';
 import {View, Image} from 'react-native';
-import CartStyles from '../../styles/screens/CartStyles';
 import CartActions from './CarActions';
 import ProductHeader from './ProductHeader';
 import globalStyles from '../../styles/globalStyles';
