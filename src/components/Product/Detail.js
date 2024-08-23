@@ -88,18 +88,18 @@ const Detail = () => {
       </View>
       <Text style={detailStyles.title}>iPhone 12</Text>
       {renderPriceSection()}
-      <Divider style={detailStyles.dividerStyle} />
+      <Divider style={globalStyles.dividerStyle} />
       {renderFeaturesSection()}
-      <Divider style={detailStyles.dividerStyle} />
+      <Divider style={globalStyles.dividerStyle} />
       {renderDescriptionSection()}
-      <Divider style={detailStyles.dividerStyle} />
+      <Divider style={globalStyles.dividerStyle} />
       {renderPaymentMethods()}
-      <Divider style={detailStyles.dividerStyle} />
+      <Divider style={globalStyles.dividerStyle} />
       <Button
         title="ADD TO CART"
         buttonStyle={[globalStyles.buttonStyle, detailStyles.borderButton]}
       />
-      <Divider style={detailStyles.dividerStyle} />
+      <Divider style={globalStyles.dividerStyle} />
       {renderComments()}
     </ScrollView>
   );

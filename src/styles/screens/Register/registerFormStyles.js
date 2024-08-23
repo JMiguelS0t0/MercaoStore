@@ -16,7 +16,7 @@ const registerFormStyles = StyleSheet.create({
     color: '#fff',
     marginLeft: 10,
     fontSize: 16,
-    fontFamily: 'Lato-Regular',
+    fontFamily: 'Poppins-Regular',
   },
   registerText: {
     fontSize: 24,

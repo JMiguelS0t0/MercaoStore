@@ -1,14 +1,14 @@
 import {StyleSheet} from 'react-native';
 
-const CardStyles = StyleSheet.create({
+const favoritesStyles = StyleSheet.create({
   listContainer: {
     paddingTop: 0,
     marginTop: 0,
-    paddingHorizontal: 5,
+    paddingHorizontal: 0,
   },
   cardWrapper: {
-    width: '48%',
-    margin: 5,
+    width: '50%',
+    margin: 0,
   },
   cardContainer: {
     borderWidth: 0,
@@ -22,6 +22,7 @@ const CardStyles = StyleSheet.create({
     width: '100%',
     borderRadius: 15,
     position: 'relative',
+    padding: 3,
   },
   cardImage: {
     width: '100%',
@@ -42,7 +43,7 @@ const CardStyles = StyleSheet.create({
     color: '#fff',
     textAlign: 'left',
     marginLeft: 5,
-    marginBottom:5,
+    marginBottom: 5,
     fontFamily: 'Poppins-Bold',
   },
   cardsContainer: {
@@ -54,11 +55,11 @@ const CardStyles = StyleSheet.create({
     position: 'absolute',
     bottom: 10,
     right: 8,
-    backgroundColor: 'rgba(66, 66, 66, 0.6)',
+    backgroundColor: '#120b34',
     borderRadius: 15,
     padding: 5,
     zIndex: 1,
   },
 });
 
-export default CardStyles;
+export default favoritesStyles;

@@ -18,6 +18,10 @@ const AccountScreen = () => {
         <AccountCard iconName="question-circle" title="Support" />
         <AccountCard iconName="cog" title="Settings" />
       </View>
+
+      <View style={accountScreenStyles.cardFavorites}>
+        <AccountCard iconName="heart" title="My Favorites" solid={true} />
+      </View>
     </View>
   );
 };

@@ -8,6 +8,9 @@ import Cart from './Cart';
 import AccountScreen from './Account/AccountScreen';
 import EditAccount from './Account/EditAccount';
 import Support from './Support';
+import Purchases from './Purchase/Purchases';
+import Favorites from './Favorites';
+import SearchScreen from './Search/SearchScreen';
 
 const Home = () => {
   return (
@@ -18,7 +21,10 @@ const Home = () => {
       {/* <Cart /> */}
       {/* <AccountScreen /> */}
       {/* <EditAccount /> */}
-      <Support />
+      {/* <Support /> */}
+      {/* <Purchases /> */}
+      {/* <Favorites /> */}
+      <SearchScreen />
       <NavBar />
     </View>
   );

@@ -29,7 +29,7 @@ const globalStyles = StyleSheet.create({
     justifyContent: 'center',
     alignItems: 'center',
     borderRadius: 10,
-    fontFamily: 'Lato-Bold',
+    fontFamily: 'Poppins-Bold',
   },
   containerForm: {
     flex: 4,
@@ -53,6 +53,52 @@ const globalStyles = StyleSheet.create({
   avatar: {
     backgroundColor: '#ccc',
     marginBottom: 15,
+  },
+
+  itemContainer: {
+    flexDirection: 'row',
+    alignItems: 'flex-start',
+    padding: 10,
+    marginBottom: 10,
+    backgroundColor: '#120b34',
+    borderRadius: 20,
+  },
+  productInfoContainer: {
+    flex: 1,
+    marginLeft: 10,
+  },
+  productText: {
+    color: '#fff',
+    fontSize: 14,
+    fontFamily: 'Poppins-Regular',
+  },
+  productName: {
+    color: '#fff',
+    fontSize: 16,
+    maxWidth: '50%',
+    fontFamily: 'Poppins-Bold',
+  },
+  productPrice: {
+    color: '#fff',
+    fontSize: 16,
+    maxWidth: '50%',
+    fontFamily: 'Poppins-Regular',
+  },
+  productHeader: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+  },
+  productImage: {
+    width: '40%',
+    height: 120,
+    borderRadius: 15,
+    resizeMode: 'contain',
+    backgroundColor: '#fff',
+  },
+  dividerStyle: {
+    marginVertical: 8,
+    color: 'rgba(255, 255, 255, 0.1)',
   },
 });
 export default globalStyles;

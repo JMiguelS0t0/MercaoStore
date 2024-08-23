@@ -57,6 +57,11 @@ const accountScreenStyles = StyleSheet.create({
   buttonContainer: {
     alignItems: 'center',
   },
+  cardFavorites: {
+    flexDirection: 'row',
+    justifyContent: 'center',
+    width: '200%',
+  },
 });
 
 export default accountScreenStyles;
