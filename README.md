@@ -1,5 +1,10 @@
 # Mercao Store
 
+## Integrantes
+
+- Juan Miguel Soto Sanchez
+- Juan Jose Vanegas Ospina
+
 ## Descripción
 
 Mercao Store es una E-commerce móvil construida con React Native. La aplicación presenta un diseño moderno y elegante, centrado en la experiencia del usuario, ofreciendo funciones como navegación de productos, funcionalidad de búsqueda, un carrito de compras y gestión de cuentas de usuario.
