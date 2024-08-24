@@ -12,7 +12,7 @@ const CustomInput = ({
   inputStyle = {},
   containerStyle = {},
   placeholderTextColor = '#ccc',
-  textColor = '#fff',
+  textColor = '#fff',errorMessage, errorStyle,
   iconColor = '#fff',
   ...props
 }) => (
@@ -29,6 +29,8 @@ const CustomInput = ({
     keyboardType={keyboardType}
     secureTextEntry={secureTextEntry}
     placeholderTextColor={placeholderTextColor}
+    errorMessage={errorMessage}
+    errorStyle={errorStyle}
     {...props}
   />
 );

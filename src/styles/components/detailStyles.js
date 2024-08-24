@@ -29,7 +29,7 @@ const detailStyles = StyleSheet.create({
     fontSize: 22,
     color: '#fff',
     textAlign: 'center',
-    fontFamily: 'Lato-Regular',
+    fontFamily: 'Poppins-Regular',
   },
   priceContainer: {
     flexDirection: 'row',
@@ -41,7 +41,7 @@ const detailStyles = StyleSheet.create({
     fontSize: 20,
     color: '#fff',
     textAlign: 'left',
-    fontFamily: 'Lato-Regular',
+    fontFamily: 'Poppins-Regular',
   },
   section: {
     marginBottom: 10,
@@ -51,13 +51,13 @@ const detailStyles = StyleSheet.create({
     color: '#fff',
     marginBottom: 5,
     textAlign: 'center',
-    fontFamily: 'Lato-Bold',
+    fontFamily: 'Poppins-Bold',
   },
   sectionText: {
     fontSize: 16,
     color: '#fff',
     textAlign: 'left',
-    fontFamily: 'Lato-Regular',
+    fontFamily: 'Poppins-Regular',
   },
   iconContainer: {
     flexDirection: 'row',
@@ -79,10 +79,6 @@ const detailStyles = StyleSheet.create({
     padding: 8,
     zIndex: 1,
   },
-  dividerStyle: {
-    marginVertical: 8,
-    color: 'rgba(255, 255, 255, 0.1)',
-  },
   horizontalCardContainer: {
     backgroundColor: '#120b34',
     borderColor: 'rgba(255, 255, 255, 0.4)',
@@ -98,13 +94,13 @@ const detailStyles = StyleSheet.create({
     color: '#fff',
     textAlign: 'left',
     marginBottom: 5,
-    fontFamily: 'Lato-Bold',
+    fontFamily: 'Poppins-Bold',
   },
   cardText: {
     fontSize: 14,
     color: '#fff',
     textAlign: 'left',
-    fontFamily: 'Lato-Regular',
+    fontFamily: 'Poppins-Regular',
   },
   borderButton: {
     borderRadius: 10,

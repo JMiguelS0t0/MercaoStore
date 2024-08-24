@@ -16,6 +16,8 @@ const CartStyles = StyleSheet.create({
     alignItems: 'flex-start',
     padding: 10,
     marginBottom: 10,
+    backgroundColor: '#120b34',
+    borderRadius: 20,
   },
   productImage: {
     width: '40%',
@@ -36,13 +38,19 @@ const CartStyles = StyleSheet.create({
   productName: {
     color: '#fff',
     fontSize: 16,
-    fontWeight: 'bold',
     maxWidth: '50%',
+    fontFamily: 'Poppins-Bold',
+  },
+  productText: {
+    color: '#fff',
+    fontSize: 14,
+    fontFamily: 'Poppins-Regular',
   },
   productPrice: {
     color: '#fff',
     fontSize: 16,
     maxWidth: '50%',
+    fontFamily: 'Poppins-Regular',
   },
   containerIcons: {
     flexDirection: 'row',

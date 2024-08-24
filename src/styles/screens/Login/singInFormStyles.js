@@ -7,7 +7,7 @@ const signInFormStyles = StyleSheet.create({
     paddingBottom: 5,
     margin: 0,
     marginTop: 10,
-    fontFamily: 'Lato-Bold',
+    fontFamily: 'Poppins-Bold',
   },
   colorForm: {
     backgroundColor: '#fff',
@@ -15,14 +15,24 @@ const signInFormStyles = StyleSheet.create({
   createText: {
     color: 'black',
     marginTop: 20,
-    fontFamily: 'Lato-Regular',
+    fontFamily: 'Poppins-Regular',
   },
   inputContainer: {
     backgroundColor: '#f5f5f5',
   },
   createTextHighlight: {
     color: '#7b5bbd',
-    fontFamily: 'Lato-Bold',
+    fontFamily: 'Poppins-Bold',
+  },
+  createAccountButton: {
+    fontFamily: 'Poppins-Regular',
+    borderRadius: 10,
+  },
+  errorStyle: {
+    color: 'red',
+    fontSize: 12,
+    fontFamily: 'Poppins-Regular',
+    marginTop: 5,
   },
 });
 

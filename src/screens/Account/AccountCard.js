@@ -1,20 +1,27 @@
 import React from 'react';
-import {Text} from 'react-native';
-import {Card, Icon} from '@rneui/themed';
+import {Button, Icon} from '@rneui/themed';
 import accountScreenStyles from '../../styles/screens/Account/AccountScreenStyles';
 
-const AccountCard = ({iconName, title}) => {
+const AccountCard = ({iconName, title, onPress, solid = false}) => {
   return (
-    <Card containerStyle={accountScreenStyles.card}>
-      <Icon
-        name={iconName}
-        type="font-awesome-5"
-        color="#fff"
-        size={30}
-        containerStyle={accountScreenStyles.iconContainer}
-      />
-      <Text style={accountScreenStyles.cardText}>{title}</Text>
-    </Card>
+    <Button
+      onPress={onPress}
+      containerStyle={accountScreenStyles.card}
+      buttonStyle={accountScreenStyles.cardButton}
+      icon={
+        <Icon
+          name={iconName}
+          type="font-awesome-5"
+          color="#fff"
+          size={30}
+          solid={solid}
+          containerStyle={accountScreenStyles.iconContainer}
+        />
+      }
+      title={title}
+      titleStyle={accountScreenStyles.cardText}
+      iconPosition="top"
+    />
   );
 };
 

@@ -1,41 +1,97 @@
-import React from 'react';
+import React, {useState} from 'react';
 import {View, Text} from 'react-native';
 import {Button} from '@rneui/themed';
+import {useNavigation} from '@react-navigation/native';
 import signInFormStyles from '../styles/screens/Login/singInFormStyles';
 import globalStyles from '../styles/globalStyles';
 import CustomInput from '../reusable/CustomInput';
 
-const SignInForm = () => (
-  <View style={[globalStyles.containerForm, signInFormStyles.colorForm]}>
-    <Text style={signInFormStyles.loginText}>Sign in</Text>
+const SignInForm = () => {
+  const navigation = useNavigation();
+  const [username, setUsername] = useState('');
+  const [password, setPassword] = useState('');
+  const [error, setError] = useState({username: '', password: ''});
 
-    <CustomInput
-      placeholder="Email"
-      iconName="user"
-      keyboardType="email-address"
-      textColor="#000"
-      iconColor="#beb5c5"
-      containerStyle={signInFormStyles.inputContainer}
-    />
+  const validateInputs = () => {
+    let valid = true;
+    const errorMessages = {username: '', password: ''};
 
-    <CustomInput
-      placeholder="Password"
-      iconName="key"
-      secureTextEntry
-      textColor="#000"
-      iconColor="#beb5c5"
-      containerStyle={signInFormStyles.inputContainer}
-    />
+ 
+    if (username.length > 10) {
+      errorMessages.username = 'El usuario no puede tener más de 10 caracteres';
+      valid = false;
+    }
 
-    <Button title="LOGIN" buttonStyle={globalStyles.buttonStyle} />
 
-    <Text style={signInFormStyles.createText}>
-      Don't have an account?{' '}
-      <Text style={signInFormStyles.createTextHighlight}>
-        Create a new account
+    const passwordRegex = /^(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{8,}$/;
+    if (!passwordRegex.test(password)) {
+      errorMessages.password = 'La contraseña debe tener al menos 8 caracteres, incluir 1 mayúscula, 1 caracter especial y números.';
+      valid = false;
+    }
+
+    setError(errorMessages);
+    return valid;
+  };
+
+  const handleLogin = () => {
+    if (validateInputs()) {
+      navigation.navigate('Home');
+    }
+  };
+
+  const handleCreateAccount = () => {
+    navigation.navigate('Register');
+  };
+
+  return (
+    <View style={[globalStyles.containerForm, signInFormStyles.colorForm]}>
+      <Text style={signInFormStyles.loginText}>Sign in</Text>
+
+      <CustomInput
+        placeholder="Username"
+        iconName="user"
+        keyboardType="default"
+        textColor="#000"
+        iconColor="#beb5c5"
+        containerStyle={signInFormStyles.inputContainer}
+        value={username}
+        onChangeText={setUsername}
+        maxLength={10}
+        errorMessage={error.username}
+        errorStyle={signInFormStyles.errorStyle}
+      />
+
+      <CustomInput
+        placeholder="Password"
+        iconName="key"
+        secureTextEntry
+        textColor="#000"
+        iconColor="#beb5c5"
+        containerStyle={signInFormStyles.inputContainer}
+        value={password}
+        onChangeText={setPassword}
+        errorMessage={error.password}
+        errorStyle={signInFormStyles.errorStyle}
+      />
+
+      <Button
+        title="LOGIN"
+        buttonStyle={globalStyles.buttonStyle}
+        onPress={handleLogin}
+      />
+
+      <Text style={signInFormStyles.createText}>
+        Don't have an account?
+        <Button
+          title="Create a New Account"
+          type="clear"
+          titleStyle={signInFormStyles.createTextHighlight}
+          onPress={handleCreateAccount}
+          containerStyle={signInFormStyles.createAccountButton}
+        />
       </Text>
-    </Text>
-  </View>
-);
+    </View>
+  );
+};
 
 export default SignInForm;

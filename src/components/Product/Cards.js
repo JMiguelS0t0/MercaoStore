@@ -1,6 +1,6 @@
 import React from 'react';
-import {Card, Text, Icon} from '@rneui/themed';
-import {FlatList, View} from 'react-native';
+import {FlatList} from 'react-native';
+import CardItem from './CardItem';
 import CardStyles from '../../styles/components/cardStyles';
 
 const data = [
@@ -9,83 +9,31 @@ const data = [
     title: 'Case iPhone 1',
     price: 'US$ 25,00',
     image: require('../../assets/CaseIphone.webp'),
+    onOffer: true,
+    offerPrice: 'US$ 20,00',
   },
   {
     id: 2,
-    title: 'iPhone 13 ',
+    title: 'iPhone 13',
     price: 'US$ 600,00',
     image: require('../../assets/Iphone.webp'),
-  },
-  {
-    id: 3,
-    title: 'Case iPhone 3',
-    price: 'US$ 20,00',
-    image: require('../../assets/CaseIphone.webp'),
-  },
-  {
-    id: 4,
-    title: 'Case iPhone 3',
-    price: 'US$ 20,00',
-    image: require('../../assets/CaseIphone.webp'),
-  },
-  {
-    id: 5,
-    title: 'Case iPhone 3',
-    price: 'US$ 20,00',
-    image: require('../../assets/CaseIphone.webp'),
-  },
-  {
-    id: 6,
-    title: 'Case iPhone 3',
-    price: 'US$ 20,00',
-    image: require('../../assets/CaseIphone.webp'),
-  },
-  {
-    id: 7,
-    title: 'Case iPhone 3',
-    price: 'US$ 20,00',
-    image: require('../../assets/CaseIphone.webp'),
-  },
-  {
-    id: 8,
-    title: 'Case iPhone 3',
-    price: 'US$ 20,00',
-    image: require('../../assets/CaseIphone.webp'),
+    onOffer: false,
   },
 ];
 
-const renderItem = ({item}) => (
-  <View style={CardStyles.cardWrapper}>
-    <Card containerStyle={CardStyles.cardContainer}>
-      <View style={CardStyles.imageContainer}>
-        <Card.Image
-          source={item.image}
-          style={CardStyles.cardImage}
-          resizeMode="contain"
-        />
-        <Icon
-          name="heart"
-          type="font-awesome-5"
-          color="#fff"
-          size={15}
-          containerStyle={CardStyles.heartIcon}
-        />
-      </View>
-      <Text style={CardStyles.cardTitle}>{item.title}</Text>
-      <Text style={CardStyles.cardText}>{item.price}</Text>
-    </Card>
-  </View>
-);
+const Cards = () => {
+  const renderItem = ({item}) => <CardItem item={item} />;
 
-const Cards = () => (
-  <FlatList
-    data={data}
-    renderItem={renderItem}
-    keyExtractor={item => item.id.toString()}
-    numColumns={2}
-    contentContainerStyle={CardStyles.listContainer}
-    style={CardStyles.cardsContainer}
-  />
-);
+  return (
+    <FlatList
+      data={data}
+      renderItem={renderItem}
+      keyExtractor={item => item.id.toString()}
+      numColumns={2}
+      contentContainerStyle={CardStyles.listContainer}
+      style={CardStyles.cardsContainer}
+    />
+  );
+};
 
 export default Cards;
