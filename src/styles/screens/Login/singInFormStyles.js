@@ -28,6 +28,12 @@ const signInFormStyles = StyleSheet.create({
     fontFamily: 'Poppins-Regular',
     borderRadius: 10,
   },
+  errorStyle: {
+    color: 'red',
+    fontSize: 12,
+    fontFamily: 'Poppins-Regular',
+    marginTop: 5,
+  },
 });
 
 export default signInFormStyles;
