@@ -41,8 +41,8 @@ const CardStyles = StyleSheet.create({
     fontSize: 16,
     color: '#fff',
     textAlign: 'left',
-    marginLeft: 5,
-    marginBottom:5,
+    marginLeft: 1,
+    marginBottom: 5,
     fontFamily: 'Poppins-Bold',
   },
   cardsContainer: {
@@ -58,6 +58,20 @@ const CardStyles = StyleSheet.create({
     borderRadius: 15,
     padding: 5,
     zIndex: 1,
+  },
+  offerContainer: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    marginLeft: 5,
+  },
+  originalPrice: {
+    textDecorationLine: 'line-through',
+    color: '#fff',
+    marginRight: 5,
+  },
+  offerPrice: {
+    color: 'red',
+    fontFamily: 'Poppins-Bold',
   },
 });
 

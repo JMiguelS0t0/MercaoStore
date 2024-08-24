@@ -37,9 +37,9 @@ const accountScreenStyles = StyleSheet.create({
     borderRadius: 15,
     backgroundColor: '#120b34',
     alignItems: 'center',
-    padding: 20,
     marginHorizontal: 5,
     borderColor: 'transparent',
+    margin: 10,
   },
   iconContainer: {
     marginBottom: 8,
@@ -61,6 +61,12 @@ const accountScreenStyles = StyleSheet.create({
     flexDirection: 'row',
     justifyContent: 'center',
     width: '200%',
+  },
+  cardButton: {
+    backgroundColor: 'transparent',
+    width: '100%',
+    alignItems: 'center',
+    padding: 20,
   },
 });
 

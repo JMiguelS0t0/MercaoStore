@@ -29,7 +29,11 @@ const CardItem = ({item}) => {
             CardStyles.cardContainer,
             isPressed && {transform: [{scale: 0.95}], opacity: 0.7},
           ]}>
-          <CardContent item={item} />
+          <CardContent
+            item={item}
+            onOffer={item.onOffer}
+            offerPrice={item.offerPrice}
+          />
         </Animated.View>
       </TouchableWithoutFeedback>
     </View>

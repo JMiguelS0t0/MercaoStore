@@ -1,7 +1,7 @@
 import React from 'react';
-import {FlatList, View, Text} from 'react-native';
-import {Card, Icon} from '@rneui/themed';
+import {FlatList} from 'react-native';
 import favoritesStyles from '../styles/screens/FavoriteStyles';
+import CardItem from '../components/Product/CardItem';
 
 const data = [
   {
@@ -27,35 +27,10 @@ const data = [
   },
 ];
 
-const renderItem = ({item}) => (
-  <View style={favoritesStyles.cardWrapper}>
-    <Card containerStyle={favoritesStyles.cardContainer}>
-      <View style={favoritesStyles.imageContainer}>
-        <Card.Image
-          source={item.image}
-          style={favoritesStyles.cardImage}
-          resizeMode="contain"
-        />
-        <Icon
-          name="heart"
-          type="font-awesome-5"
-          color="#fff"
-          size={15}
-          solid={true}
-          containerStyle={favoritesStyles.heartIcon}
-        />
-      </View>
-      <Text style={favoritesStyles.cardTitle}>{item.title}</Text>
-      <Text style={favoritesStyles.cardText}>{item.price}</Text>
-      <Text style={favoritesStyles.cardText}>{item.status}</Text>
-    </Card>
-  </View>
-);
-
 const Favorites = () => (
   <FlatList
     data={data}
-    renderItem={renderItem}
+    renderItem={({item}) => <CardItem item={item} />}
     keyExtractor={item => item.id.toString()}
     numColumns={2}
     contentContainerStyle={favoritesStyles.listContainer}

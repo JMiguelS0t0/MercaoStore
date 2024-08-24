@@ -32,6 +32,20 @@ const navBarStyles = StyleSheet.create({
     width: '50%',
     backgroundColor: '#120b34',
   },
+  backButtonContainer: {
+    position: 'absolute',
+    left: '10%',
+    zIndex: 2,
+  },
+  circularButton: {
+    backgroundColor: 'rgba(18, 11, 52, 0.4)',
+    borderColor: '#7b5bbd',
+    borderWidth: 1,
+    borderRadius: 50,
+  },
+  buttonStyle: {
+    backgroundColor: 'transparent',
+  },
 });
 
 export default navBarStyles;

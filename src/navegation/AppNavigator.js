@@ -1,16 +1,24 @@
 import React from 'react';
+import {StyleSheet, View} from 'react-native';
+
 import {NavigationContainer} from '@react-navigation/native';
-import {createStackNavigator} from '@react-navigation/stack';
+import {createStackNavigator, TransitionPresets} from '@react-navigation/stack';
+
 import LinearGradient from 'react-native-linear-gradient';
+
 import HomeScreen from '../screens/Home';
 import LoginScreen from '../screens/Login';
 import RegisterScreen from '../screens/Register';
 import DetailScreen from '../components/Product/Detail';
 import CartScreen from '../screens/Cart';
 import AccountScreen from '../screens/Account/AccountScreen';
+import EditAccountScreen from '../screens/Account/EditAccount';
+import SupportScreen from '../screens/Support';
+import FavoritesScreen from '../screens/Favorites';
+import SearchScreen from '../screens/Search/SearchScreen';
+import PurchasesScreen from '../screens/Purchase/Purchases';
 import HeaderApp from '../components/Layout/HeaderApp';
 import NavBar from '../components/Layout/NavBar';
-import {View, StyleSheet} from 'react-native';
 
 const Stack = createStackNavigator();
 
@@ -37,7 +45,13 @@ const MainScreens = ({children}) => {
 const AppNavigator = () => {
   return (
     <NavigationContainer>
-      <Stack.Navigator screenOptions={{headerShown: false}}>
+      <Stack.Navigator
+        screenOptions={{
+          headerShown: false,
+          ...TransitionPresets.SlideFromRightIOS,
+          animationEnabled: true,
+          animationTypeForReplace: 'push',
+        }}>
         <Stack.Screen name="Login">
           {props => (
             <GradientBackground>
@@ -84,6 +98,51 @@ const AppNavigator = () => {
             <GradientBackground>
               <MainScreens>
                 <AccountScreen {...props} />
+              </MainScreens>
+            </GradientBackground>
+          )}
+        </Stack.Screen>
+        <Stack.Screen name="EditAccount">
+          {props => (
+            <GradientBackground>
+              <MainScreens>
+                <EditAccountScreen {...props} />
+              </MainScreens>
+            </GradientBackground>
+          )}
+        </Stack.Screen>
+        <Stack.Screen name="Support">
+          {props => (
+            <GradientBackground>
+              <MainScreens>
+                <SupportScreen {...props} />
+              </MainScreens>
+            </GradientBackground>
+          )}
+        </Stack.Screen>
+        <Stack.Screen name="Favorites">
+          {props => (
+            <GradientBackground>
+              <MainScreens>
+                <FavoritesScreen {...props} />
+              </MainScreens>
+            </GradientBackground>
+          )}
+        </Stack.Screen>
+        <Stack.Screen name="SearchScreen">
+          {props => (
+            <GradientBackground>
+              <MainScreens>
+                <SearchScreen {...props} />
+              </MainScreens>
+            </GradientBackground>
+          )}
+        </Stack.Screen>
+        <Stack.Screen name="Purchases">
+          {props => (
+            <GradientBackground>
+              <MainScreens>
+                <PurchasesScreen {...props} />
               </MainScreens>
             </GradientBackground>
           )}

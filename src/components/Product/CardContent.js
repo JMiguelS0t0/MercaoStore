@@ -3,7 +3,7 @@ import {Card, Text, Icon} from '@rneui/themed';
 import CardStyles from '../../styles/components/cardStyles';
 import {View} from 'react-native';
 
-const CardContent = ({item}) => {
+const CardContent = ({item, onOffer = false, offerPrice = null}) => {
   return (
     <Card containerStyle={CardStyles.cardContainer}>
       <View style={CardStyles.imageContainer}>
@@ -21,7 +21,18 @@ const CardContent = ({item}) => {
         />
       </View>
       <Text style={CardStyles.cardTitle}>{item.title}</Text>
-      <Text style={CardStyles.cardText}>{item.price}</Text>
+      {onOffer && offerPrice ? (
+        <View style={CardStyles.offerContainer}>
+          <Text style={[CardStyles.cardText, CardStyles.originalPrice]}>
+            {item.price}
+          </Text>
+          <Text style={[CardStyles.cardText, CardStyles.offerPrice]}>
+            {offerPrice}
+          </Text>
+        </View>
+      ) : (
+        <Text style={CardStyles.cardText}>{item.price}</Text>
+      )}
     </Card>
   );
 };
