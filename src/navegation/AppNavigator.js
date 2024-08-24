@@ -1,9 +1,7 @@
 import React from 'react';
 import {StyleSheet, View} from 'react-native';
-
 import {NavigationContainer} from '@react-navigation/native';
 import {createStackNavigator, TransitionPresets} from '@react-navigation/stack';
-
 import LinearGradient from 'react-native-linear-gradient';
 
 import HomeScreen from '../screens/Home';
@@ -17,6 +15,8 @@ import SupportScreen from '../screens/Support';
 import FavoritesScreen from '../screens/Favorites';
 import SearchScreen from '../screens/Search/SearchScreen';
 import PurchasesScreen from '../screens/Purchase/Purchases';
+import PaymentScreen from '../screens/Payment/PaymentScreen';
+
 import HeaderApp from '../components/Layout/HeaderApp';
 import NavBar from '../components/Layout/NavBar';
 
@@ -32,10 +32,10 @@ const GradientBackground = ({children}) => (
   </LinearGradient>
 );
 
-const MainScreens = ({children}) => {
+const MainScreens = ({children, showHeader = true}) => {
   return (
     <View style={styles.container}>
-      <HeaderApp />
+      {showHeader && <HeaderApp />}
       {children}
       <NavBar />
     </View>
@@ -143,6 +143,15 @@ const AppNavigator = () => {
             <GradientBackground>
               <MainScreens>
                 <PurchasesScreen {...props} />
+              </MainScreens>
+            </GradientBackground>
+          )}
+        </Stack.Screen>
+        <Stack.Screen name="Payment">
+          {props => (
+            <GradientBackground>
+              <MainScreens showHeader={false}>
+                <PaymentScreen {...props} />
               </MainScreens>
             </GradientBackground>
           )}
