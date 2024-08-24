@@ -97,6 +97,7 @@ const CartStyles = StyleSheet.create({
     width: '100%',
     alignSelf: 'center',
     borderRadius: 20,
+    marginBottom: 10,
   },
   heartIcon: {
     backgroundColor: 'rgba(123, 91, 189, 0.5)',
