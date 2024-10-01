@@ -27,6 +27,24 @@ const headerStyle = StyleSheet.create({
     justifyContent: 'center',
     alignItems: 'center',
   },
+  cartIconFilled: {
+    marginRight: 10,
+    backgroundColor: '#7b5bbd',
+    borderRadius: 25,
+    width: 35,
+    height: 35,
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  userIcon: {
+    backgroundColor: 'rgba(255, 255, 255, 0.3)',
+    borderRadius: 25,
+    width: 35,
+    height: 35,
+    justifyContent: 'center',
+    alignItems: 'center',
+    marginRight: 10,
+  },
 });
 
 export default headerStyle;

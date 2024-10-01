@@ -1,12 +1,14 @@
-import React from 'react';
+import React, {useContext} from 'react';
 import {View, Image, Pressable} from 'react-native';
 import globalStyles from '../../styles/globalStyles';
 import headerStyle from '../../styles/components/headerStyle';
 import {Icon} from '@rneui/themed';
 import {useNavigation} from '@react-navigation/native';
+import {ProductContext} from '../../context/ProductContext';
 
 const HeaderApp = () => {
   const navigation = useNavigation();
+  const {cart} = useContext(ProductContext);
 
   const handleCartPress = () => {
     navigation.navigate('Cart');
@@ -19,6 +21,9 @@ const HeaderApp = () => {
   const handleLogoPress = () => {
     navigation.navigate('Home');
   };
+
+  const cartIconStyle =
+    cart.length > 0 ? headerStyle.cartIconFilled : headerStyle.cartIcon;
 
   return (
     <View style={headerStyle.headerContainer}>
@@ -34,7 +39,7 @@ const HeaderApp = () => {
           type="font-awesome-5"
           color="#fff"
           size={17}
-          style={headerStyle.cartIcon}
+          containerStyle={cartIconStyle}
           onPress={handleCartPress}
         />
         <Icon
@@ -42,7 +47,7 @@ const HeaderApp = () => {
           type="font-awesome-5"
           color="#fff"
           size={17}
-          style={headerStyle.cartIcon}
+          style={headerStyle.userIcon}
           onPress={handleProfilePress}
         />
       </View>

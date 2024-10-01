@@ -1,11 +1,13 @@
-import React, {useState} from 'react';
+import React, {useState, useContext} from 'react';
 import {View, TouchableWithoutFeedback, Animated} from 'react-native';
 import CardStyles from '../../styles/components/cardStyles';
 import {useNavigation} from '@react-navigation/native';
 import CardContent from './CardContent';
+import {ProductContext} from '../../context/ProductContext';
 
 const CardItem = ({item}) => {
   const navigation = useNavigation();
+  const {selectProduct} = useContext(ProductContext);
   const [pressedCardId, setPressedCardId] = useState(null);
 
   const handlePressIn = () => {
@@ -18,12 +20,17 @@ const CardItem = ({item}) => {
 
   const isPressed = pressedCardId === item.id;
 
+  const handlePress = () => {
+    selectProduct(item);
+    navigation.navigate('Detail');
+  };
+
   return (
     <View style={CardStyles.cardWrapper}>
       <TouchableWithoutFeedback
         onPressIn={handlePressIn}
         onPressOut={handlePressOut}
-        onPress={() => navigation.navigate('Detail')}>
+        onPress={handlePress}>
         <Animated.View
           style={[
             CardStyles.cardContainer,
