@@ -60,6 +60,13 @@ const favoritesStyles = StyleSheet.create({
     padding: 5,
     zIndex: 1,
   },
+  emptyText: {
+    fontSize: 18,
+    color: '#fff',
+    textAlign: 'center',
+    marginTop: 50,
+    fontFamily: 'Poppins-Regular',
+  },
 });
 
 export default favoritesStyles;

@@ -1,41 +1,30 @@
-import React from 'react';
-import {FlatList} from 'react-native';
+import React, {useContext} from 'react';
+import {FlatList, Text, View} from 'react-native';
 import favoritesStyles from '../styles/screens/FavoriteStyles';
 import CardItem from '../components/Product/CardItem';
+import {ProductContext} from '../context/ProductContext';
 
-const data = [
-  {
-    id: 1,
-    title: 'Favorite Item 1',
-    price: 'US$ 100,00',
-    image: require('../assets/Iphone.webp'),
-    status: 'Not available',
-  },
-  {
-    id: 2,
-    title: 'Favorite Item 2',
-    price: 'US$ 200,00',
-    image: require('../assets/Iphone.webp'),
-    status: 'Available',
-  },
-  {
-    id: 3,
-    title: 'Favorite Item 3',
-    price: 'US$ 300,00',
-    image: require('../assets/Iphone.webp'),
-    status: 'Available',
-  },
-];
+const Favorites = () => {
+  const {favorites} = useContext(ProductContext);
 
-const Favorites = () => (
-  <FlatList
-    data={data}
-    renderItem={({item}) => <CardItem item={item} />}
-    keyExtractor={item => item.id.toString()}
-    numColumns={2}
-    contentContainerStyle={favoritesStyles.listContainer}
-    style={favoritesStyles.cardsContainer}
-  />
-);
+  return (
+    <View style={favoritesStyles.container}>
+      {favorites.length === 0 ? (
+        <Text style={favoritesStyles.emptyText}>
+          No tienes productos en favoritos
+        </Text>
+      ) : (
+        <FlatList
+          data={favorites}
+          renderItem={({item}) => <CardItem item={item} />}
+          keyExtractor={item => item.id.toString()}
+          numColumns={2}
+          contentContainerStyle={favoritesStyles.listContainer}
+          style={favoritesStyles.cardsContainer}
+        />
+      )}
+    </View>
+  );
+};
 
 export default Favorites;

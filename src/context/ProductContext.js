@@ -29,6 +29,7 @@ const initialState = {
   ],
   selectedProduct: null,
   cart: [],
+  favorites: [],
 };
 
 const productReducer = (state, action) => {
@@ -38,7 +39,7 @@ const productReducer = (state, action) => {
         ...state,
         selectedProduct: action.payload,
       };
-    case 'ADD_TO_CART': {
+    case 'ADD_TO_CART':
       const productInCart = state.cart.find(
         product => product.id === action.payload.id,
       );
@@ -48,7 +49,7 @@ const productReducer = (state, action) => {
           ...state,
           cart: state.cart.map(product =>
             product.id === action.payload.id
-              ? {...product, quantity: (product.quantity || 1) + 1}
+              ? {...product, quantity: product.quantity + 1}
               : product,
           ),
         };
@@ -58,8 +59,12 @@ const productReducer = (state, action) => {
           cart: [...state.cart, {...action.payload, quantity: 1}],
         };
       }
-    }
-    case 'UPDATE_QUANTITY': {
+    case 'REMOVE_FROM_CART':
+      return {
+        ...state,
+        cart: state.cart.filter(product => product.id !== action.payload.id),
+      };
+    case 'UPDATE_QUANTITY':
       return {
         ...state,
         cart: state.cart.map(product =>
@@ -68,12 +73,24 @@ const productReducer = (state, action) => {
             : product,
         ),
       };
-    }
-    case 'REMOVE_FROM_CART':
-      return {
-        ...state,
-        cart: state.cart.filter(product => product.id !== action.payload.id),
-      };
+    case 'TOGGLE_FAVORITE':
+      const productInFavorites = state.favorites.find(
+        product => product.id === action.payload.id,
+      );
+
+      if (productInFavorites) {
+        return {
+          ...state,
+          favorites: state.favorites.filter(
+            product => product.id !== action.payload.id,
+          ),
+        };
+      } else {
+        return {
+          ...state,
+          favorites: [...state.favorites, action.payload],
+        };
+      }
     default:
       return state;
   }
@@ -98,16 +115,22 @@ export const ProductProvider = ({children}) => {
     dispatch({type: 'UPDATE_QUANTITY', payload: {id: product.id, quantity}});
   };
 
+  const toggleFavorite = product => {
+    dispatch({type: 'TOGGLE_FAVORITE', payload: product});
+  };
+
   return (
     <ProductContext.Provider
       value={{
         products: state.products,
         selectedProduct: state.selectedProduct,
         cart: state.cart,
+        favorites: state.favorites,
         selectProduct,
         addToCart,
         removeFromCart,
         updateQuantity,
+        toggleFavorite,
       }}>
       {children}
     </ProductContext.Provider>

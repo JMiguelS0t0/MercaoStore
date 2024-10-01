@@ -33,23 +33,20 @@ const HeaderApp = () => {
           style={globalStyles.smallLogo}
         />
       </Pressable>
+
       <View style={headerStyle.iconContainer}>
-        <Icon
-          name="shopping-cart"
-          type="font-awesome-5"
-          color="#fff"
-          size={17}
-          containerStyle={cartIconStyle}
-          onPress={handleCartPress}
-        />
-        <Icon
-          name="user"
-          type="font-awesome-5"
-          color="#fff"
-          size={17}
-          style={headerStyle.userIcon}
-          onPress={handleProfilePress}
-        />
+        <Pressable onPress={handleCartPress} style={cartIconStyle}>
+          <Icon
+            name="shopping-cart"
+            type="font-awesome-5"
+            color="#fff"
+            size={17}
+          />
+        </Pressable>
+
+        <Pressable onPress={handleProfilePress} style={headerStyle.userIcon}>
+          <Icon name="user" type="font-awesome-5" color="#fff" size={17} />
+        </Pressable>
       </View>
     </View>
   );

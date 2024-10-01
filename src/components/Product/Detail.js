@@ -1,16 +1,21 @@
 import React, {useContext} from 'react';
-import {View, ScrollView} from 'react-native';
+import {View, ScrollView, Pressable} from 'react-native';
 import {Text, Image, Icon, Divider, Button, Card} from '@rneui/themed';
 import detailStyles from '../../styles/components/detailStyles';
 import globalStyles from '../../styles/globalStyles';
 import {ProductContext} from '../../context/ProductContext';
 
 const Detail = () => {
-  const {selectedProduct, addToCart} = useContext(ProductContext);
+  const {selectedProduct, addToCart, toggleFavorite, favorites} =
+    useContext(ProductContext);
 
   if (!selectedProduct) {
     return <Text>No product selected</Text>;
   }
+
+  const isFavorite = favorites.some(
+    product => product.id === selectedProduct.id,
+  );
 
   const renderPriceSection = () => (
     <View style={detailStyles.priceContainer}>
@@ -19,13 +24,17 @@ const Detail = () => {
           ? selectedProduct.offerPrice
           : selectedProduct.price}
       </Text>
-      <Icon
-        name="heart"
-        type="font-awesome-5"
-        color="#fff"
-        size={15}
-        containerStyle={detailStyles.heartIcon}
-      />
+      <Pressable onPress={() => toggleFavorite(selectedProduct)}>
+        <View style={detailStyles.heartIconBackground}>
+          <Icon
+            name="heart"
+            type="font-awesome-5"
+            color={isFavorite ? '#7b5bbd' : '#fff'}
+            size={15}
+            containerStyle={detailStyles.heartIcon}
+          />
+        </View>
+      </Pressable>
     </View>
   );
 
@@ -36,7 +45,6 @@ const Detail = () => {
         {selectedProduct.title} - Here you can add the specific features of the
         product.
       </Text>
-      {/* Agrega más características del producto aquí */}
       <Text style={detailStyles.sectionText}>- Feature 1</Text>
       <Text style={detailStyles.sectionText}>- Feature 2</Text>
       <Text style={detailStyles.sectionText}>- Feature 3</Text>
