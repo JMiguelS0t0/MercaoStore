@@ -1,11 +1,13 @@
 import React, {useContext, useState, useEffect} from 'react';
-import {Text, View, ScrollView} from 'react-native';
+import {Text, View, ScrollView, Pressable} from 'react-native';
 import globalStyles from '../../styles/globalStyles';
 import accountScreenStyles from '../../styles/screens/Account/AccountScreenStyles';
 import {Avatar} from '@rneui/themed';
 import CustomInput from '../../reusable/CustomInput';
 import {Button} from '@rneui/themed';
 import {AuthContext} from '../../context/AuthContext';
+import DatePicker from 'react-native-date-picker';
+import moment from 'moment';
 
 const EditAccount = () => {
   const {user} = useContext(AuthContext);
@@ -16,6 +18,9 @@ const EditAccount = () => {
     address: '',
   });
 
+  const [isDatePickerVisible, setIsDatePickerVisible] = useState(false);
+  const [selectedDate, setSelectedDate] = useState(new Date());
+
   useEffect(() => {
     if (user) {
       setFormData({
@@ -24,6 +29,10 @@ const EditAccount = () => {
         birthday: user.birthday || '',
         address: user.address || '',
       });
+
+      if (user.birthday) {
+        setSelectedDate(moment(user.birthday, 'DD/MM/YYYY').toDate());
+      }
     }
   }, [user]);
 
@@ -36,6 +45,17 @@ const EditAccount = () => {
 
   const handleSaveChanges = () => {
     console.log('Datos guardados:', formData);
+  };
+
+  const showDatePicker = () => {
+    setIsDatePickerVisible(true);
+  };
+
+  const handleDateConfirm = date => {
+    setSelectedDate(date);
+    const formattedDate = moment(date).format('DD/MM/YYYY');
+    setFormData({...formData, birthday: formattedDate});
+    setIsDatePickerVisible(false);
   };
 
   return (
@@ -74,16 +94,27 @@ const EditAccount = () => {
           ]}
         />
 
-        <CustomInput
-          placeholder="Birthday"
-          iconName="calendar"
-          keyboardType="numeric"
-          value={formData.birthday}
-          onChangeText={value => handleInputChange('birthday', value)}
-          containerStyle={[
-            globalStyles.backgroundInput,
-            globalStyles.inputStyles,
-          ]}
+        <Pressable onPress={showDatePicker}>
+          <CustomInput
+            placeholder="Birthday"
+            iconName="calendar"
+            value={formData.birthday}
+            editable={false}
+            containerStyle={[{width: '100%'}, globalStyles.backgroundInput]}
+          />
+        </Pressable>
+
+        <DatePicker
+          modal
+          open={isDatePickerVisible}
+          date={selectedDate}
+          mode="date"
+          theme="dark"
+          dividerColor="#7b5bbd"
+          buttonColor="#7b5bbd"
+          onConfirm={handleDateConfirm}
+          onCancel={() => setIsDatePickerVisible(false)}
+          textColor="white"
         />
 
         <CustomInput

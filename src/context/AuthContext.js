@@ -61,7 +61,7 @@ export const AuthProvider = ({children}) => {
       name: 'testuser',
       email: 'test@example.com',
       password: 'Test123!',
-      birthday: '1990-01-01',
+      birthday: '01/01/1990',
       country: 'Colombia',
       department: 'Antioquia',
       city: 'Medellín',

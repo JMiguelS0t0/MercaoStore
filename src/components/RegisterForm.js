@@ -1,11 +1,13 @@
 import React, {useState, useContext} from 'react';
-import {View, Image, Text, Alert} from 'react-native';
+import {View, Image, Text, Alert, Pressable} from 'react-native';
 import CustomInput from '../reusable/CustomInput';
 import {Button, Icon} from '@rneui/themed';
 import globalStyles from '../styles/globalStyles';
 import {useNavigation} from '@react-navigation/native';
 import registerFormStyles from '../styles/screens/Register/registerFormStyles';
 import {AuthContext} from '../context/AuthContext';
+import DatePicker from 'react-native-date-picker';
+import moment from 'moment';
 
 const RegisterForm = () => {
   const navigation = useNavigation();
@@ -19,6 +21,8 @@ const RegisterForm = () => {
   const [city, setCity] = useState('');
   const [address, setAddress] = useState('');
   const [errors, setErrors] = useState({});
+  const [isDatePickerVisible, setIsDatePickerVisible] = useState(false);
+  const [selectedDate, setSelectedDate] = useState(new Date());
 
   const handleRegister = () => {
     const errorMessages = {};
@@ -94,6 +98,16 @@ const RegisterForm = () => {
     navigation.navigate('Login');
   };
 
+  const showDatePicker = () => {
+    setIsDatePickerVisible(true);
+  };
+
+  const handleDateConfirm = date => {
+    setSelectedDate(date);
+    setBirthday(moment(date).format('DD/MM/YYYY'));
+    setIsDatePickerVisible(false);
+  };
+
   return (
     <View style={{flex: 1}}>
       <View style={registerFormStyles.header}>
@@ -122,6 +136,7 @@ const RegisterForm = () => {
 
       <View style={globalStyles.containerForm}>
         <Text style={registerFormStyles.registerText}>Register</Text>
+
         <CustomInput
           placeholder="Username"
           iconName="user"
@@ -148,15 +163,30 @@ const RegisterForm = () => {
           onChangeText={setEmail}
           errorMessage={errors.email}
         />
-        <CustomInput
-          placeholder="Birthday"
-          iconName="calendar"
-          keyboardType="numeric"
-          containerStyle={globalStyles.backgroundInput}
-          value={birthday}
-          onChangeText={setBirthday}
-          errorMessage={errors.birthday}
+
+        <Pressable onPress={showDatePicker}>
+          <CustomInput
+            placeholder="Birthday"
+            iconName="calendar"
+            containerStyle={[{width: '100%'}, globalStyles.backgroundInput]}
+            value={birthday}
+            errorMessage={errors.birthday}
+            editable={false}
+          />
+        </Pressable>
+
+        <DatePicker
+          modal
+          open={isDatePickerVisible}
+          date={selectedDate}
+          mode="date"
+          theme="dark"
+          dividerColor="#7b5bbd"
+          buttonColor="#7b5bbd"
+          onConfirm={handleDateConfirm}
+          onCancel={() => setIsDatePickerVisible(false)}
         />
+
         <CustomInput
           placeholder="Country"
           iconName="map-marker-alt"
