@@ -5,11 +5,11 @@ import {Button, Icon} from '@rneui/themed';
 import globalStyles from '../styles/globalStyles';
 import {useNavigation} from '@react-navigation/native';
 import registerFormStyles from '../styles/screens/Register/registerFormStyles';
-import {AuthContext} from '../context/AuthContext'; // Importamos el AuthContext
+import {AuthContext} from '../context/AuthContext';
 
 const RegisterForm = () => {
   const navigation = useNavigation();
-  const {register} = useContext(AuthContext); // Usamos el contexto de autenticación
+  const {register} = useContext(AuthContext);
   const [username, setUsername] = useState('');
   const [password, setPassword] = useState('');
   const [email, setEmail] = useState('');
@@ -70,7 +70,16 @@ const RegisterForm = () => {
     setErrors(errorMessages);
 
     if (valid) {
-      register({name: username, email, password});
+      register({
+        name: username,
+        email,
+        password,
+        birthday,
+        country,
+        department,
+        city,
+        address,
+      });
       Alert.alert('Registro exitoso', 'Usuario registrado exitosamente');
       navigation.navigate('Home');
     } else {

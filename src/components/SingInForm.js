@@ -9,11 +9,12 @@ import {AuthContext} from '../context/AuthContext';
 
 const SignInForm = () => {
   const navigation = useNavigation();
-  const {login, user} = useContext(AuthContext);
+  const {login, users} = useContext(AuthContext); // Usamos el array 'users' del contexto
   const [username, setUsername] = useState('');
   const [password, setPassword] = useState('');
   const [error, setError] = useState({username: '', password: ''});
 
+  // Validamos los campos de entrada
   const validateInputs = () => {
     let valid = true;
     const errorMessages = {username: '', password: ''};
@@ -35,9 +36,14 @@ const SignInForm = () => {
     return valid;
   };
 
+  // Función para manejar el inicio de sesión
   const handleLogin = () => {
     if (validateInputs()) {
-      if (user && user.name === username && user.password === password) {
+      const user = users.find(
+        u => u.name === username && u.password === password,
+      );
+
+      if (user) {
         login({username, password});
         navigation.navigate('Home');
       } else {
