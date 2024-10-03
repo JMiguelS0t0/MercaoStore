@@ -35,32 +35,34 @@ const searchScreenStyles = StyleSheet.create({
   categoryContainer: {
     flexDirection: 'row',
     flexWrap: 'wrap',
-    justifyContent: 'space-between',
+    justifyContent: 'center',
     padding: 10,
     width: '100%',
   },
-  card: {
-    width: '41%',
-    paddingHorizontal: 20,
-    borderRadius: 15,
-    alignItems: 'center',
+  button: {
+    marginBottom: 10,
+    marginHorizontal: 0,
     paddingVertical: 10,
-    borderWidth: 0,
+    borderRadius: 10,
+    alignItems: 'center',
+    justifyContent: 'center',
+    marginHorizontal: 5,
   },
   cardText: {
     fontSize: 14,
     color: '#fff',
     fontFamily: 'Poppins-Regular',
   },
-  offerCard: {
+  offerButton: {
     width: '90%',
-    backgroundColor: '#7b5bbd', 
+    backgroundColor: '#7b5bbd',
     borderRadius: 15,
     alignItems: 'center',
-    borderWidth: 0,
-  },
-  iconContainer: {
-    marginBottom: 10,
+    justifyContent: 'center',
+    paddingVertical: 30,
+    marginTop: 20,
+    paddingHorizontal: '30%',
+    flexDirection: 'column',
   },
 });
 

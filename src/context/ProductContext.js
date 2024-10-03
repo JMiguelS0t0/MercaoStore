@@ -8,6 +8,7 @@ const initialState = {
       id: 1,
       title: 'Case iPhone 1',
       price: 'US$ 25,00',
+      category: 'Accessories',
       image: require('../assets/CaseIphone.webp'),
       onOffer: true,
       offerPrice: 'US$ 20,00',
@@ -16,6 +17,7 @@ const initialState = {
       id: 2,
       title: 'iPhone 13',
       price: 'US$ 600,00',
+      category: 'Electronics',
       image: require('../assets/Iphone.webp'),
       onOffer: false,
     },
@@ -23,6 +25,7 @@ const initialState = {
       id: 3,
       title: 'iPhone 14',
       price: 'US$ 700,00',
+      category: 'Electronics',
       image: require('../assets/Iphone.webp'),
       onOffer: false,
     },
@@ -91,6 +94,17 @@ const productReducer = (state, action) => {
           favorites: [...state.favorites, action.payload],
         };
       }
+    case 'SEARCH_PRODUCT':
+      const searchTerm = action.payload.toLowerCase();
+      const filteredProducts = state.products.filter(
+        product =>
+          product.title.toLowerCase().includes(searchTerm) ||
+          product.category.toLowerCase().includes(searchTerm),
+      );
+      return {
+        ...state,
+        products: filteredProducts,
+      };
     default:
       return state;
   }
@@ -119,6 +133,10 @@ export const ProductProvider = ({children}) => {
     dispatch({type: 'TOGGLE_FAVORITE', payload: product});
   };
 
+  const searchProduct = term => {
+    dispatch({type: 'SEARCH_PRODUCT', payload: term});
+  };
+
   return (
     <ProductContext.Provider
       value={{
@@ -131,6 +149,7 @@ export const ProductProvider = ({children}) => {
         removeFromCart,
         updateQuantity,
         toggleFavorite,
+        searchProduct,
       }}>
       {children}
     </ProductContext.Provider>

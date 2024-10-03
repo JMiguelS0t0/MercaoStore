@@ -16,6 +16,7 @@ import FavoritesScreen from '../screens/Favorites';
 import SearchScreen from '../screens/Search/SearchScreen';
 import PurchasesScreen from '../screens/Purchase/Purchases';
 import PaymentScreen from '../screens/Payment/PaymentScreen';
+import ProductsListScreen from '../screens/Search/ProductsListScreen';
 
 import HeaderApp from '../components/Layout/HeaderApp';
 import NavBar from '../components/Layout/NavBar';
@@ -134,6 +135,15 @@ const AppNavigator = () => {
             <GradientBackground>
               <MainScreens>
                 <SearchScreen {...props} />
+              </MainScreens>
+            </GradientBackground>
+          )}
+        </Stack.Screen>
+        <Stack.Screen name="ProductsList">
+          {props => (
+            <GradientBackground>
+              <MainScreens>
+                <ProductsListScreen {...props} />
               </MainScreens>
             </GradientBackground>
           )}
