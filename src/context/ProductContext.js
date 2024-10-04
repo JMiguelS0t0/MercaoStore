@@ -105,6 +105,12 @@ const productReducer = (state, action) => {
         ...state,
         products: filteredProducts,
       };
+    case 'FILTER_OFFERS':
+      const offerProducts = state.products.filter(product => product.onOffer);
+      return {
+        ...state,
+        products: offerProducts,
+      };
     default:
       return state;
   }
@@ -137,6 +143,10 @@ export const ProductProvider = ({children}) => {
     dispatch({type: 'SEARCH_PRODUCT', payload: term});
   };
 
+  const filterOffers = () => {
+    dispatch({type: 'FILTER_OFFERS'});
+  };
+
   return (
     <ProductContext.Provider
       value={{
@@ -150,6 +160,7 @@ export const ProductProvider = ({children}) => {
         updateQuantity,
         toggleFavorite,
         searchProduct,
+        filterOffers,
       }}>
       {children}
     </ProductContext.Provider>

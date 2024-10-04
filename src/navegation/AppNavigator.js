@@ -1,8 +1,11 @@
 import React from 'react';
-import {StyleSheet, View} from 'react-native';
 import {NavigationContainer} from '@react-navigation/native';
-import {createStackNavigator, TransitionPresets} from '@react-navigation/stack';
-import LinearGradient from 'react-native-linear-gradient';
+import {
+  createStackNavigator,
+  CardStyleInterpolators,
+} from '@react-navigation/stack';
+
+import ScreenWithBackground from '../components/navegation/ScreenWithBackground';
 
 import HomeScreen from '../screens/Home';
 import LoginScreen from '../screens/Login';
@@ -18,29 +21,18 @@ import PurchasesScreen from '../screens/Purchase/Purchases';
 import PaymentScreen from '../screens/Payment/PaymentScreen';
 import ProductsListScreen from '../screens/Search/ProductsListScreen';
 
-import HeaderApp from '../components/Layout/HeaderApp';
-import NavBar from '../components/Layout/NavBar';
-
 const Stack = createStackNavigator();
 
-const GradientBackground = ({children}) => (
-  <LinearGradient
-    colors={['rgba(67,56,131,1)', 'rgba(13,10,32,1)']}
-    start={{x: 0.3, y: 0.0}}
-    end={{x: 1.0, y: 1.0}}
-    style={{flex: 1}}>
-    {children}
-  </LinearGradient>
-);
-
-const MainScreens = ({children, showHeader = true}) => {
-  return (
-    <View style={styles.container}>
-      {showHeader && <HeaderApp />}
-      {children}
-      <NavBar />
-    </View>
-  );
+const config = {
+  animation: 'spring',
+  config: {
+    stiffness: 1000,
+    damping: 50,
+    mass: 3,
+    overshootClamping: false,
+    restDisplacementThreshold: 0.01,
+    restSpeedThreshold: 0.01,
+  },
 };
 
 const AppNavigator = () => {
@@ -49,132 +41,78 @@ const AppNavigator = () => {
       <Stack.Navigator
         screenOptions={{
           headerShown: false,
-          ...TransitionPresets.SlideFromRightIOS,
-          animationEnabled: true,
-          animationTypeForReplace: 'push',
+          transitionSpec: {
+            open: config,
+            close: config,
+          },
+          cardStyleInterpolator: CardStyleInterpolators.forHorizontalIOS,
         }}>
         <Stack.Screen name="Login">
-          {props => (
-            <GradientBackground>
-              <LoginScreen {...props} />
-            </GradientBackground>
-          )}
+          {props => <ScreenWithBackground Component={LoginScreen} {...props} />}
         </Stack.Screen>
         <Stack.Screen name="Register">
           {props => (
-            <GradientBackground>
-              <RegisterScreen {...props} />
-            </GradientBackground>
+            <ScreenWithBackground Component={RegisterScreen} {...props} />
           )}
         </Stack.Screen>
         <Stack.Screen name="Home">
-          {props => (
-            <GradientBackground>
-              <MainScreens>
-                <HomeScreen {...props} />
-              </MainScreens>
-            </GradientBackground>
-          )}
+          {props => <ScreenWithBackground Component={HomeScreen} {...props} />}
         </Stack.Screen>
         <Stack.Screen name="Detail">
           {props => (
-            <GradientBackground>
-              <MainScreens>
-                <DetailScreen {...props} />
-              </MainScreens>
-            </GradientBackground>
+            <ScreenWithBackground Component={DetailScreen} {...props} />
           )}
         </Stack.Screen>
         <Stack.Screen name="Cart">
-          {props => (
-            <GradientBackground>
-              <MainScreens>
-                <CartScreen {...props} />
-              </MainScreens>
-            </GradientBackground>
-          )}
+          {props => <ScreenWithBackground Component={CartScreen} {...props} />}
         </Stack.Screen>
         <Stack.Screen name="Account">
           {props => (
-            <GradientBackground>
-              <MainScreens>
-                <AccountScreen {...props} />
-              </MainScreens>
-            </GradientBackground>
+            <ScreenWithBackground Component={AccountScreen} {...props} />
           )}
         </Stack.Screen>
         <Stack.Screen name="EditAccount">
           {props => (
-            <GradientBackground>
-              <MainScreens>
-                <EditAccountScreen {...props} />
-              </MainScreens>
-            </GradientBackground>
+            <ScreenWithBackground Component={EditAccountScreen} {...props} />
           )}
         </Stack.Screen>
         <Stack.Screen name="Support">
           {props => (
-            <GradientBackground>
-              <MainScreens>
-                <SupportScreen {...props} />
-              </MainScreens>
-            </GradientBackground>
+            <ScreenWithBackground Component={SupportScreen} {...props} />
           )}
         </Stack.Screen>
         <Stack.Screen name="Favorites">
           {props => (
-            <GradientBackground>
-              <MainScreens>
-                <FavoritesScreen {...props} />
-              </MainScreens>
-            </GradientBackground>
+            <ScreenWithBackground Component={FavoritesScreen} {...props} />
           )}
         </Stack.Screen>
         <Stack.Screen name="SearchScreen">
           {props => (
-            <GradientBackground>
-              <MainScreens>
-                <SearchScreen {...props} />
-              </MainScreens>
-            </GradientBackground>
+            <ScreenWithBackground Component={SearchScreen} {...props} />
           )}
         </Stack.Screen>
         <Stack.Screen name="ProductsList">
           {props => (
-            <GradientBackground>
-              <MainScreens>
-                <ProductsListScreen {...props} />
-              </MainScreens>
-            </GradientBackground>
+            <ScreenWithBackground Component={ProductsListScreen} {...props} />
           )}
         </Stack.Screen>
         <Stack.Screen name="Purchases">
           {props => (
-            <GradientBackground>
-              <MainScreens>
-                <PurchasesScreen {...props} />
-              </MainScreens>
-            </GradientBackground>
+            <ScreenWithBackground Component={PurchasesScreen} {...props} />
           )}
         </Stack.Screen>
         <Stack.Screen name="Payment">
           {props => (
-            <GradientBackground>
-              <MainScreens showHeader={false}>
-                <PaymentScreen {...props} />
-              </MainScreens>
-            </GradientBackground>
+            <ScreenWithBackground
+              Component={PaymentScreen}
+              showHeader={false}
+              {...props}
+            />
           )}
         </Stack.Screen>
       </Stack.Navigator>
     </NavigationContainer>
   );
 };
-
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-  },
-});
 
 export default AppNavigator;

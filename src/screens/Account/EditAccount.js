@@ -1,16 +1,20 @@
 import React, {useContext, useState, useEffect} from 'react';
-import {Text, View, ScrollView, Pressable} from 'react-native';
+import {Text, View, ScrollView, Pressable, Alert} from 'react-native';
+import {useNavigation} from '@react-navigation/native'; 
 import globalStyles from '../../styles/globalStyles';
 import accountScreenStyles from '../../styles/screens/Account/AccountScreenStyles';
 import {Avatar} from '@rneui/themed';
 import CustomInput from '../../reusable/CustomInput';
 import {Button} from '@rneui/themed';
 import {AuthContext} from '../../context/AuthContext';
+import {UserContext} from '../../context/UserContext'; 
 import DatePicker from 'react-native-date-picker';
 import moment from 'moment';
 
 const EditAccount = () => {
   const {user} = useContext(AuthContext);
+  const {userProfile, updateUserProfile} = useContext(UserContext); 
+  const navigation = useNavigation();
   const [formData, setFormData] = useState({
     name: '',
     email: '',
@@ -24,17 +28,19 @@ const EditAccount = () => {
   useEffect(() => {
     if (user) {
       setFormData({
-        name: user.name || '',
-        email: user.email || '',
-        birthday: user.birthday || '',
-        address: user.address || '',
+        name: userProfile.name || user.name || '',
+        email: userProfile.email || user.email || '',
+        birthday: userProfile.birthday || user.birthday || '',
+        address: userProfile.address || user.address || '',
       });
 
-      if (user.birthday) {
-        setSelectedDate(moment(user.birthday, 'DD/MM/YYYY').toDate());
+      if (userProfile.birthday || user.birthday) {
+        setSelectedDate(
+          moment(userProfile.birthday || user.birthday, 'DD/MM/YYYY').toDate(),
+        );
       }
     }
-  }, [user]);
+  }, [user, userProfile]);
 
   const handleInputChange = (field, value) => {
     setFormData({
@@ -44,7 +50,9 @@ const EditAccount = () => {
   };
 
   const handleSaveChanges = () => {
-    console.log('Datos guardados:', formData);
+    updateUserProfile(formData); 
+    Alert.alert('Perfil actualizado', 'Los cambios se han guardado correctamente.');
+    navigation.goBack(); 
   };
 
   const showDatePicker = () => {

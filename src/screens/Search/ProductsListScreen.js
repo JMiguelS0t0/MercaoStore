@@ -9,22 +9,29 @@ import productsListStyles from '../../styles/screens/Search/ProductsListStyles';
 const ProductsListScreen = () => {
   const {products} = useContext(ProductContext);
   const route = useRoute();
-  const {category} = route.params;
+  const {category, offersOnly} = route.params;
 
   const [filteredProducts, setFilteredProducts] = useState([]);
 
   useEffect(() => {
-    const filtered = products.filter(
-      product =>
-        product.category.toLowerCase() === category.toLowerCase() ||
-        product.title.toLowerCase().includes(category.toLowerCase()),
-    );
+    let filtered;
+    if (offersOnly) {
+      filtered = products.filter(product => product.onOffer === true);
+    } else {
+      filtered = products.filter(
+        product =>
+          product.category.toLowerCase() === category.toLowerCase() ||
+          product.title.toLowerCase().includes(category.toLowerCase()),
+      );
+    }
     setFilteredProducts(filtered);
-  }, [category, products]);
+  }, [category, offersOnly, products]);
 
   return (
     <View style={globalStyles.container}>
-      <Text style={productsListStyles.categoryText}>{category}</Text>
+      <Text style={productsListStyles.categoryText}>
+        {offersOnly ? 'Exclusive Offers' : category}
+      </Text>
       <View style={productsListStyles.cardsContainer}>
         <Cards products={filteredProducts} />
       </View>

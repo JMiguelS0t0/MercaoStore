@@ -26,6 +26,10 @@ const SearchScreen = () => {
     navigation.navigate('ProductsList', {category: category.title});
   };
 
+  const handleOffersPress = () => {
+    navigation.navigate('ProductsList', {category: 'Offers', offersOnly: true});
+  };
+
   useEffect(() => {
     return () => {
       setSearch('');
@@ -74,6 +78,7 @@ const SearchScreen = () => {
           size: 25,
         }}
         buttonStyle={searchScreenStyles.offerButton}
+        onPress={handleOffersPress}
       />
     </View>
   );

@@ -13,7 +13,7 @@ const productsListStyles = StyleSheet.create({
   cardsContainer: {
     paddingHorizontal: 10,
     marginTop: 0,
-    marginTop: '-30%',
+    marginTop: '-25%',
   },
 });
 
