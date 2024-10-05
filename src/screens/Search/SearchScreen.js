@@ -1,8 +1,9 @@
-import React from 'react';
+import React, {useState, useEffect, useContext} from 'react';
 import {View, Text} from 'react-native';
-import {SearchBar, Card, Icon} from '@rneui/themed';
+import {SearchBar, Button} from '@rneui/themed';
 import searchScreenStyles from '../../styles/screens/Search/SearchScreenStyles';
-import globalStyles from '../../styles/globalStyles';
+import {useNavigation} from '@react-navigation/native';
+import {ProductContext} from '../../context/ProductContext';
 
 const categories = [
   {id: 1, title: "Women's Clothing", color: '#ff6347'},
@@ -17,7 +18,29 @@ const categories = [
 ];
 
 const SearchScreen = () => {
-  const [search, setSearch] = React.useState('');
+  const [search, setSearch] = useState('');
+  const navigation = useNavigation();
+  const {searchProduct} = useContext(ProductContext);
+
+  const handleCategoryPress = category => {
+    navigation.navigate('ProductsList', {category: category.title});
+  };
+
+  const handleOffersPress = () => {
+    navigation.navigate('ProductsList', {category: 'Offers', offersOnly: true});
+  };
+
+  useEffect(() => {
+    return () => {
+      setSearch('');
+      searchProduct('');
+    };
+  }, [searchProduct]);
+
+  const handleSearchSubmit = () => {
+    searchProduct(search);
+    navigation.navigate('ProductsList', {category: search});
+  };
 
   return (
     <View style={searchScreenStyles.container}>
@@ -29,32 +52,34 @@ const SearchScreen = () => {
         inputContainerStyle={searchScreenStyles.inputContainer}
         inputStyle={searchScreenStyles.input}
         lightTheme
+        onSubmitEditing={handleSearchSubmit}
       />
       <Text style={searchScreenStyles.text}>Search by category</Text>
       <View style={searchScreenStyles.categoryContainer}>
         {categories.map(category => (
-          <Card
+          <Button
             key={category.id}
-            containerStyle={[
-              searchScreenStyles.card,
+            title={category.title}
+            buttonStyle={[
+              searchScreenStyles.button,
               {backgroundColor: category.color},
-            ]}>
-            <Text style={searchScreenStyles.cardText}>{category.title}</Text>
-          </Card>
+            ]}
+            onPress={() => handleCategoryPress(category)}
+          />
         ))}
       </View>
       <Text style={searchScreenStyles.text}>Exclusive Deals Just for You</Text>
-      <Card containerStyle={[searchScreenStyles.offerCard]}>
-        <Icon
-          name="star"
-          type="font-awesome-5"
-          color="#fff"
-          size={25}
-          solid={true}
-          containerStyle={searchScreenStyles.iconContainer}
-        />
-        <Text style={searchScreenStyles.cardText}>Offers</Text>
-      </Card>
+      <Button
+        title="Offers"
+        icon={{
+          name: 'star',
+          type: 'font-awesome-5',
+          color: '#fff',
+          size: 25,
+        }}
+        buttonStyle={searchScreenStyles.offerButton}
+        onPress={handleOffersPress}
+      />
     </View>
   );
 };

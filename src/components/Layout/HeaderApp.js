@@ -1,12 +1,14 @@
-import React from 'react';
+import React, {useContext} from 'react';
 import {View, Image, Pressable} from 'react-native';
 import globalStyles from '../../styles/globalStyles';
 import headerStyle from '../../styles/components/headerStyle';
 import {Icon} from '@rneui/themed';
 import {useNavigation} from '@react-navigation/native';
+import {ProductContext} from '../../context/ProductContext';
 
 const HeaderApp = () => {
   const navigation = useNavigation();
+  const {cart} = useContext(ProductContext);
 
   const handleCartPress = () => {
     navigation.navigate('Cart');
@@ -20,6 +22,9 @@ const HeaderApp = () => {
     navigation.navigate('Home');
   };
 
+  const cartIconStyle =
+    cart.length > 0 ? headerStyle.cartIconFilled : headerStyle.cartIcon;
+
   return (
     <View style={headerStyle.headerContainer}>
       <Pressable onPress={handleLogoPress}>
@@ -28,23 +33,20 @@ const HeaderApp = () => {
           style={globalStyles.smallLogo}
         />
       </Pressable>
+
       <View style={headerStyle.iconContainer}>
-        <Icon
-          name="shopping-cart"
-          type="font-awesome-5"
-          color="#fff"
-          size={17}
-          style={headerStyle.cartIcon}
-          onPress={handleCartPress}
-        />
-        <Icon
-          name="user"
-          type="font-awesome-5"
-          color="#fff"
-          size={17}
-          style={headerStyle.cartIcon}
-          onPress={handleProfilePress}
-        />
+        <Pressable onPress={handleCartPress} style={cartIconStyle}>
+          <Icon
+            name="shopping-cart"
+            type="font-awesome-5"
+            color="#fff"
+            size={17}
+          />
+        </Pressable>
+
+        <Pressable onPress={handleProfilePress} style={headerStyle.userIcon}>
+          <Icon name="user" type="font-awesome-5" color="#fff" size={17} />
+        </Pressable>
       </View>
     </View>
   );

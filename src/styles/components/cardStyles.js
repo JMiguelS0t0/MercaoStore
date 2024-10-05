@@ -47,7 +47,7 @@ const CardStyles = StyleSheet.create({
   },
   cardsContainer: {
     paddingBottom: 100,
-    marginTop: 100,
+    marginTop: 90,
     flexGrow: 1,
   },
   heartIcon: {

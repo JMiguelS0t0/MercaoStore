@@ -11,6 +11,17 @@ const CartStyles = StyleSheet.create({
     backgroundColor: '#120b34',
     borderRadius: 20,
   },
+  emptyCartContainer: {
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  emptyCartText: {
+    color: '#fff',
+    fontSize: 18,
+    fontFamily: 'Poppins-Regular',
+    textAlign: 'center',
+  },
   itemContainer: {
     flexDirection: 'row',
     alignItems: 'flex-start',

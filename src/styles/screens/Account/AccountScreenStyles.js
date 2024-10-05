@@ -62,6 +62,12 @@ const accountScreenStyles = StyleSheet.create({
     justifyContent: 'center',
     width: '200%',
   },
+  cardLogout: {
+    flexDirection: 'row',
+    justifyContent: 'center',
+    width: '60%',
+    height: 100,
+  },
   cardButton: {
     backgroundColor: 'transparent',
     width: '100%',

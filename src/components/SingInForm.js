@@ -1,13 +1,15 @@
-import React, {useState} from 'react';
-import {View, Text} from 'react-native';
+import React, {useState, useContext} from 'react';
+import {View, Text, Alert} from 'react-native';
 import {Button} from '@rneui/themed';
 import {useNavigation} from '@react-navigation/native';
 import signInFormStyles from '../styles/screens/Login/singInFormStyles';
 import globalStyles from '../styles/globalStyles';
 import CustomInput from '../reusable/CustomInput';
+import {AuthContext} from '../context/AuthContext';
 
 const SignInForm = () => {
   const navigation = useNavigation();
+  const {login, users} = useContext(AuthContext);
   const [username, setUsername] = useState('');
   const [password, setPassword] = useState('');
   const [error, setError] = useState({username: '', password: ''});
@@ -16,16 +18,16 @@ const SignInForm = () => {
     let valid = true;
     const errorMessages = {username: '', password: ''};
 
- 
     if (username.length > 10) {
       errorMessages.username = 'El usuario no puede tener más de 10 caracteres';
       valid = false;
     }
 
-
-    const passwordRegex = /^(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{8,}$/;
+    const passwordRegex =
+      /^(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{8,}$/;
     if (!passwordRegex.test(password)) {
-      errorMessages.password = 'La contraseña debe tener al menos 8 caracteres, incluir 1 mayúscula, 1 caracter especial y números.';
+      errorMessages.password =
+        'La contraseña debe tener al menos 8 caracteres, incluir 1 mayúscula, 1 caracter especial y números.';
       valid = false;
     }
 
@@ -35,7 +37,19 @@ const SignInForm = () => {
 
   const handleLogin = () => {
     if (validateInputs()) {
-      navigation.navigate('Home');
+      const user = users.find(
+        u => u.name === username && u.password === password,
+      );
+
+      if (user) {
+        login({username, password});
+        navigation.navigate('Home');
+      } else {
+        Alert.alert(
+          'Error',
+          'El usuario no está registrado o la contraseña es incorrecta.',
+        );
+      }
     }
   };
 
@@ -80,16 +94,14 @@ const SignInForm = () => {
         onPress={handleLogin}
       />
 
-      <Text style={signInFormStyles.createText}>
-        Don't have an account?
-        <Button
-          title="Create a New Account"
-          type="clear"
-          titleStyle={signInFormStyles.createTextHighlight}
-          onPress={handleCreateAccount}
-          containerStyle={signInFormStyles.createAccountButton}
-        />
-      </Text>
+      <Text style={signInFormStyles.createText}>Don't have an account?</Text>
+      <Button
+        title="Create a New Account"
+        type="clear"
+        titleStyle={signInFormStyles.createTextHighlight}
+        onPress={handleCreateAccount}
+        containerStyle={signInFormStyles.createAccountButton}
+      />
     </View>
   );
 };
