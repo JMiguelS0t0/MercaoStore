@@ -1,19 +1,20 @@
 import React, {useContext, useState, useEffect} from 'react';
-import {Text, View, ScrollView, Pressable, Alert} from 'react-native';
-import {useNavigation} from '@react-navigation/native'; 
+import {Text, View, ScrollView, Pressable} from 'react-native';
+import {useNavigation} from '@react-navigation/native';
 import globalStyles from '../../styles/globalStyles';
 import accountScreenStyles from '../../styles/screens/Account/AccountScreenStyles';
 import {Avatar} from '@rneui/themed';
 import CustomInput from '../../reusable/CustomInput';
 import {Button} from '@rneui/themed';
 import {AuthContext} from '../../context/AuthContext';
-import {UserContext} from '../../context/UserContext'; 
+import {UserContext} from '../../context/UserContext';
 import DatePicker from 'react-native-date-picker';
 import moment from 'moment';
+import CustomModal from '../../reusable/CustomModal';
 
 const EditAccount = () => {
   const {user} = useContext(AuthContext);
-  const {userProfile, updateUserProfile} = useContext(UserContext); 
+  const {userProfile, updateUserProfile} = useContext(UserContext);
   const navigation = useNavigation();
   const [formData, setFormData] = useState({
     name: '',
@@ -21,6 +22,7 @@ const EditAccount = () => {
     birthday: '',
     address: '',
   });
+  const [isModalVisible, setIsModalVisible] = useState(false);
 
   const [isDatePickerVisible, setIsDatePickerVisible] = useState(false);
   const [selectedDate, setSelectedDate] = useState(new Date());
@@ -50,9 +52,13 @@ const EditAccount = () => {
   };
 
   const handleSaveChanges = () => {
-    updateUserProfile(formData); 
-    Alert.alert('Perfil actualizado', 'Los cambios se han guardado correctamente.');
-    navigation.goBack(); 
+    updateUserProfile(formData);
+    setIsModalVisible(true);
+  };
+
+  const handleCloseModal = () => {
+    setIsModalVisible(false);
+    navigation.goBack();
   };
 
   const showDatePicker = () => {
@@ -144,6 +150,13 @@ const EditAccount = () => {
           />
         </View>
       </View>
+
+      <CustomModal
+        visible={isModalVisible}
+        title="Profile Updated"
+        message="Your changes have been saved successfully."
+        onClose={handleCloseModal}
+      />
     </ScrollView>
   );
 };

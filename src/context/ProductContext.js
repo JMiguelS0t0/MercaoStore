@@ -12,6 +12,13 @@ const initialState = {
       image: require('../assets/CaseIphone.webp'),
       onOffer: true,
       offerPrice: 'US$ 20,00',
+      description:
+        'A sturdy and stylish case for iPhone 1, providing excellent protection.',
+      features: ['Durable material', 'Shockproof', 'Lightweight design'],
+      comments: [
+        {id: 1, text: 'Great product, loved it!'},
+        {id: 2, text: 'Good value for money.'},
+      ],
     },
     {
       id: 2,
@@ -20,6 +27,17 @@ const initialState = {
       category: 'Electronics',
       image: require('../assets/Iphone.webp'),
       onOffer: false,
+      description:
+        'The latest iPhone 13 with outstanding performance and camera quality.',
+      features: [
+        'A15 Bionic chip',
+        'OLED display',
+        'Advanced dual-camera system',
+      ],
+      comments: [
+        {id: 1, text: 'Amazing camera quality.'},
+        {id: 2, text: 'Sleek design and smooth performance.'},
+      ],
     },
     {
       id: 3,
@@ -28,6 +46,14 @@ const initialState = {
       category: 'Electronics',
       image: require('../assets/Iphone.webp'),
       onOffer: false,
+      description:
+        'Upcoming iPhone 14 with all-new features and design improvements.',
+      features: [
+        'A16 Bionic chip',
+        'ProMotion technology',
+        'All-day battery life',
+      ],
+      comments: [],
     },
   ],
   selectedProduct: null,
@@ -111,6 +137,29 @@ const productReducer = (state, action) => {
         ...state,
         products: offerProducts,
       };
+    case 'CLEAR_CART':
+      return {
+        ...state,
+        cart: [],
+      };
+    case 'ADD_COMMENT':
+      return {
+        ...state,
+        products: state.products.map(product =>
+          product.id === action.payload.productId
+            ? {
+                ...product,
+                comments: [
+                  ...product.comments,
+                  {
+                    id: product.comments.length + 1,
+                    text: action.payload.comment,
+                  },
+                ],
+              }
+            : product,
+        ),
+      };
     default:
       return state;
   }
@@ -147,6 +196,14 @@ export const ProductProvider = ({children}) => {
     dispatch({type: 'FILTER_OFFERS'});
   };
 
+  const clearCart = () => {
+    dispatch({type: 'CLEAR_CART'});
+  };
+
+  const addComment = (productId, comment) => {
+    dispatch({type: 'ADD_COMMENT', payload: {productId, comment}});
+  };
+
   return (
     <ProductContext.Provider
       value={{
@@ -161,6 +218,8 @@ export const ProductProvider = ({children}) => {
         toggleFavorite,
         searchProduct,
         filterOffers,
+        clearCart,
+        addComment,
       }}>
       {children}
     </ProductContext.Provider>

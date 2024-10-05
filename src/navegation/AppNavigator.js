@@ -20,6 +20,7 @@ import SearchScreen from '../screens/Search/SearchScreen';
 import PurchasesScreen from '../screens/Purchase/Purchases';
 import PaymentScreen from '../screens/Payment/PaymentScreen';
 import ProductsListScreen from '../screens/Search/ProductsListScreen';
+import PaymentForm from '../components/Payment/PaymentForm';
 
 const Stack = createStackNavigator();
 
@@ -48,11 +49,23 @@ const AppNavigator = () => {
           cardStyleInterpolator: CardStyleInterpolators.forHorizontalIOS,
         }}>
         <Stack.Screen name="Login">
-          {props => <ScreenWithBackground Component={LoginScreen} {...props} />}
+          {props => (
+            <ScreenWithBackground
+              Component={LoginScreen}
+              showHeader={false}
+              showNavBar={false}
+              {...props}
+            />
+          )}
         </Stack.Screen>
         <Stack.Screen name="Register">
           {props => (
-            <ScreenWithBackground Component={RegisterScreen} {...props} />
+            <ScreenWithBackground
+              Component={RegisterScreen}
+              showHeader={false}
+              showNavBar={false}
+              {...props}
+            />
           )}
         </Stack.Screen>
         <Stack.Screen name="Home">
@@ -105,6 +118,15 @@ const AppNavigator = () => {
           {props => (
             <ScreenWithBackground
               Component={PaymentScreen}
+              showHeader={false}
+              {...props}
+            />
+          )}
+        </Stack.Screen>
+        <Stack.Screen name="PaymentForm">
+          {props => (
+            <ScreenWithBackground
+              Component={PaymentForm}
               showHeader={false}
               {...props}
             />

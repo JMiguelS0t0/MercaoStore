@@ -7,12 +7,12 @@ const PaymentStyles = StyleSheet.create({
   title: {
     fontSize: 24,
     fontFamily: 'Poppins-Bold',
-    marginBottom: 20,
+    marginBottom: 10,
     textAlign: 'center',
     color: '#fff',
-    backgroundColor: '#7b5bbd',
     padding: 8,
     borderRadius: 15,
+    marginTop: 20,
   },
   inputContainer: {
     marginBottom: 15,

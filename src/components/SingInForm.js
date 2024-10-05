@@ -9,12 +9,11 @@ import {AuthContext} from '../context/AuthContext';
 
 const SignInForm = () => {
   const navigation = useNavigation();
-  const {login, users} = useContext(AuthContext); // Usamos el array 'users' del contexto
+  const {login, users} = useContext(AuthContext);
   const [username, setUsername] = useState('');
   const [password, setPassword] = useState('');
   const [error, setError] = useState({username: '', password: ''});
 
-  // Validamos los campos de entrada
   const validateInputs = () => {
     let valid = true;
     const errorMessages = {username: '', password: ''};
@@ -36,7 +35,6 @@ const SignInForm = () => {
     return valid;
   };
 
-  // Función para manejar el inicio de sesión
   const handleLogin = () => {
     if (validateInputs()) {
       const user = users.find(
@@ -96,16 +94,14 @@ const SignInForm = () => {
         onPress={handleLogin}
       />
 
-      <Text style={signInFormStyles.createText}>
-        Don't have an account?
-        <Button
-          title="Create a New Account"
-          type="clear"
-          titleStyle={signInFormStyles.createTextHighlight}
-          onPress={handleCreateAccount}
-          containerStyle={signInFormStyles.createAccountButton}
-        />
-      </Text>
+      <Text style={signInFormStyles.createText}>Don't have an account?</Text>
+      <Button
+        title="Create a New Account"
+        type="clear"
+        titleStyle={signInFormStyles.createTextHighlight}
+        onPress={handleCreateAccount}
+        containerStyle={signInFormStyles.createAccountButton}
+      />
     </View>
   );
 };

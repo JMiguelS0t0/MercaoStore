@@ -1,4 +1,6 @@
 import React, {createContext, useReducer} from 'react';
+import {useContext} from 'react';
+import {AuthContext} from './AuthContext';
 
 export const UserContext = createContext();
 
@@ -44,6 +46,21 @@ const userReducer = (state, action) => {
 
 export const UserProvider = ({children}) => {
   const [state, dispatch] = useReducer(userReducer, initialState);
+  const {user} = useContext(AuthContext);
+
+  React.useEffect(() => {
+    if (user) {
+      dispatch({
+        type: 'UPDATE_USER_PROFILE',
+        payload: {
+          name: user.name,
+          email: user.email,
+          birthday: user.birthday,
+          address: user.address,
+        },
+      });
+    }
+  }, [user]);
 
   const addToFavorites = item => {
     dispatch({type: 'ADD_TO_FAVORITES', payload: item});

@@ -2,9 +2,14 @@ import React from 'react';
 import GradientBackground from './GradientBackground';
 import MainScreens from './MainScreens';
 
-const ScreenWithBackground = ({Component, showHeader = true, ...props}) => (
+const ScreenWithBackground = ({
+  Component,
+  showHeader = true,
+  showNavBar = true,
+  ...props
+}) => (
   <GradientBackground>
-    <MainScreens showHeader={showHeader}>
+    <MainScreens showHeader={showHeader} showNavBar={showNavBar}>
       <Component {...props} />
     </MainScreens>
   </GradientBackground>

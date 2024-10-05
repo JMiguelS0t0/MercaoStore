@@ -3,11 +3,11 @@ import {StyleSheet, View} from 'react-native';
 import NavBar from '../Layout/NavBar';
 import HeaderApp from '../Layout/HeaderApp';
 
-const MainScreens = ({children, showHeader = true}) => (
+const MainScreens = ({children, showHeader = true, showNavBar = true}) => (
   <View style={styles.container}>
     {showHeader && <HeaderApp />}
     {children}
-    <NavBar />
+    {showNavBar && <NavBar />}
   </View>
 );
 

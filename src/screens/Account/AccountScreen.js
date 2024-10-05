@@ -1,12 +1,19 @@
-import React from 'react';
+import React, {useContext} from 'react';
 import {View} from 'react-native';
 import {useNavigation} from '@react-navigation/native';
 import accountScreenStyles from '../../styles/screens/Account/AccountScreenStyles';
 import ProfileSection from './ProfileSection';
 import AccountCard from './AccountCard';
+import {AuthContext} from '../../context/AuthContext';
 
 const AccountScreen = () => {
   const navigation = useNavigation();
+  const {logout} = useContext(AuthContext);
+
+  const handleLogout = () => {
+    logout();
+    navigation.navigate('Login');
+  };
 
   return (
     <View style={accountScreenStyles.container}>
@@ -31,6 +38,14 @@ const AccountScreen = () => {
           title="My Favorites"
           solid={true}
           onPress={() => navigation.navigate('Favorites')}
+        />
+      </View>
+      <View style={accountScreenStyles.cardLogout}>
+        <AccountCard
+          iconName="arrow-left"
+          title="Log Out"
+          solid={true}
+          onPress={handleLogout}
         />
       </View>
     </View>
