@@ -1,5 +1,5 @@
 import React from 'react';
-import {Modal, View, Text, TouchableOpacity} from 'react-native';
+import {Modal, View, Text, Pressable} from 'react-native';
 import modalStyles from '../styles/modalStyles';
 
 const CustomModal = ({visible, title, message, onClose}) => {
@@ -9,9 +9,14 @@ const CustomModal = ({visible, title, message, onClose}) => {
         <View style={modalStyles.modalContent}>
           <Text style={modalStyles.modalTitle}>{title}</Text>
           <Text style={modalStyles.modalMessage}>{message}</Text>
-          <TouchableOpacity style={modalStyles.modalButton} onPress={onClose}>
+          <Pressable
+            style={({pressed}) => [
+              modalStyles.modalButton,
+              {opacity: pressed ? 0.7 : 1},
+            ]}
+            onPress={onClose}>
             <Text style={modalStyles.modalButtonText}>OK</Text>
-          </TouchableOpacity>
+          </Pressable>
         </View>
       </View>
     </Modal>
