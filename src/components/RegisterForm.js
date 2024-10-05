@@ -65,9 +65,9 @@ const RegisterForm = () => {
       valid = false;
     }
 
-    if (country !== 'Colombia' || department === '' || city === '') {
+    if (country === '' || department === '' || city === '') {
       errorMessages.location =
-        'Debe seleccionar un país, departamento y ciudad válidos';
+        'Debe escribir un país, departamento y ciudad válidos';
       valid = false;
     }
 
