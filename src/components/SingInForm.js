@@ -9,7 +9,7 @@ import {AuthContext} from '../context/AuthContext';
 
 const SignInForm = () => {
   const navigation = useNavigation();
-  const {login, users} = useContext(AuthContext);
+  const {login} = useContext(AuthContext);
 
   const [formData, setFormData] = useState({
     username: '',
@@ -46,23 +46,19 @@ const SignInForm = () => {
     return valid;
   }, [formData]);
 
-  const handleLogin = useCallback(() => {
+  const handleLogin = useCallback(async () => {
     if (validateInputs()) {
-      const user = users.find(
-        u => u.name === formData.username && u.password === formData.password,
-      );
-
-      if (user) {
-        login({username: formData.username, password: formData.password});
+      try {
+        await login({username: formData.username, password: formData.password});
         navigation.navigate('Home');
-      } else {
+      } catch (err) {
         Alert.alert(
           'Error',
           'El usuario no está registrado o la contraseña es incorrecta.',
         );
       }
     }
-  }, [formData, login, users, navigation, validateInputs]);
+  }, [formData, login, navigation, validateInputs]);
 
   const handleCreateAccount = useCallback(() => {
     navigation.navigate('Register');

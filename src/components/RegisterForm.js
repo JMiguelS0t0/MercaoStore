@@ -28,6 +28,7 @@ const RegisterForm = () => {
   const [isDatePickerVisible, setIsDatePickerVisible] = useState(false);
   const [selectedDate, setSelectedDate] = useState(new Date());
 
+  // Función para actualizar los datos del formulario
   const handleChange = useCallback((name, value) => {
     setFormData(prevState => ({
       ...prevState,
@@ -35,6 +36,7 @@ const RegisterForm = () => {
     }));
   }, []);
 
+  // Validar y manejar el registro de usuario
   const handleRegister = useCallback(() => {
     const errorMessages = {};
     let valid = true;
@@ -83,9 +85,9 @@ const RegisterForm = () => {
     setErrors(errorMessages);
 
     if (valid) {
-      register({...formData});
+      register({...formData}); // Llamada al contexto para registrar el usuario
       Alert.alert('Registro exitoso', 'Usuario registrado exitosamente');
-      navigation.navigate('Home');
+      navigation.navigate('Home'); // Navegación a la página principal después del registro
     } else {
       Alert.alert(
         'Error en el registro',
@@ -94,14 +96,17 @@ const RegisterForm = () => {
     }
   }, [formData, register, navigation]);
 
+  // Manejo del botón para regresar a la pantalla de login
   const handleBack = useCallback(() => {
     navigation.navigate('Login');
   }, [navigation]);
 
+  // Mostrar el DatePicker para seleccionar la fecha de nacimiento
   const showDatePicker = useCallback(() => {
     setIsDatePickerVisible(true);
   }, []);
 
+  // Confirmar y asignar la fecha seleccionada
   const handleDateConfirm = useCallback(
     date => {
       setSelectedDate(date);
