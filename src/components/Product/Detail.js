@@ -11,6 +11,7 @@ import IconRow from '../Payment/IconRow';
 const PriceSection = memo(({selectedProduct, isFavorite, toggleFavorite}) => (
   <View style={detailStyles.priceContainer}>
     <Text style={detailStyles.price}>
+      $
       {selectedProduct.onOffer
         ? selectedProduct.offerPrice
         : selectedProduct.price}
@@ -20,6 +21,7 @@ const PriceSection = memo(({selectedProduct, isFavorite, toggleFavorite}) => (
         <Icon
           name="heart"
           type="font-awesome-5"
+          solid={isFavorite}
           color={isFavorite ? '#7b5bbd' : '#fff'}
           size={15}
           containerStyle={detailStyles.heartIcon}
@@ -29,13 +31,13 @@ const PriceSection = memo(({selectedProduct, isFavorite, toggleFavorite}) => (
   </View>
 ));
 
-const FeaturesSection = memo(({features}) => (
+const FeaturesSection = memo(({features = []}) => (
   <View style={detailStyles.section}>
     <Text style={detailStyles.sectionTitle}>Features:</Text>
     {features && features.length > 0 ? (
       features.map((feature, index) => (
         <Text key={index} style={detailStyles.sectionText}>
-          - {feature}
+          • {feature}
         </Text>
       ))
     ) : (
@@ -47,23 +49,29 @@ const FeaturesSection = memo(({features}) => (
 const DescriptionSection = memo(({description}) => (
   <View style={detailStyles.section}>
     <Text style={detailStyles.sectionTitle}>Description:</Text>
-    <Text style={detailStyles.sectionText}>{description}</Text>
+    <Text style={detailStyles.sectionText}>
+      {description || 'No description available.'}
+    </Text>
   </View>
 ));
 
-const CommentsSection = memo(({comments}) => (
+const CommentsSection = memo(({comments = []}) => (
   <View style={detailStyles.section}>
     <Text style={detailStyles.sectionTitle}>Comments:</Text>
-    <ScrollView horizontal showsHorizontalScrollIndicator={false}>
-      {comments.map(comment => (
-        <Card
-          key={comment.id}
-          containerStyle={detailStyles.horizontalCardContainer}>
-          <Text style={detailStyles.cardTitle}>Comment {comment.id}:</Text>
-          <Text style={detailStyles.cardText}>{comment.text}</Text>
-        </Card>
-      ))}
-    </ScrollView>
+    {Array.isArray(comments) && comments.length > 0 ? (
+      <ScrollView horizontal showsHorizontalScrollIndicator={false}>
+        {comments.map((comment, index) => (
+          <Card
+            key={`comment-${comment.id || index}`}
+            containerStyle={detailStyles.horizontalCardContainer}>
+            <Text style={detailStyles.cardTitle}>Comment:</Text>
+            <Text style={detailStyles.cardText}>{comment.text}</Text>
+          </Card>
+        ))}
+      </ScrollView>
+    ) : (
+      <Text style={detailStyles.sectionText}>No comments yet.</Text>
+    )}
   </View>
 ));
 
@@ -73,42 +81,75 @@ const Detail = () => {
   const [newComment, setNewComment] = useState('');
   const [isModalVisible, setIsModalVisible] = useState(false);
   const [localComments, setLocalComments] = useState([]);
+  const [isLoading, setIsLoading] = useState(true);
 
   useEffect(() => {
-    if (selectedProduct && selectedProduct.comments) {
-      setLocalComments(selectedProduct.comments);
+    if (selectedProduct) {
+      setIsLoading(false);
+      setLocalComments(selectedProduct.comments || []);
     }
   }, [selectedProduct]);
 
   const isFavorite = favorites.some(
-    product => product.id === selectedProduct.id,
+    product => product.id === selectedProduct?.id,
   );
 
-  const handleAddComment = useCallback(() => {
+  const handleAddComment = useCallback(async () => {
     if (newComment.trim() !== '') {
-      addComment(selectedProduct.id, newComment);
-      setLocalComments(prevComments => [
-        ...prevComments,
-        {id: prevComments.length + 1, text: newComment},
-      ]);
-      setNewComment('');
-      setIsModalVisible(true);
+      try {
+        const newCommentObj = {
+          id: Date.now(),
+          text: newComment,
+        };
+        await addComment(selectedProduct.id, newComment);
+        setLocalComments(prevComments => [
+          ...(prevComments || []),
+          newCommentObj,
+        ]);
+        setNewComment('');
+        setIsModalVisible(true);
+      } catch (error) {
+        console.error('Error al agregar comentario:', error);
+      }
     }
-  }, [addComment, newComment, selectedProduct, localComments]);
+  }, [addComment, newComment, selectedProduct]);
+
+  const handleAddToCart = useCallback(() => {
+    addToCart(selectedProduct);
+  }, [addToCart, selectedProduct]);
+
+  if (isLoading) {
+    return (
+      <View style={detailStyles.loadingContainer}>
+        <Text>Loading product details...</Text>
+      </View>
+    );
+  }
 
   if (!selectedProduct) {
-    return <Text>No product selected</Text>;
+    return (
+      <View style={detailStyles.errorContainer}>
+        <Text>No product selected</Text>
+      </View>
+    );
   }
 
   return (
     <ScrollView contentContainerStyle={detailStyles.scrollContainer}>
       <View style={detailStyles.imageContainer}>
         <Image
-          source={selectedProduct.image}
+          source={{uri: selectedProduct.images}}
           style={detailStyles.image}
           resizeMode="contain"
+          onError={error => console.error('Error loading image:', error)}
+          PlaceholderContent={
+            <View style={detailStyles.imagePlaceholder}>
+              <Icon name="image" type="font-awesome-5" size={50} color="#ccc" />
+            </View>
+          }
         />
       </View>
+
       <Text style={detailStyles.title}>{selectedProduct.title}</Text>
 
       <PriceSection
@@ -130,7 +171,7 @@ const Detail = () => {
       <Button
         title="ADD TO CART"
         buttonStyle={[globalStyles.buttonStyle, detailStyles.borderButton]}
-        onPress={() => addToCart(selectedProduct)}
+        onPress={handleAddToCart}
       />
       <Divider style={globalStyles.dividerStyle} />
 
@@ -145,14 +186,12 @@ const Detail = () => {
         returnKeyType="done"
       />
 
-      {isModalVisible && (
-        <CustomModal
-          visible={isModalVisible}
-          title="Comment Added"
-          message="Your comment has been successfully added!"
-          onClose={() => setIsModalVisible(false)}
-        />
-      )}
+      <CustomModal
+        visible={isModalVisible}
+        title="Comment Added"
+        message="Your comment has been successfully added!"
+        onClose={() => setIsModalVisible(false)}
+      />
     </ScrollView>
   );
 };

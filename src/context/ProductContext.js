@@ -1,68 +1,51 @@
-import React, {createContext, useReducer} from 'react';
+import React, {createContext, useReducer, useEffect} from 'react';
+import firebase from '../firebase/firebase';
 
 export const ProductContext = createContext();
 
 const initialState = {
-  products: [
-    {
-      id: 1,
-      title: 'Case iPhone 1',
-      price: 'US$ 25,00',
-      category: 'Accessories',
-      image: require('../assets/CaseIphone.webp'),
-      onOffer: true,
-      offerPrice: 'US$ 20,00',
-      description:
-        'A sturdy and stylish case for iPhone 1, providing excellent protection.',
-      features: ['Durable material', 'Shockproof', 'Lightweight design'],
-      comments: [
-        {id: 1, text: 'Great product, loved it!'},
-        {id: 2, text: 'Good value for money.'},
-      ],
-    },
-    {
-      id: 2,
-      title: 'iPhone 13',
-      price: 'US$ 600,00',
-      category: 'Electronics',
-      image: require('../assets/Iphone.webp'),
-      onOffer: false,
-      description:
-        'The latest iPhone 13 with outstanding performance and camera quality.',
-      features: [
-        'A15 Bionic chip',
-        'OLED display',
-        'Advanced dual-camera system',
-      ],
-      comments: [
-        {id: 1, text: 'Amazing camera quality.'},
-        {id: 2, text: 'Sleek design and smooth performance.'},
-      ],
-    },
-    {
-      id: 3,
-      title: 'iPhone 14',
-      price: 'US$ 700,00',
-      category: 'Electronics',
-      image: require('../assets/Iphone.webp'),
-      onOffer: false,
-      description:
-        'Upcoming iPhone 14 with all-new features and design improvements.',
-      features: [
-        'A16 Bionic chip',
-        'ProMotion technology',
-        'All-day battery life',
-      ],
-      comments: [],
-    },
-  ],
+  products: [],
+  filteredProducts: [],
   selectedProduct: null,
   cart: [],
   favorites: [],
+  loading: true,
+  error: null,
 };
 
 const productReducer = (state, action) => {
   switch (action.type) {
+    case 'FETCH_PRODUCTS_SUCCESS':
+      return {
+        ...state,
+        products: action.payload,
+        filteredProducts: action.payload,
+        loading: false,
+        error: null,
+      };
+    case 'FETCH_PRODUCTS_ERROR':
+      return {
+        ...state,
+        loading: false,
+        error: action.payload,
+      };
+    case 'SEARCH_PRODUCT':
+      const searchTerm = action.payload.toLowerCase();
+      const filteredProducts = state.products.filter(
+        product =>
+          product.title.toLowerCase().includes(searchTerm) ||
+          product.category.toLowerCase().includes(searchTerm),
+      );
+      return {
+        ...state,
+        filteredProducts: filteredProducts,
+      };
+    case 'FILTER_OFFERS':
+      const offerProducts = state.products.filter(product => product.onOffer);
+      return {
+        ...state,
+        filteredProducts: offerProducts,
+      };
     case 'SELECT_PRODUCT':
       return {
         ...state,
@@ -72,7 +55,6 @@ const productReducer = (state, action) => {
       const productInCart = state.cart.find(
         product => product.id === action.payload.id,
       );
-
       if (productInCart) {
         return {
           ...state,
@@ -106,7 +88,6 @@ const productReducer = (state, action) => {
       const productInFavorites = state.favorites.find(
         product => product.id === action.payload.id,
       );
-
       if (productInFavorites) {
         return {
           ...state,
@@ -120,28 +101,6 @@ const productReducer = (state, action) => {
           favorites: [...state.favorites, action.payload],
         };
       }
-    case 'SEARCH_PRODUCT':
-      const searchTerm = action.payload.toLowerCase();
-      const filteredProducts = state.products.filter(
-        product =>
-          product.title.toLowerCase().includes(searchTerm) ||
-          product.category.toLowerCase().includes(searchTerm),
-      );
-      return {
-        ...state,
-        products: filteredProducts,
-      };
-    case 'FILTER_OFFERS':
-      const offerProducts = state.products.filter(product => product.onOffer);
-      return {
-        ...state,
-        products: offerProducts,
-      };
-    case 'CLEAR_CART':
-      return {
-        ...state,
-        cart: [],
-      };
     case 'ADD_COMMENT':
       return {
         ...state,
@@ -149,16 +108,21 @@ const productReducer = (state, action) => {
           product.id === action.payload.productId
             ? {
                 ...product,
-                comments: [
-                  ...product.comments,
-                  {
-                    id: product.comments.length + 1,
-                    text: action.payload.comment,
-                  },
-                ],
+                comments: Array.isArray(product.comments)
+                  ? [...product.comments, action.payload.comment]
+                  : [action.payload.comment],
               }
             : product,
         ),
+        selectedProduct:
+          state.selectedProduct?.id === action.payload.productId
+            ? {
+                ...state.selectedProduct,
+                comments: Array.isArray(state.selectedProduct.comments)
+                  ? [...state.selectedProduct.comments, action.payload.comment]
+                  : [action.payload.comment],
+              }
+            : state.selectedProduct,
       };
     default:
       return state;
@@ -167,6 +131,83 @@ const productReducer = (state, action) => {
 
 export const ProductProvider = ({children}) => {
   const [state, dispatch] = useReducer(productReducer, initialState);
+
+  useEffect(() => {
+    const fetchProducts = async () => {
+      try {
+        const productsCollection = await firebase.db
+          .collection('product')
+          .get();
+
+        const products = productsCollection.docs.map(doc => {
+          const data = doc.data();
+          const comments = data.comments
+            ? Array.isArray(data.comments)
+              ? data.comments
+              : [data.comments]
+            : [];
+
+          return {
+            id: doc.id,
+            title: data.title || '',
+            description: data.description || '',
+            category: data.category || '',
+            price: data.price || 0,
+            offerPrice: data.offerPrice || 0,
+            onOffer: data.onOffer || false,
+            images: data.images || '',
+            features: Array.isArray(data.features) ? data.features : [],
+            comments: comments,
+          };
+        });
+
+        dispatch({type: 'FETCH_PRODUCTS_SUCCESS', payload: products});
+      } catch (error) {
+        console.error('Error al cargar productos:', error);
+        dispatch({type: 'FETCH_PRODUCTS_ERROR', payload: error.message});
+      }
+    };
+
+    fetchProducts();
+  }, []);
+
+  const addComment = async (productId, comment) => {
+    try {
+      const productRef = firebase.db.collection('product').doc(productId);
+      const newCommentId = Date.now();
+
+      const doc = await productRef.get();
+      const productData = doc.data();
+      const currentComments = productData.comments || [];
+
+      // Asegurarse de que currentComments sea un array
+      const commentsArray = Array.isArray(currentComments)
+        ? currentComments
+        : [currentComments].filter(Boolean);
+
+      const newComment = {
+        id: newCommentId,
+        text: comment,
+      };
+
+      await productRef.update({
+        comments: [...commentsArray, newComment],
+      });
+
+      dispatch({
+        type: 'ADD_COMMENT',
+        payload: {
+          productId,
+          comment: newComment,
+        },
+      });
+
+      return newComment;
+    } catch (error) {
+      console.error('Error al añadir comentario:', error);
+      throw error;
+    }
+  };
 
   const selectProduct = product => {
     dispatch({type: 'SELECT_PRODUCT', payload: product});
@@ -196,30 +237,23 @@ export const ProductProvider = ({children}) => {
     dispatch({type: 'FILTER_OFFERS'});
   };
 
-  const clearCart = () => {
-    dispatch({type: 'CLEAR_CART'});
-  };
-
-  const addComment = (productId, comment) => {
-    dispatch({type: 'ADD_COMMENT', payload: {productId, comment}});
-  };
-
   return (
     <ProductContext.Provider
       value={{
-        products: state.products,
+        products: state.filteredProducts,
         selectedProduct: state.selectedProduct,
         cart: state.cart,
         favorites: state.favorites,
+        loading: state.loading,
+        error: state.error,
         selectProduct,
         addToCart,
         removeFromCart,
         updateQuantity,
         toggleFavorite,
+        addComment,
         searchProduct,
         filterOffers,
-        clearCart,
-        addComment,
       }}>
       {children}
     </ProductContext.Provider>
