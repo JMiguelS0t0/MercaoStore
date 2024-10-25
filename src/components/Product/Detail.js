@@ -1,4 +1,4 @@
-import React, {useContext, useState, useEffect} from 'react';
+import React, {useContext, useState, useEffect, useCallback, memo} from 'react';
 import {View, ScrollView, Pressable} from 'react-native';
 import {Text, Image, Icon, Divider, Button, Card} from '@rneui/themed';
 import detailStyles from '../../styles/components/detailStyles';
@@ -8,7 +8,7 @@ import CustomInput from '../../reusable/CustomInput';
 import CustomModal from '../../reusable/CustomModal';
 import IconRow from '../Payment/IconRow';
 
-const PriceSection = ({selectedProduct, isFavorite, toggleFavorite}) => (
+const PriceSection = memo(({selectedProduct, isFavorite, toggleFavorite}) => (
   <View style={detailStyles.priceContainer}>
     <Text style={detailStyles.price}>
       {selectedProduct.onOffer
@@ -27,9 +27,9 @@ const PriceSection = ({selectedProduct, isFavorite, toggleFavorite}) => (
       </View>
     </Pressable>
   </View>
-);
+));
 
-const FeaturesSection = ({features}) => (
+const FeaturesSection = memo(({features}) => (
   <View style={detailStyles.section}>
     <Text style={detailStyles.sectionTitle}>Features:</Text>
     {features && features.length > 0 ? (
@@ -42,16 +42,16 @@ const FeaturesSection = ({features}) => (
       <Text style={detailStyles.sectionText}>No features available.</Text>
     )}
   </View>
-);
+));
 
-const DescriptionSection = ({description}) => (
+const DescriptionSection = memo(({description}) => (
   <View style={detailStyles.section}>
     <Text style={detailStyles.sectionTitle}>Description:</Text>
     <Text style={detailStyles.sectionText}>{description}</Text>
   </View>
-);
+));
 
-const CommentsSection = ({comments}) => (
+const CommentsSection = memo(({comments}) => (
   <View style={detailStyles.section}>
     <Text style={detailStyles.sectionTitle}>Comments:</Text>
     <ScrollView horizontal showsHorizontalScrollIndicator={false}>
@@ -65,12 +65,11 @@ const CommentsSection = ({comments}) => (
       ))}
     </ScrollView>
   </View>
-);
+));
 
 const Detail = () => {
   const {selectedProduct, addToCart, toggleFavorite, favorites, addComment} =
     useContext(ProductContext);
-
   const [newComment, setNewComment] = useState('');
   const [isModalVisible, setIsModalVisible] = useState(false);
   const [localComments, setLocalComments] = useState([]);
@@ -85,17 +84,17 @@ const Detail = () => {
     product => product.id === selectedProduct.id,
   );
 
-  const handleAddComment = () => {
+  const handleAddComment = useCallback(() => {
     if (newComment.trim() !== '') {
       addComment(selectedProduct.id, newComment);
-      setLocalComments([
-        ...localComments,
-        {id: localComments.length + 1, text: newComment},
+      setLocalComments(prevComments => [
+        ...prevComments,
+        {id: prevComments.length + 1, text: newComment},
       ]);
       setNewComment('');
       setIsModalVisible(true);
     }
-  };
+  }, [addComment, newComment, selectedProduct, localComments]);
 
   if (!selectedProduct) {
     return <Text>No product selected</Text>;

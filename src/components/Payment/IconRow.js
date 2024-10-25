@@ -1,4 +1,4 @@
-import React from 'react';
+import React, {useCallback} from 'react';
 import {View, Pressable, Text} from 'react-native';
 import {Icon} from '@rneui/themed';
 import PaymentStyles from '../../styles/screens/Payment/PaymentStyles';
@@ -7,10 +7,13 @@ import {useNavigation} from '@react-navigation/native';
 const IconRow = ({selectedProduct}) => {
   const navigation = useNavigation();
 
-  const handlePaymentMethodPress = method => {
-    console.log(`Selected payment method: ${method}`);
-    navigation.navigate('PaymentForm', {product: selectedProduct});
-  };
+  const handlePaymentMethodPress = useCallback(
+    method => {
+      console.log(`Selected payment method: ${method}`);
+      navigation.navigate('PaymentForm', {product: selectedProduct});
+    },
+    [navigation, selectedProduct],
+  );
 
   return (
     <View>

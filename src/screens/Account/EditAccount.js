@@ -1,4 +1,4 @@
-import React, {useContext, useState, useEffect} from 'react';
+import React, {useContext, useState, useEffect, useCallback} from 'react';
 import {Text, View, ScrollView, Pressable} from 'react-native';
 import {useNavigation} from '@react-navigation/native';
 import globalStyles from '../../styles/globalStyles';
@@ -23,7 +23,6 @@ const EditAccount = () => {
     address: '',
   });
   const [isModalVisible, setIsModalVisible] = useState(false);
-
   const [isDatePickerVisible, setIsDatePickerVisible] = useState(false);
   const [selectedDate, setSelectedDate] = useState(new Date());
 
@@ -44,33 +43,36 @@ const EditAccount = () => {
     }
   }, [user, userProfile]);
 
-  const handleInputChange = (field, value) => {
-    setFormData({
-      ...formData,
+  const handleInputChange = useCallback((field, value) => {
+    setFormData(prevData => ({
+      ...prevData,
       [field]: value,
-    });
-  };
+    }));
+  }, []);
 
-  const handleSaveChanges = () => {
+  const handleSaveChanges = useCallback(() => {
     updateUserProfile(formData);
     setIsModalVisible(true);
-  };
+  }, [formData, updateUserProfile]);
 
-  const handleCloseModal = () => {
+  const handleCloseModal = useCallback(() => {
     setIsModalVisible(false);
     navigation.goBack();
-  };
+  }, [navigation]);
 
-  const showDatePicker = () => {
+  const showDatePicker = useCallback(() => {
     setIsDatePickerVisible(true);
-  };
+  }, []);
 
-  const handleDateConfirm = date => {
+  const handleDateConfirm = useCallback(date => {
     setSelectedDate(date);
     const formattedDate = moment(date).format('DD/MM/YYYY');
-    setFormData({...formData, birthday: formattedDate});
+    setFormData(prevData => ({
+      ...prevData,
+      birthday: formattedDate,
+    }));
     setIsDatePickerVisible(false);
-  };
+  }, []);
 
   return (
     <ScrollView contentContainerStyle={globalStyles.containerScroll}>

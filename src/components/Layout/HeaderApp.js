@@ -1,4 +1,4 @@
-import React, {useContext} from 'react';
+import React, {useContext, useCallback} from 'react';
 import {View, Image, Pressable} from 'react-native';
 import globalStyles from '../../styles/globalStyles';
 import headerStyle from '../../styles/components/headerStyle';
@@ -10,17 +10,17 @@ const HeaderApp = () => {
   const navigation = useNavigation();
   const {cart} = useContext(ProductContext);
 
-  const handleCartPress = () => {
+  const handleCartPress = useCallback(() => {
     navigation.navigate('Cart');
-  };
+  }, [navigation]);
 
-  const handleProfilePress = () => {
+  const handleProfilePress = useCallback(() => {
     navigation.navigate('Account');
-  };
+  }, [navigation]);
 
-  const handleLogoPress = () => {
+  const handleLogoPress = useCallback(() => {
     navigation.navigate('Home');
-  };
+  }, [navigation]);
 
   const cartIconStyle =
     cart.length > 0 ? headerStyle.cartIconFilled : headerStyle.cartIcon;

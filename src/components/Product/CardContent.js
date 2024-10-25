@@ -1,4 +1,4 @@
-import React, {useContext} from 'react';
+import React, {useContext, useCallback} from 'react';
 import {Card, Text, Icon} from '@rneui/themed';
 import {View, Pressable} from 'react-native';
 import {ProductContext} from '../../context/ProductContext';
@@ -15,10 +15,14 @@ const CardContent = ({item}) => {
 
   const isFavorite = favorites.some(product => product.id === item.id);
 
-  const handleProductPress = () => {
+  const handleProductPress = useCallback(() => {
     selectProduct(item);
     navigation.navigate('Detail');
-  };
+  }, [item, navigation, selectProduct]);
+
+  const handleToggleFavorite = useCallback(() => {
+    toggleFavorite(item);
+  }, [item, toggleFavorite]);
 
   return (
     <Pressable onPress={handleProductPress}>
@@ -31,7 +35,7 @@ const CardContent = ({item}) => {
           />
           <Pressable
             style={CardStyles.heartIcon}
-            onPress={() => toggleFavorite(item)}>
+            onPress={handleToggleFavorite}>
             <Icon
               name="heart"
               type="font-awesome-5"

@@ -1,4 +1,4 @@
-import React, {useState, useContext} from 'react';
+import React, {useState, useContext, useCallback} from 'react';
 import {View, Text, Alert} from 'react-native';
 import {Button} from '@rneui/themed';
 import {useNavigation} from '@react-navigation/native';
@@ -10,22 +10,33 @@ import {AuthContext} from '../context/AuthContext';
 const SignInForm = () => {
   const navigation = useNavigation();
   const {login, users} = useContext(AuthContext);
-  const [username, setUsername] = useState('');
-  const [password, setPassword] = useState('');
+
+  const [formData, setFormData] = useState({
+    username: '',
+    password: '',
+  });
+
   const [error, setError] = useState({username: '', password: ''});
 
-  const validateInputs = () => {
+  const handleChange = useCallback((name, value) => {
+    setFormData(prevState => ({
+      ...prevState,
+      [name]: value,
+    }));
+  }, []);
+
+  const validateInputs = useCallback(() => {
     let valid = true;
     const errorMessages = {username: '', password: ''};
 
-    if (username.length > 10) {
+    if (formData.username.length > 10) {
       errorMessages.username = 'El usuario no puede tener más de 10 caracteres';
       valid = false;
     }
 
     const passwordRegex =
       /^(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{8,}$/;
-    if (!passwordRegex.test(password)) {
+    if (!passwordRegex.test(formData.password)) {
       errorMessages.password =
         'La contraseña debe tener al menos 8 caracteres, incluir 1 mayúscula, 1 caracter especial y números.';
       valid = false;
@@ -33,16 +44,16 @@ const SignInForm = () => {
 
     setError(errorMessages);
     return valid;
-  };
+  }, [formData]);
 
-  const handleLogin = () => {
+  const handleLogin = useCallback(() => {
     if (validateInputs()) {
       const user = users.find(
-        u => u.name === username && u.password === password,
+        u => u.name === formData.username && u.password === formData.password,
       );
 
       if (user) {
-        login({username, password});
+        login({username: formData.username, password: formData.password});
         navigation.navigate('Home');
       } else {
         Alert.alert(
@@ -51,11 +62,11 @@ const SignInForm = () => {
         );
       }
     }
-  };
+  }, [formData, login, users, navigation, validateInputs]);
 
-  const handleCreateAccount = () => {
+  const handleCreateAccount = useCallback(() => {
     navigation.navigate('Register');
-  };
+  }, [navigation]);
 
   return (
     <View style={[globalStyles.containerForm, signInFormStyles.colorForm]}>
@@ -68,8 +79,8 @@ const SignInForm = () => {
         textColor="#000"
         iconColor="#beb5c5"
         containerStyle={signInFormStyles.inputContainer}
-        value={username}
-        onChangeText={setUsername}
+        value={formData.username}
+        onChangeText={value => handleChange('username', value)}
         maxLength={10}
         errorMessage={error.username}
         errorStyle={signInFormStyles.errorStyle}
@@ -82,8 +93,8 @@ const SignInForm = () => {
         textColor="#000"
         iconColor="#beb5c5"
         containerStyle={signInFormStyles.inputContainer}
-        value={password}
-        onChangeText={setPassword}
+        value={formData.password}
+        onChangeText={value => handleChange('password', value)}
         errorMessage={error.password}
         errorStyle={signInFormStyles.errorStyle}
       />

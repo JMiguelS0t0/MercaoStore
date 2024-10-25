@@ -1,4 +1,4 @@
-import React, {useState, useContext} from 'react';
+import React, {useState, useContext, useCallback} from 'react';
 import {View, Pressable, ScrollView, Alert} from 'react-native';
 import {Button} from '@rneui/themed';
 import CustomInput from '../../reusable/CustomInput';
@@ -17,30 +17,36 @@ const PaymentForm = () => {
   const route = useRoute();
   const {clearCart, cart} = useContext(ProductContext);
   const {addPurchase} = useContext(PurchasesContext);
-  const [fullName, setFullName] = useState('');
-  const [cardNumber, setCardNumber] = useState('');
-  const [cvv, setCvv] = useState('');
-  const [expiryDate, setExpiryDate] = useState('');
+
+  const [formData, setFormData] = useState({
+    fullName: '',
+    cardNumber: '',
+    cvv: '',
+    expiryDate: '',
+  });
   const [isDatePickerVisible, setIsDatePickerVisible] = useState(false);
   const [selectedDate, setSelectedDate] = useState(new Date());
   const [isModalVisible, setIsModalVisible] = useState(false);
 
   const {product} = route.params || {};
 
-  const handleCompletePayment = () => {
-    if (
-      fullName.trim() === '' ||
-      cardNumber.trim() === '' ||
-      cvv.trim() === '' ||
-      expiryDate.trim() === ''
-    ) {
+  const handleInputChange = useCallback((name, value) => {
+    setFormData(prevState => ({
+      ...prevState,
+      [name]: value,
+    }));
+  }, []);
+
+  const handleCompletePayment = useCallback(() => {
+    const {fullName, cardNumber, cvv, expiryDate} = formData;
+    if (!fullName || !cardNumber || !cvv || !expiryDate) {
       Alert.alert('Incomplete Form', 'Please fill all the fields to proceed.');
     } else {
       setIsModalVisible(true);
     }
-  };
+  }, [formData]);
 
-  const handleConfirmPayment = () => {
+  const handleConfirmPayment = useCallback(() => {
     if (product) {
       addPurchase({
         ...product,
@@ -63,21 +69,24 @@ const PaymentForm = () => {
     setTimeout(() => {
       navigation.navigate('Purchases');
     }, 100);
-  };
+  }, [addPurchase, cart, clearCart, navigation, product]);
 
-  const handleCancelPayment = () => {
+  const handleCancelPayment = useCallback(() => {
     navigation.goBack();
-  };
+  }, [navigation]);
 
-  const showDatePicker = () => {
+  const showDatePicker = useCallback(() => {
     setIsDatePickerVisible(true);
-  };
+  }, []);
 
-  const handleDateConfirm = date => {
-    setSelectedDate(date);
-    setExpiryDate(moment(date).format('MM/YY'));
-    setIsDatePickerVisible(false);
-  };
+  const handleDateConfirm = useCallback(
+    date => {
+      setSelectedDate(date);
+      handleInputChange('expiryDate', moment(date).format('MM/YY'));
+      setIsDatePickerVisible(false);
+    },
+    [handleInputChange],
+  );
 
   return (
     <ScrollView contentContainerStyle={globalStyles.containerScroll}>
@@ -90,8 +99,8 @@ const PaymentForm = () => {
           iconName="user"
           keyboardType="default"
           containerStyle={globalStyles.backgroundInput}
-          value={fullName}
-          onChangeText={setFullName}
+          value={formData.fullName}
+          onChangeText={value => handleInputChange('fullName', value)}
         />
 
         <CustomInput
@@ -99,8 +108,8 @@ const PaymentForm = () => {
           iconName="credit-card"
           keyboardType="numeric"
           containerStyle={globalStyles.backgroundInput}
-          value={cardNumber}
-          onChangeText={setCardNumber}
+          value={formData.cardNumber}
+          onChangeText={value => handleInputChange('cardNumber', value)}
         />
 
         <CustomInput
@@ -108,8 +117,8 @@ const PaymentForm = () => {
           iconName="key"
           keyboardType="numeric"
           containerStyle={globalStyles.backgroundInput}
-          value={cvv}
-          onChangeText={setCvv}
+          value={formData.cvv}
+          onChangeText={value => handleInputChange('cvv', value)}
           maxLength={3}
         />
 
@@ -118,7 +127,7 @@ const PaymentForm = () => {
             placeholder="Expiry Date (MM/YY)"
             iconName="calendar"
             containerStyle={[{width: '100%'}, globalStyles.backgroundInput]}
-            value={expiryDate}
+            value={formData.expiryDate}
             editable={false}
           />
         </Pressable>
@@ -163,4 +172,3 @@ const PaymentForm = () => {
 };
 
 export default PaymentForm;
-``;

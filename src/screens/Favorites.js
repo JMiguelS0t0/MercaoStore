@@ -1,4 +1,4 @@
-import React, {useContext} from 'react';
+import React, {useContext, useCallback} from 'react';
 import {FlatList, Text, View} from 'react-native';
 import favoritesStyles from '../styles/screens/FavoriteStyles';
 import CardItem from '../components/Product/CardItem';
@@ -6,6 +6,8 @@ import {ProductContext} from '../context/ProductContext';
 
 const Favorites = () => {
   const {favorites} = useContext(ProductContext);
+
+  const renderItem = useCallback(({item}) => <CardItem item={item} />, []);
 
   return (
     <View style={favoritesStyles.container}>
@@ -16,7 +18,7 @@ const Favorites = () => {
       ) : (
         <FlatList
           data={favorites}
-          renderItem={({item}) => <CardItem item={item} />}
+          renderItem={renderItem}
           keyExtractor={item => item.id.toString()}
           numColumns={2}
           contentContainerStyle={favoritesStyles.listContainer}
