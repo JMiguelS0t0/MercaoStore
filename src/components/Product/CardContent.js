@@ -13,8 +13,9 @@ const CardContent = ({item}) => {
   const {selectProduct} = useContext(ProductContext);
   const {user} = useContext(AuthContext);
   const navigation = useNavigation();
-
-  const isFavorite = favorites.some(product => product.id === item.id);
+  const isFavorite = favorites.some(
+    product => product.firebaseId === item.id || product.id === item.id,
+  );
 
   const handleProductPress = useCallback(() => {
     selectProduct(item);
@@ -28,6 +29,7 @@ const CardContent = ({item}) => {
     }
 
     try {
+      // Si ya es favorito, eliminarlo, si no, agregarlo
       if (isFavorite) {
         await removeFromFavorites(item);
       } else {
