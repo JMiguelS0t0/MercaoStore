@@ -1,5 +1,6 @@
-import React, {createContext, useReducer, useEffect} from 'react';
-import firebase from '../firebase/firebase';
+import React, {createContext, useReducer, useEffect, useContext} from 'react';
+import {AuthContext} from './AuthContext';
+import firebase from '../firebase';
 
 export const ProductContext = createContext();
 
@@ -29,6 +30,28 @@ const productReducer = (state, action) => {
         loading: false,
         error: action.payload,
       };
+    case 'UPDATE_USER_FAVORITES':
+      return {
+        ...state,
+        favorites: action.payload,
+      };
+    case 'TOGGLE_FAVORITE':
+      const productInFavorites = state.favorites.find(
+        product => product.id === action.payload.id,
+      );
+      if (productInFavorites) {
+        return {
+          ...state,
+          favorites: state.favorites.filter(
+            product => product.id !== action.payload.id,
+          ),
+        };
+      } else {
+        return {
+          ...state,
+          favorites: [...state.favorites, action.payload],
+        };
+      }
     case 'SEARCH_PRODUCT':
       const searchTerm = action.payload.toLowerCase();
       const filteredProducts = state.products.filter(
@@ -84,23 +107,6 @@ const productReducer = (state, action) => {
             : product,
         ),
       };
-    case 'TOGGLE_FAVORITE':
-      const productInFavorites = state.favorites.find(
-        product => product.id === action.payload.id,
-      );
-      if (productInFavorites) {
-        return {
-          ...state,
-          favorites: state.favorites.filter(
-            product => product.id !== action.payload.id,
-          ),
-        };
-      } else {
-        return {
-          ...state,
-          favorites: [...state.favorites, action.payload],
-        };
-      }
     case 'ADD_COMMENT':
       return {
         ...state,
@@ -131,6 +137,7 @@ const productReducer = (state, action) => {
 
 export const ProductProvider = ({children}) => {
   const [state, dispatch] = useReducer(productReducer, initialState);
+  const {user} = useContext(AuthContext);
 
   useEffect(() => {
     const fetchProducts = async () => {
@@ -169,7 +176,96 @@ export const ProductProvider = ({children}) => {
     };
 
     fetchProducts();
-  }, []);
+
+    const fetchUserFavorites = async () => {
+      if (user) {
+        try {
+          const userRef = firebase.db.collection('user').doc(user.id);
+          const userDoc = await userRef.get();
+
+          if (userDoc.exists) {
+            const userFavorites = userDoc.data().favorites || [];
+
+            if (userFavorites.length === 0) {
+              dispatch({
+                type: 'UPDATE_USER_FAVORITES',
+                payload: [],
+              });
+              return;
+            }
+
+            const favoriteProducts = await Promise.all(
+              userFavorites.map(async favoriteId => {
+                const productDoc = await firebase.db
+                  .collection('product')
+                  .doc(favoriteId)
+                  .get();
+
+                if (productDoc.exists) {
+                  return {
+                    id: productDoc.id,
+                    ...productDoc.data(),
+                  };
+                }
+                return null;
+              }),
+            );
+
+            const validProducts = favoriteProducts.filter(
+              product => product !== null,
+            );
+
+            dispatch({
+              type: 'UPDATE_USER_FAVORITES',
+              payload: validProducts,
+            });
+          }
+        } catch (error) {
+          console.error('Error al cargar los favoritos del usuario:', error);
+          dispatch({
+            type: 'UPDATE_USER_FAVORITES',
+            payload: [],
+          });
+        }
+      }
+    };
+
+    fetchUserFavorites();
+  }, [user]);
+
+  const toggleFavorite = async product => {
+    try {
+      const userId = user?.id;
+
+      if (!userId) {
+        throw new Error('User not authenticated');
+      }
+
+      const userRef = firebase.db.collection('user').doc(userId);
+      const userDoc = await userRef.get();
+
+      if (!userDoc.exists) {
+        throw new Error('User not found in database');
+      }
+
+      const userFavorites = userDoc.data().favorites || [];
+      let updatedFavorites;
+
+      if (userFavorites.includes(product.id)) {
+        updatedFavorites = userFavorites.filter(favId => favId !== product.id);
+      } else {
+        updatedFavorites = [...userFavorites, product.id];
+      }
+
+      await userRef.update({
+        favorites: updatedFavorites,
+      });
+
+      dispatch({type: 'TOGGLE_FAVORITE', payload: product});
+    } catch (error) {
+      console.error('Error al actualizar favoritos:', error);
+    }
+  };
 
   const addComment = async (productId, comment) => {
     try {
@@ -180,7 +276,6 @@ export const ProductProvider = ({children}) => {
       const productData = doc.data();
       const currentComments = productData.comments || [];
 
-      // Asegurarse de que currentComments sea un array
       const commentsArray = Array.isArray(currentComments)
         ? currentComments
         : [currentComments].filter(Boolean);
@@ -223,10 +318,6 @@ export const ProductProvider = ({children}) => {
 
   const updateQuantity = (product, quantity) => {
     dispatch({type: 'UPDATE_QUANTITY', payload: {id: product.id, quantity}});
-  };
-
-  const toggleFavorite = product => {
-    dispatch({type: 'TOGGLE_FAVORITE', payload: product});
   };
 
   const searchProduct = term => {
