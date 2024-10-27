@@ -17,17 +17,24 @@ const initialState = {
 
 const userReducer = (state, action) => {
   switch (action.type) {
+    case 'SET_LOADING':
+      return {
+        ...state,
+        loading: action.payload,
+      };
     case 'ADD_TO_FAVORITES':
       return {
         ...state,
         favorites: [...state.favorites, action.payload],
       };
     case 'REMOVE_FROM_FAVORITES':
+      const updatedFavorites = state.favorites.filter(
+        item => item.firebaseId !== action.payload,
+      );
+      console.log('Removing favorite with ID:', action.payload);
       return {
         ...state,
-        favorites: state.favorites.filter(
-          item => item.id !== action.payload.id,
-        ),
+        favorites: updatedFavorites,
       };
     case 'SET_FAVORITES':
       return {
@@ -53,62 +60,57 @@ export const UserProvider = ({children}) => {
   const [state, dispatch] = useReducer(userReducer, initialState);
   const {user} = useContext(AuthContext);
 
-  useEffect(() => {
-    const loadUserFavorites = async () => {
-      console.log('UserContext - Loading favorites for user:', user?.id);
-      if (!user) {
-        console.log('UserContext - No user logged in');
+  const loadUserFavorites = async () => {
+    if (!user) {
+      dispatch({type: 'SET_FAVORITES', payload: []});
+      return;
+    }
+
+    try {
+      dispatch({type: 'SET_LOADING', payload: true});
+
+      const userRef = firebase.db.collection('user').doc(user.id);
+      const userDoc = await userRef.get();
+
+      if (!userDoc.exists) {
         dispatch({type: 'SET_FAVORITES', payload: []});
         return;
       }
 
-      try {
-        const userRef = firebase.db.collection('user').doc(user.id);
-        const userDoc = await userRef.get();
+      const userFavorites = userDoc.data().favorites || [];
 
-        if (!userDoc.exists) {
-          console.log('UserContext - User document does not exist');
-          dispatch({type: 'SET_FAVORITES', payload: []});
-          return;
-        }
-
-        const userFavorites = userDoc.data().favorites || [];
-        console.log('UserContext - User favorites IDs:', userFavorites);
-
-        if (!userFavorites.length) {
-          console.log('UserContext - No favorites found');
-          dispatch({type: 'SET_FAVORITES', payload: []});
-          return;
-        }
-
-        const favoriteProducts = await Promise.all(
-          userFavorites.map(async favoriteId => {
-            const productDoc = await firebase.db
-              .collection('product')
-              .doc(favoriteId)
-              .get();
-
-            if (productDoc.exists) {
-              return {
-                id: productDoc.id,
-                ...productDoc.data(),
-              };
-            }
-            return null;
-          }),
-        );
-
-        const validProducts = favoriteProducts.filter(
-          product => product !== null,
-        );
-        console.log('UserContext - Fetched favorite products:', validProducts);
-        dispatch({type: 'SET_FAVORITES', payload: validProducts});
-      } catch (error) {
-        console.error('UserContext - Error loading favorites:', error);
+      if (!userFavorites.length) {
         dispatch({type: 'SET_FAVORITES', payload: []});
+        return;
       }
-    };
 
+      const productsPromises = userFavorites.map(favoriteId =>
+        firebase.db.collection('product').doc(favoriteId).get(),
+      );
+
+      const productDocs = await Promise.all(productsPromises);
+
+      const favoriteProducts = productDocs
+        .filter(doc => doc.exists)
+        .map(doc => {
+          const productData = {
+            ...doc.data(),
+            firebaseId: doc.id,
+          };
+          console.log('Loaded product:', productData);
+          return productData;
+        });
+
+      dispatch({type: 'SET_FAVORITES', payload: favoriteProducts});
+    } catch (error) {
+      console.error('Error loading favorites:', error);
+      dispatch({type: 'SET_FAVORITES', payload: []});
+    } finally {
+      dispatch({type: 'SET_LOADING', payload: false});
+    }
+  };
+
+  useEffect(() => {
     loadUserFavorites();
   }, [user]);
 
@@ -118,22 +120,44 @@ export const UserProvider = ({children}) => {
         throw new Error('User not authenticated');
       }
 
+      const firebaseId = item.firebaseId || item.id;
+      if (!firebaseId) {
+        throw new Error('Product does not have a valid Firebase ID');
+      }
+
+      dispatch({type: 'SET_LOADING', payload: true});
+
+      const productRef = firebase.db.collection('product').doc(firebaseId);
+      const productDoc = await productRef.get();
+
+      if (!productDoc.exists) {
+        throw new Error('Product not found in Firebase');
+      }
+
+      console.log('Adding product with Firebase ID:', firebaseId);
+
       const userRef = firebase.db.collection('user').doc(user.id);
       const userDoc = await userRef.get();
 
       if (!userDoc.exists) {
-        await userRef.set({favorites: [item.id]});
+        await userRef.set({favorites: [firebaseId]});
       } else {
         const userFavorites = userDoc.data().favorites || [];
-        if (!userFavorites.includes(item.id)) {
-          const updatedFavorites = [...userFavorites, item.id];
-          await userRef.update({favorites: updatedFavorites});
+        if (!userFavorites.includes(firebaseId)) {
+          await userRef.update({
+            favorites: [...userFavorites, firebaseId],
+          });
         }
       }
 
-      dispatch({type: 'ADD_TO_FAVORITES', payload: item});
+      dispatch({
+        type: 'ADD_TO_FAVORITES',
+        payload: {...item, firebaseId},
+      });
     } catch (error) {
-      console.error('Error al agregar a favoritos:', error);
+      console.error('Error adding to favorites:', error);
+    } finally {
+      dispatch({type: 'SET_LOADING', payload: false});
     }
   };
 
@@ -143,39 +167,48 @@ export const UserProvider = ({children}) => {
         throw new Error('User not authenticated');
       }
 
+      const firebaseId = typeof item === 'object' ? item.firebaseId : item;
+
+      if (!firebaseId) {
+        throw new Error('No firebaseId provided');
+      }
+
+      console.log('Removing item with firebaseId:', firebaseId);
+
+      dispatch({type: 'SET_LOADING', payload: true});
+
       const userRef = firebase.db.collection('user').doc(user.id);
       const userDoc = await userRef.get();
 
       if (userDoc.exists) {
-        const userFavorites = userDoc.data().favorites || [];
-        const updatedFavorites = userFavorites.filter(id => id !== item.id);
+        const currentFavorites = userDoc.data().favorites || [];
+        const updatedFavorites = currentFavorites.filter(
+          id => id !== firebaseId,
+        );
 
-        await userRef.update({favorites: updatedFavorites});
-        dispatch({type: 'REMOVE_FROM_FAVORITES', payload: item});
+        if (currentFavorites.length !== updatedFavorites.length) {
+          await userRef.update({
+            favorites: updatedFavorites,
+          });
+
+          dispatch({type: 'REMOVE_FROM_FAVORITES', payload: firebaseId});
+        }
       }
     } catch (error) {
-      console.error('Error al eliminar de favoritos:', error);
+      console.error('Error removing from favorites:', error);
+      console.error('Error details:', error.message);
+    } finally {
+      dispatch({type: 'SET_LOADING', payload: false});
     }
-  };
-
-  const addToPurchases = item => {
-    dispatch({type: 'ADD_TO_PURCHASES', payload: item});
-  };
-
-  const updateUserProfile = updatedProfile => {
-    dispatch({type: 'UPDATE_USER_PROFILE', payload: updatedProfile});
   };
 
   return (
     <UserContext.Provider
       value={{
         favorites: state.favorites,
-        purchases: state.purchases,
-        userProfile: state.userProfile,
+        loading: state.loading,
         addToFavorites,
         removeFromFavorites,
-        addToPurchases,
-        updateUserProfile,
         dispatch,
       }}>
       {children}
