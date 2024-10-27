@@ -125,16 +125,19 @@ export const UserProvider = ({children}) => {
         throw new Error('Product does not have a valid Firebase ID');
       }
 
-      dispatch({type: 'SET_LOADING', payload: true});
+      const alreadyFavorite = state.favorites.some(
+        favorite => favorite.firebaseId === firebaseId,
+      );
 
-      const productRef = firebase.db.collection('product').doc(firebaseId);
-      const productDoc = await productRef.get();
-
-      if (!productDoc.exists) {
-        throw new Error('Product not found in Firebase');
+      if (alreadyFavorite) {
+        console.log('El producto ya está en favoritos:', firebaseId);
+        return;
       }
 
-      console.log('Adding product with Firebase ID:', firebaseId);
+      dispatch({
+        type: 'ADD_TO_FAVORITES',
+        payload: {...item, firebaseId},
+      });
 
       const userRef = firebase.db.collection('user').doc(user.id);
       const userDoc = await userRef.get();
@@ -143,21 +146,14 @@ export const UserProvider = ({children}) => {
         await userRef.set({favorites: [firebaseId]});
       } else {
         const userFavorites = userDoc.data().favorites || [];
-        if (!userFavorites.includes(firebaseId)) {
-          await userRef.update({
-            favorites: [...userFavorites, firebaseId],
-          });
-        }
+        await userRef.update({
+          favorites: [...userFavorites, firebaseId],
+        });
       }
 
-      dispatch({
-        type: 'ADD_TO_FAVORITES',
-        payload: {...item, firebaseId},
-      });
+      console.log('Producto agregado a favoritos en Firebase:', firebaseId);
     } catch (error) {
       console.error('Error adding to favorites:', error);
-    } finally {
-      dispatch({type: 'SET_LOADING', payload: false});
     }
   };
 
@@ -175,7 +171,7 @@ export const UserProvider = ({children}) => {
 
       console.log('Removing item with firebaseId:', firebaseId);
 
-      dispatch({type: 'SET_LOADING', payload: true});
+      dispatch({type: 'REMOVE_FROM_FAVORITES', payload: firebaseId});
 
       const userRef = firebase.db.collection('user').doc(user.id);
       const userDoc = await userRef.get();
@@ -191,14 +187,14 @@ export const UserProvider = ({children}) => {
             favorites: updatedFavorites,
           });
 
-          dispatch({type: 'REMOVE_FROM_FAVORITES', payload: firebaseId});
+          console.log(
+            'Producto eliminado de favoritos en Firebase:',
+            firebaseId,
+          );
         }
       }
     } catch (error) {
       console.error('Error removing from favorites:', error);
-      console.error('Error details:', error.message);
-    } finally {
-      dispatch({type: 'SET_LOADING', payload: false});
     }
   };
 
