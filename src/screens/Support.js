@@ -1,7 +1,7 @@
 import React, {useState, useCallback} from 'react';
 import {Text, View, ScrollView, TextInput} from 'react-native';
 import globalStyles from '../styles/globalStyles';
-import {Icon, Button} from '@rneui/themed';
+import {Button} from '@rneui/themed';
 import supportStyles from '../styles/screens/SupportStyles';
 import CustomInput from '../reusable/CustomInput';
 import {useNavigation} from '@react-navigation/native';

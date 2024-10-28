@@ -41,11 +41,6 @@ const userReducer = (state, action) => {
         ...state,
         favorites: action.payload,
       };
-    case 'ADD_TO_PURCHASES':
-      return {
-        ...state,
-        purchases: [...state.purchases, action.payload],
-      };
     case 'UPDATE_USER_PROFILE':
       return {
         ...state,
@@ -59,6 +54,65 @@ const userReducer = (state, action) => {
 export const UserProvider = ({children}) => {
   const [state, dispatch] = useReducer(userReducer, initialState);
   const {user} = useContext(AuthContext);
+
+  const loadUserProfile = async () => {
+    if (!user) {
+      dispatch({
+        type: 'UPDATE_USER_PROFILE',
+        payload: {name: '', email: '', birthday: '', address: ''},
+      });
+      return;
+    }
+
+    try {
+      const userRef = firebase.db.collection('user').doc(user.id);
+      const userDoc = await userRef.get();
+
+      if (userDoc.exists) {
+        const userProfileData = userDoc.data();
+        console.log('User profile loaded:', userProfileData);
+        dispatch({
+          type: 'UPDATE_USER_PROFILE',
+          payload: {
+            name: userProfileData.username || '',
+            email: userProfileData.email || '',
+            birthday: userProfileData.birthday || '',
+            address: userProfileData.address || '',
+          },
+        });
+      } else {
+        console.log('User document does not exist');
+      }
+    } catch (error) {
+      console.error('Error loading user profile:', error);
+    }
+  };
+
+  const updateUserProfile = async profileData => {
+    if (!user) {
+      console.error('No user is logged in');
+      return;
+    }
+
+    try {
+      const userRef = firebase.db.collection('user').doc(user.id);
+      await userRef.update(profileData);
+
+      dispatch({
+        type: 'UPDATE_USER_PROFILE',
+        payload: profileData,
+      });
+
+      console.log('User profile updated:', profileData);
+    } catch (error) {
+      console.error('Error updating user profile:', error);
+    }
+  };
+
+  useEffect(() => {
+    loadUserProfile();
+    loadUserFavorites();
+  }, [user]);
 
   const loadUserFavorites = async () => {
     if (!user) {
@@ -92,14 +146,10 @@ export const UserProvider = ({children}) => {
 
       const favoriteProducts = productDocs
         .filter(doc => doc.exists)
-        .map(doc => {
-          const productData = {
-            ...doc.data(),
-            firebaseId: doc.id,
-          };
-          console.log('Loaded product:', productData);
-          return productData;
-        });
+        .map(doc => ({
+          ...doc.data(),
+          firebaseId: doc.id,
+        }));
 
       dispatch({type: 'SET_FAVORITES', payload: favoriteProducts});
     } catch (error) {
@@ -111,6 +161,7 @@ export const UserProvider = ({children}) => {
   };
 
   useEffect(() => {
+    loadUserProfile();
     loadUserFavorites();
   }, [user]);
 
@@ -203,8 +254,10 @@ export const UserProvider = ({children}) => {
       value={{
         favorites: state.favorites,
         loading: state.loading,
+        userProfile: state.userProfile,
         addToFavorites,
         removeFromFavorites,
+        updateUserProfile,
         dispatch,
       }}>
       {children}
