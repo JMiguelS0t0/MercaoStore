@@ -6,7 +6,8 @@ const registerFormStyles = StyleSheet.create({
     justifyContent: 'space-between',
     alignItems: 'center',
     marginRight: 30,
-    marginLeft: 20,
+    paddingLeft: 20,
+    width: '100%',
   },
   headerLeft: {
     flexDirection: 'row',

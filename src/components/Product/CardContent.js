@@ -71,7 +71,7 @@ const CardContent = ({item}) => {
               name="heart"
               type="font-awesome-5"
               solid={isFavorite}
-              color={isFavorite ? '#7b5bbd' : '#fff'}
+              color={isFavorite ? '#815bbd' : '#fff'}
               size={15}
             />
           </Pressable>

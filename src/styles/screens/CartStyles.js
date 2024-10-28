@@ -8,7 +8,7 @@ const CartStyles = StyleSheet.create({
   },
   listContainer: {
     paddingBottom: 180,
-    backgroundColor: '#120b34',
+    backgroundColor: '#fff',
     borderRadius: 20,
   },
   emptyCartContainer: {
@@ -17,7 +17,7 @@ const CartStyles = StyleSheet.create({
     alignItems: 'center',
   },
   emptyCartText: {
-    color: '#fff',
+    color: '#000',
     fontSize: 18,
     fontFamily: 'Poppins-Regular',
     textAlign: 'center',
@@ -47,18 +47,18 @@ const CartStyles = StyleSheet.create({
     alignItems: 'center',
   },
   productName: {
-    color: '#fff',
+    color: '#000',
     fontSize: 16,
     maxWidth: '50%',
     fontFamily: 'Poppins-Bold',
   },
   productText: {
-    color: '#fff',
+    color: '#000',
     fontSize: 14,
     fontFamily: 'Poppins-Regular',
   },
   productPrice: {
-    color: '#fff',
+    color: '#000',
     fontSize: 16,
     maxWidth: '50%',
     fontFamily: 'Poppins-Regular',
@@ -73,7 +73,7 @@ const CartStyles = StyleSheet.create({
     flexDirection: 'row',
     justifyContent: 'space-between',
     alignItems: 'center',
-    backgroundColor: 'rgba(123, 91, 189, 0.5)',
+    backgroundColor: 'rgba(123, 91, 189, 0.9)',
     borderRadius: 10,
     paddingHorizontal: 10,
     paddingVertical: 5,
@@ -95,11 +95,11 @@ const CartStyles = StyleSheet.create({
     borderRadius: 20,
   },
   subtotalText: {
-    color: '#ccc',
+    color: '#000',
     fontSize: 16,
   },
   subtotalPrice: {
-    color: '#fff',
+    color: '#000',
     fontSize: 18,
     fontWeight: 'bold',
   },
@@ -117,7 +117,7 @@ const CartStyles = StyleSheet.create({
     marginLeft: 'auto',
   },
   footerContainer: {
-    backgroundColor: '#120b34',
+    backgroundColor: '#fff',
     padding: 10,
     borderRadius: 10,
     marginTop: 10,

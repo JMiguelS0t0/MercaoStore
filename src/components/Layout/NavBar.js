@@ -30,7 +30,7 @@ const NavBar = () => {
   return (
     <View style={navBarStyles.container}>
       <LinearGradient
-        colors={['transparent', 'rgba(115,83,182, 0.2)']}
+        colors={['transparent', 'rgba(234, 234, 234, 0.2)']}
         style={navBarStyles.gradientContainer}>
         {!isMainScreen && (
           <View style={navBarStyles.backButtonContainer}>

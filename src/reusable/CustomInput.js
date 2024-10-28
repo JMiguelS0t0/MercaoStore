@@ -12,8 +12,8 @@ const CustomInput = ({
   inputStyle = {},
   containerStyle = {},
   placeholderTextColor = '#ccc',
-  textColor = '#fff',errorMessage, errorStyle,
-  iconColor = '#fff',
+  textColor = '#000',errorMessage, errorStyle,
+  iconColor = '#000',
   ...props
 }) => (
   <Input
@@ -22,7 +22,7 @@ const CustomInput = ({
       <Icon name={iconName} type={iconType} color={iconColor} size={20} />
     }
     inputStyle={[
-      {color: textColor, fontFamily: 'Poppins-Regular', fontSize: 15}, 
+      {color: textColor, fontFamily: 'Poppins-Regular', fontSize: 15},
       inputStyle,
     ]}
     inputContainerStyle={[globalStyles.inputContainer, containerStyle]}

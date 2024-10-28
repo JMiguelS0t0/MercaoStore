@@ -5,6 +5,7 @@ import headerStyle from '../../styles/components/headerStyle';
 import {Icon} from '@rneui/themed';
 import {useNavigation} from '@react-navigation/native';
 import {ProductContext} from '../../context/ProductContext';
+import LinearGradient from 'react-native-linear-gradient';
 
 const HeaderApp = () => {
   const navigation = useNavigation();
@@ -26,7 +27,12 @@ const HeaderApp = () => {
     cart.length > 0 ? headerStyle.cartIconFilled : headerStyle.cartIcon;
 
   return (
-    <View style={headerStyle.headerContainer}>
+    <LinearGradient
+      colors={['transparent', '#eaeaea']}
+      locations={[0, 1]}
+      start={{x: 0.5, y: 1}}
+      end={{x: 0.5, y: 0}}
+      style={headerStyle.headerContainer}>
       <Pressable onPress={handleLogoPress}>
         <Image
           source={require('../../assets/Mercao.png')}
@@ -39,16 +45,16 @@ const HeaderApp = () => {
           <Icon
             name="shopping-cart"
             type="font-awesome-5"
-            color="#fff"
+            color="#000"
             size={17}
           />
         </Pressable>
 
         <Pressable onPress={handleProfilePress} style={headerStyle.userIcon}>
-          <Icon name="user" type="font-awesome-5" color="#fff" size={17} />
+          <Icon name="user" type="font-awesome-5" color="#000" size={17} />
         </Pressable>
       </View>
-    </View>
+    </LinearGradient>
   );
 };
 

@@ -9,14 +9,14 @@ const PaymentStyles = StyleSheet.create({
     fontFamily: 'Poppins-Bold',
     marginBottom: 10,
     textAlign: 'center',
-    color: '#fff',
+    color: '#000',
     padding: 8,
     borderRadius: 15,
     marginTop: 20,
   },
   inputContainer: {
     marginBottom: 15,
-    backgroundColor: '#120b34',
+    backgroundColor: '#fff',
   },
   iconRow: {
     flexDirection: 'row',
@@ -25,7 +25,7 @@ const PaymentStyles = StyleSheet.create({
     marginHorizontal: 20,
   },
   iconStyle: {
-    backgroundColor: '#120b34',
+    backgroundColor: '#fff',
     padding: 10,
     borderRadius: 10,
     width: '30%',

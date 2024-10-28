@@ -28,7 +28,6 @@ const RegisterForm = () => {
   const [isDatePickerVisible, setIsDatePickerVisible] = useState(false);
   const [selectedDate, setSelectedDate] = useState(new Date());
 
-  // Función para actualizar los datos del formulario
   const handleChange = useCallback((name, value) => {
     setFormData(prevState => ({
       ...prevState,
@@ -36,7 +35,6 @@ const RegisterForm = () => {
     }));
   }, []);
 
-  // Validar y manejar el registro de usuario
   const handleRegister = useCallback(() => {
     const errorMessages = {};
     let valid = true;
@@ -85,9 +83,9 @@ const RegisterForm = () => {
     setErrors(errorMessages);
 
     if (valid) {
-      register({...formData}); // Llamada al contexto para registrar el usuario
+      register({...formData});
       Alert.alert('Registro exitoso', 'Usuario registrado exitosamente');
-      navigation.navigate('Home'); // Navegación a la página principal después del registro
+      navigation.navigate('Home');
     } else {
       Alert.alert(
         'Error en el registro',
@@ -96,17 +94,14 @@ const RegisterForm = () => {
     }
   }, [formData, register, navigation]);
 
-  // Manejo del botón para regresar a la pantalla de login
   const handleBack = useCallback(() => {
     navigation.navigate('Login');
   }, [navigation]);
 
-  // Mostrar el DatePicker para seleccionar la fecha de nacimiento
   const showDatePicker = useCallback(() => {
     setIsDatePickerVisible(true);
   }, []);
 
-  // Confirmar y asignar la fecha seleccionada
   const handleDateConfirm = useCallback(
     date => {
       setSelectedDate(date);
@@ -117,7 +112,7 @@ const RegisterForm = () => {
   );
 
   return (
-    <View style={{flex: 1}}>
+    <View style={{flex: 1, backgroundColor: '#583f8c'}}>
       <View style={registerFormStyles.header}>
         <View style={registerFormStyles.headerLeft}>
           <Button
@@ -137,7 +132,7 @@ const RegisterForm = () => {
           />
         </View>
         <Image
-          source={require('../assets/Mercao.png')}
+          source={require('../assets/MercaoStore.png')}
           style={globalStyles.smallLogo}
         />
       </View>

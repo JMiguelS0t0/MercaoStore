@@ -27,10 +27,10 @@ const navBarStyles = StyleSheet.create({
     alignItems: 'center',
     padding: 10,
     borderWidth: 1,
-    borderColor: '#7958bc',
+    borderColor: '#eaeaea',
     borderRadius: 25,
     width: '50%',
-    backgroundColor: '#120b34',
+    backgroundColor: '#fff',
   },
   backButtonContainer: {
     position: 'absolute',
@@ -38,8 +38,8 @@ const navBarStyles = StyleSheet.create({
     zIndex: 2,
   },
   circularButton: {
-    backgroundColor: 'rgba(18, 11, 52, 0.4)',
-    borderColor: '#7b5bbd',
+    backgroundColor: '#fff',
+    borderColor: '#f5f5f5',
     borderWidth: 1,
     borderRadius: 50,
   },

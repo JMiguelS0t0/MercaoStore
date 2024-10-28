@@ -9,7 +9,6 @@ const headerStyle = StyleSheet.create({
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'space-between',
-    backgroundColor: '#120b34',
     zIndex: 1,
     padding: 0,
     marginBottom: 0,
@@ -29,7 +28,7 @@ const headerStyle = StyleSheet.create({
   },
   cartIconFilled: {
     marginRight: 10,
-    backgroundColor: '#7b5bbd',
+    backgroundColor: '#fff',
     borderRadius: 25,
     width: 35,
     height: 35,

@@ -55,6 +55,7 @@ const CartActions = ({item}) => {
         <Icon
           name="heart"
           type="font-awesome-5"
+          solid={isFavorite}
           color={isFavorite ? '#7b5bbd' : '#fff'}
           size={15}
         />

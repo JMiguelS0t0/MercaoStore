@@ -7,15 +7,21 @@ const CardStyles = StyleSheet.create({
     paddingHorizontal: 5,
   },
   cardWrapper: {
-    width: '48%',
+    width: '49%',
     margin: 5,
   },
   cardContainer: {
     borderWidth: 0,
-    backgroundColor: 'transparent',
-    shadowColor: 'transparent',
+    backgroundColor: '#fcfcfc',
+    borderRadius: 15,
     flex: 1,
     padding: 0,
+    shadowColor: '#000',
+    shadowOffset: {width: 0, height: 2},
+    shadowOpacity: 0.25,
+    shadowRadius: 3.84,
+    elevation: 5,
+    marginLeft: 0,
   },
   imageContainer: {
     backgroundColor: '#fff',
@@ -30,7 +36,7 @@ const CardStyles = StyleSheet.create({
   },
   cardTitle: {
     fontSize: 15,
-    color: '#fff',
+    color: '#000',
     textAlign: 'left',
     marginTop: 5,
     marginLeft: 5,
@@ -39,9 +45,9 @@ const CardStyles = StyleSheet.create({
   },
   cardText: {
     fontSize: 16,
-    color: '#fff',
+    color: '#000',
     textAlign: 'left',
-    marginLeft: 1,
+    marginLeft: 7,
     marginBottom: 5,
     fontFamily: 'Poppins-Bold',
   },
@@ -54,7 +60,7 @@ const CardStyles = StyleSheet.create({
     position: 'absolute',
     bottom: 10,
     right: 8,
-    backgroundColor: 'rgba(66, 66, 66, 0.6)',
+    backgroundColor: 'rgba(166, 164, 164, 0.8)',
     borderRadius: 15,
     padding: 5,
     zIndex: 1,
@@ -62,11 +68,11 @@ const CardStyles = StyleSheet.create({
   offerContainer: {
     flexDirection: 'row',
     alignItems: 'center',
-    marginLeft: 5,
+    marginLeft: 3,
   },
   originalPrice: {
     textDecorationLine: 'line-through',
-    color: '#fff',
+    color: '#000',
     marginRight: 5,
   },
   offerPrice: {

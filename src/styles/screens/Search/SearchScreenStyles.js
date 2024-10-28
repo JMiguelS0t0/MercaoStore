@@ -15,20 +15,20 @@ const searchScreenStyles = StyleSheet.create({
     paddingHorizontal: 10,
   },
   inputContainer: {
-    backgroundColor: '#120b34',
+    backgroundColor: '#fff',
     borderRadius: 10,
-    borderColor: '#7b5bbd',
-    borderWidth: 0.5,
+    borderColor: '#beb5c5',
+    borderWidth: 1,
     height: 50,
   },
   input: {
     fontFamily: 'Poppins-Regular',
     fontSize: 16,
-    color: '#fff',
+    color: '#000',
   },
   text: {
     fontSize: 20,
-    color: '#fff',
+    color: '#000',
     marginTop: 5,
     fontFamily: 'Poppins-SemiBold',
   },
@@ -41,7 +41,6 @@ const searchScreenStyles = StyleSheet.create({
   },
   button: {
     marginBottom: 10,
-    marginHorizontal: 0,
     paddingVertical: 10,
     borderRadius: 10,
     alignItems: 'center',
@@ -50,12 +49,12 @@ const searchScreenStyles = StyleSheet.create({
   },
   cardText: {
     fontSize: 14,
-    color: '#fff',
+    color: '#000',
     fontFamily: 'Poppins-Regular',
   },
   offerButton: {
     width: '90%',
-    backgroundColor: '#7b5bbd',
+    backgroundColor: '#7353b6',
     borderRadius: 15,
     alignItems: 'center',
     justifyContent: 'center',

@@ -4,7 +4,7 @@ const productsListStyles = StyleSheet.create({
   categoryText: {
     fontSize: 24,
     fontWeight: 'bold',
-    color: '#fff',
+    color: '#000',
     textAlign: 'center',
     fontFamily: 'Poppins-SemiBold',
     paddingTop: '30%',
@@ -12,7 +12,6 @@ const productsListStyles = StyleSheet.create({
   },
   cardsContainer: {
     paddingHorizontal: 10,
-    marginTop: 0,
     marginTop: '-25%',
   },
 });
