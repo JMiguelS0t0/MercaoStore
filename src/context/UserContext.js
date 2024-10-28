@@ -163,7 +163,7 @@ export const UserProvider = ({children}) => {
         throw new Error('User not authenticated');
       }
 
-      const firebaseId = typeof item === 'object' ? item.firebaseId : item;
+      const firebaseId = item.firebaseId || item.id;
 
       if (!firebaseId) {
         throw new Error('No firebaseId provided');

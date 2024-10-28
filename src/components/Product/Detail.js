@@ -4,6 +4,7 @@ import {Text, Image, Icon, Divider, Button, Card} from '@rneui/themed';
 import detailStyles from '../../styles/components/detailStyles';
 import globalStyles from '../../styles/globalStyles';
 import {ProductContext} from '../../context/ProductContext';
+import {UserContext} from '../../context/UserContext';
 import CustomInput from '../../reusable/CustomInput';
 import CustomModal from '../../reusable/CustomModal';
 import IconRow from '../Payment/IconRow';
@@ -76,8 +77,9 @@ const CommentsSection = memo(({comments = []}) => (
 ));
 
 const Detail = () => {
-  const {selectedProduct, addToCart, toggleFavorite, favorites, addComment} =
-    useContext(ProductContext);
+  const {selectedProduct, addToCart, addComment} = useContext(ProductContext);
+  const {favorites, addToFavorites, removeFromFavorites} =
+    useContext(UserContext);
   const [newComment, setNewComment] = useState('');
   const [isModalVisible, setIsModalVisible] = useState(false);
   const [localComments, setLocalComments] = useState([]);
@@ -91,8 +93,22 @@ const Detail = () => {
   }, [selectedProduct]);
 
   const isFavorite = favorites.some(
-    product => product.id === selectedProduct?.id,
+    product =>
+      product.firebaseId === selectedProduct?.firebaseId ||
+      product.id === selectedProduct?.id,
   );
+
+  const toggleFavorite = useCallback(async () => {
+    try {
+      if (isFavorite) {
+        await removeFromFavorites(selectedProduct);
+      } else {
+        await addToFavorites(selectedProduct);
+      }
+    } catch (error) {
+      console.error('Error al gestionar favoritos:', error);
+    }
+  }, [isFavorite, selectedProduct, addToFavorites, removeFromFavorites]);
 
   const handleAddComment = useCallback(async () => {
     if (newComment.trim() !== '') {

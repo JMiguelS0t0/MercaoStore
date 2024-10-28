@@ -29,7 +29,6 @@ const CardContent = ({item}) => {
     }
 
     try {
-      // Si ya es favorito, eliminarlo, si no, agregarlo
       if (isFavorite) {
         await removeFromFavorites(item);
       } else {
