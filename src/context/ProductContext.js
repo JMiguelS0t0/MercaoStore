@@ -8,7 +8,7 @@ const initialState = {
   products: [],
   filteredProducts: [],
   selectedProduct: null,
-  cart: [],
+  cart: {},
   favorites: [],
   loading: true,
   error: null,
@@ -39,19 +39,17 @@ const productReducer = (state, action) => {
       const productInFavorites = state.favorites.find(
         product => product.id === action.payload.id,
       );
-      if (productInFavorites) {
-        return {
-          ...state,
-          favorites: state.favorites.filter(
-            product => product.id !== action.payload.id,
-          ),
-        };
-      } else {
-        return {
-          ...state,
-          favorites: [...state.favorites, action.payload],
-        };
-      }
+      return productInFavorites
+        ? {
+            ...state,
+            favorites: state.favorites.filter(
+              product => product.id !== action.payload.id,
+            ),
+          }
+        : {
+            ...state,
+            favorites: [...state.favorites, action.payload],
+          };
     case 'SEARCH_PRODUCT':
       const searchTerm = action.payload.toLowerCase();
       const filteredProducts = state.products.filter(
@@ -75,37 +73,39 @@ const productReducer = (state, action) => {
         selectedProduct: action.payload,
       };
     case 'ADD_TO_CART':
-      const productInCart = state.cart.find(
-        product => product.id === action.payload.id,
-      );
-      if (productInCart) {
-        return {
-          ...state,
-          cart: state.cart.map(product =>
-            product.id === action.payload.id
-              ? {...product, quantity: product.quantity + 1}
-              : product,
-          ),
-        };
-      } else {
-        return {
-          ...state,
-          cart: [...state.cart, {...action.payload, quantity: 1}],
-        };
-      }
-    case 'REMOVE_FROM_CART':
+      const productId = action.payload.id;
       return {
         ...state,
-        cart: state.cart.filter(product => product.id !== action.payload.id),
+        cart: {
+          ...state.cart,
+          [productId]: {
+            product: productId,
+            quantity: (state.cart[productId]?.quantity || 0) + 1, // Incrementa la cantidad o la establece en 1
+          },
+        },
+      };
+    case 'REMOVE_FROM_CART':
+      const {[action.payload.id]: _, ...updatedCart} = state.cart;
+      return {
+        ...state,
+        cart: updatedCart,
+      };
+    case 'UPDATE_CART_IN_FIREBASE':
+      return {
+        ...state,
+        cart: action.payload,
       };
     case 'UPDATE_QUANTITY':
+      const updatedQuantityCart = {
+        ...state.cart,
+        [action.payload.id]: {
+          ...state.cart[action.payload.id],
+          quantity: action.payload.quantity,
+        },
+      };
       return {
         ...state,
-        cart: state.cart.map(product =>
-          product.id === action.payload.id
-            ? {...product, quantity: action.payload.quantity}
-            : product,
-        ),
+        cart: updatedQuantityCart,
       };
     case 'ADD_COMMENT':
       return {
@@ -308,8 +308,82 @@ export const ProductProvider = ({children}) => {
     dispatch({type: 'SELECT_PRODUCT', payload: product});
   };
 
-  const addToCart = product => {
-    dispatch({type: 'ADD_TO_CART', payload: product});
+  const addToCartAndFirebase = async product => {
+    try {
+      const userId = user?.id;
+      if (!userId) {
+        throw new Error('User not authenticated');
+      }
+
+      console.log('Producto agregado al carrito:', product);
+
+      dispatch({type: 'ADD_TO_CART', payload: product});
+
+      const userRef = firebase.db.collection('user').doc(userId);
+      const userDoc = await userRef.get();
+
+      const currentCart = userDoc.exists ? userDoc.data().cart || {} : {};
+      const updatedCart = {
+        ...currentCart,
+        [product.id]: {
+          product: product.id,
+          quantity: (currentCart[product.id]?.quantity || 0) + 1,
+        },
+      };
+
+      await userRef.update({cart: updatedCart});
+
+      dispatch({type: 'UPDATE_CART_IN_FIREBASE', payload: updatedCart});
+    } catch (error) {
+      console.error('Error adding product to cart:', error);
+    }
+  };
+
+  const removeFromCartAndFirebase = async product => {
+    try {
+      const userId = user?.id;
+      if (!userId) {
+        throw new Error('User not authenticated');
+      }
+
+      dispatch({type: 'REMOVE_FROM_CART', payload: product});
+
+      const userRef = firebase.db.collection('user').doc(userId);
+      const userDoc = await userRef.get();
+
+      const currentCart = userDoc.exists ? userDoc.data().cart || {} : {};
+      const {[product.id]: _, ...updatedCart} = currentCart;
+
+      await userRef.update({cart: updatedCart});
+      dispatch({type: 'UPDATE_CART_IN_FIREBASE', payload: updatedCart});
+    } catch (error) {
+      console.error('Error removing product from cart:', error);
+    }
+  };
+
+  const updateQuantityAndFirebase = async (product, quantity) => {
+    try {
+      const userId = user?.id;
+      if (!userId) {
+        throw new Error('User not authenticated');
+      }
+
+      dispatch({type: 'UPDATE_QUANTITY', payload: {id: product.id, quantity}});
+
+      const userRef = firebase.db.collection('user').doc(userId);
+      const userDoc = await userRef.get();
+
+      const currentCart = userDoc.exists ? userDoc.data().cart || {} : {};
+      const updatedCart = {
+        ...currentCart,
+        [product.id]: {product: product.id, quantity},
+      };
+
+      await userRef.update({cart: updatedCart});
+      dispatch({type: 'UPDATE_CART_IN_FIREBASE', payload: updatedCart});
+    } catch (error) {
+      console.error('Error updating product quantity:', error);
+    }
   };
 
   const removeFromCart = product => {
@@ -338,9 +412,9 @@ export const ProductProvider = ({children}) => {
         loading: state.loading,
         error: state.error,
         selectProduct,
-        addToCart,
-        removeFromCart,
-        updateQuantity,
+        addToCart: addToCartAndFirebase,
+        removeFromCart: removeFromCartAndFirebase,
+        updateQuantity: updateQuantityAndFirebase,
         toggleFavorite,
         addComment,
         searchProduct,

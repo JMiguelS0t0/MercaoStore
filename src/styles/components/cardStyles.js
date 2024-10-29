@@ -22,6 +22,7 @@ const CardStyles = StyleSheet.create({
     shadowRadius: 3.84,
     elevation: 5,
     marginLeft: 0,
+    marginRight: 13,
   },
   imageContainer: {
     backgroundColor: '#fff',

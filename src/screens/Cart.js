@@ -8,15 +8,17 @@ import {ProductContext} from '../context/ProductContext';
 const Cart = () => {
   const {cart} = useContext(ProductContext);
 
+  const cartItems = Object.values(cart || {});
+
   const renderItem = useCallback(({item}) => <CartItem item={item} />, []);
 
   return (
     <View style={CartStyles.container}>
-      {cart.length > 0 ? (
+      {cartItems.length > 0 ? (
         <FlatList
-          data={cart}
+          data={cartItems}
           renderItem={renderItem}
-          keyExtractor={item => item.id.toString()}
+          keyExtractor={item => item.product.toString()}
           contentContainerStyle={CartStyles.listContainer}
           showsVerticalScrollIndicator={false}
         />
@@ -27,7 +29,7 @@ const Cart = () => {
           </Text>
         </View>
       )}
-      {cart.length > 0 && <CartFooter />}
+      {cartItems.length > 0 && <CartFooter />}
     </View>
   );
 };

@@ -131,7 +131,7 @@ const Detail = () => {
   }, [addComment, newComment, selectedProduct]);
 
   const handleAddToCart = useCallback(() => {
-    addToCart(selectedProduct);
+    addToCart(selectedProduct); // Ahora utiliza `addToCartAndFirebase` desde el contexto
   }, [addToCart, selectedProduct]);
 
   if (isLoading) {
