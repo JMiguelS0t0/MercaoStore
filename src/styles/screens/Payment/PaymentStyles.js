@@ -9,14 +9,14 @@ const PaymentStyles = StyleSheet.create({
     fontFamily: 'Poppins-Bold',
     marginBottom: 10,
     textAlign: 'center',
-    color: '#fff',
+    color: '#000',
     padding: 8,
     borderRadius: 15,
     marginTop: 20,
   },
   inputContainer: {
     marginBottom: 15,
-    backgroundColor: '#120b34',
+    backgroundColor: '#fff',
   },
   iconRow: {
     flexDirection: 'row',
@@ -25,10 +25,15 @@ const PaymentStyles = StyleSheet.create({
     marginHorizontal: 20,
   },
   iconStyle: {
-    backgroundColor: '#120b34',
+    backgroundColor: '#fff',
     padding: 10,
     borderRadius: 10,
     width: '30%',
+    shadowColor: '#000',
+    shadowOffset: {width: 0, height: 2},
+    shadowOpacity: 0.25,
+    shadowRadius: 3.84,
+    elevation: 5,
   },
   productList: {
     flex: 1,
@@ -40,11 +45,15 @@ const PaymentStyles = StyleSheet.create({
   productCard: {
     borderWidth: 0,
     width: '90%',
-    backgroundColor: '#7b5bbd',
-    shadowColor: 'transparent',
+    backgroundColor: '#f5f5f5',
     borderRadius: 15,
     padding: 10,
     marginBottom: 15,
+    shadowColor: '#fff',
+    shadowOffset: {width: 0, height: 2},
+    shadowOpacity: 0.25,
+    shadowRadius: 3.84,
+    elevation: 5,
   },
   productRow: {
     flexDirection: 'row',
@@ -63,18 +72,19 @@ const PaymentStyles = StyleSheet.create({
     fontSize: 16,
     width: '50%',
     fontFamily: 'Poppins-Regular',
-    color: '#fff',
+    color: '#000',
   },
   productPrice: {
     fontSize: 14,
     fontFamily: 'Poppins-Bold',
-    color: '#7b5bbd',
+    color: '#000',
     textAlign: 'right',
   },
   pricingContainer: {
     paddingTop: 10,
     borderTopWidth: 1,
     borderColor: '#7b5bbd',
+    backgroundColor: 'transparent',
   },
   pricingRow: {
     flexDirection: 'row',
@@ -89,7 +99,7 @@ const PaymentStyles = StyleSheet.create({
   pricingValue: {
     fontSize: 16,
     fontFamily: 'Poppins-Bold',
-    color: '#7b5bbd',
+    color: '#fff',
   },
   containerDetails: {
     flex: 1,

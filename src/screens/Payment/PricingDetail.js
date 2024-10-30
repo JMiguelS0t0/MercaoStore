@@ -1,10 +1,9 @@
-// src/components/PricingDetails.js
 import React, {useContext} from 'react';
 import {View, Text} from 'react-native';
 import PaymentStyles from '../../styles/screens/Payment/PaymentStyles';
 import {PaymentContext} from '../../context/PaymentContext';
 
-const PricingDetails = () => {
+const PricingDetails = React.memo(() => {
   const {subtotal, shipping, total} = useContext(PaymentContext);
 
   return (
@@ -27,6 +26,6 @@ const PricingDetails = () => {
       </View>
     </View>
   );
-};
+});
 
 export default PricingDetails;

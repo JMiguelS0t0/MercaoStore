@@ -1,125 +1,60 @@
-import React, {createContext, useReducer} from 'react';
+import React, {createContext, useReducer, useEffect, useContext} from 'react';
+import {AuthContext} from './AuthContext';
+import firebase from '../firebase';
 
 export const ProductContext = createContext();
 
 const initialState = {
-  products: [
-    {
-      id: 1,
-      title: 'Case iPhone 1',
-      price: 'US$ 25,00',
-      category: 'Accessories',
-      image: require('../assets/CaseIphone.webp'),
-      onOffer: true,
-      offerPrice: 'US$ 20,00',
-      description:
-        'A sturdy and stylish case for iPhone 1, providing excellent protection.',
-      features: ['Durable material', 'Shockproof', 'Lightweight design'],
-      comments: [
-        {id: 1, text: 'Great product, loved it!'},
-        {id: 2, text: 'Good value for money.'},
-      ],
-    },
-    {
-      id: 2,
-      title: 'iPhone 13',
-      price: 'US$ 600,00',
-      category: 'Electronics',
-      image: require('../assets/Iphone.webp'),
-      onOffer: false,
-      description:
-        'The latest iPhone 13 with outstanding performance and camera quality.',
-      features: [
-        'A15 Bionic chip',
-        'OLED display',
-        'Advanced dual-camera system',
-      ],
-      comments: [
-        {id: 1, text: 'Amazing camera quality.'},
-        {id: 2, text: 'Sleek design and smooth performance.'},
-      ],
-    },
-    {
-      id: 3,
-      title: 'iPhone 14',
-      price: 'US$ 700,00',
-      category: 'Electronics',
-      image: require('../assets/Iphone.webp'),
-      onOffer: false,
-      description:
-        'Upcoming iPhone 14 with all-new features and design improvements.',
-      features: [
-        'A16 Bionic chip',
-        'ProMotion technology',
-        'All-day battery life',
-      ],
-      comments: [],
-    },
-  ],
+  products: [],
+  filteredProducts: [],
   selectedProduct: null,
-  cart: [],
+  cart: {},
   favorites: [],
+  loading: true,
+  error: null,
 };
 
 const productReducer = (state, action) => {
   switch (action.type) {
-    case 'SELECT_PRODUCT':
+    case 'FETCH_PRODUCTS_SUCCESS':
       return {
         ...state,
-        selectedProduct: action.payload,
+        products: action.payload,
+        filteredProducts: action.payload,
+        loading: false,
+        error: null,
       };
-    case 'ADD_TO_CART':
-      const productInCart = state.cart.find(
-        product => product.id === action.payload.id,
-      );
-
-      if (productInCart) {
-        return {
-          ...state,
-          cart: state.cart.map(product =>
-            product.id === action.payload.id
-              ? {...product, quantity: product.quantity + 1}
-              : product,
-          ),
-        };
-      } else {
-        return {
-          ...state,
-          cart: [...state.cart, {...action.payload, quantity: 1}],
-        };
-      }
-    case 'REMOVE_FROM_CART':
+    case 'FETCH_PRODUCTS_ERROR':
       return {
         ...state,
-        cart: state.cart.filter(product => product.id !== action.payload.id),
+        loading: false,
+        error: action.payload,
       };
-    case 'UPDATE_QUANTITY':
+    case 'UPDATE_USER_FAVORITES':
       return {
         ...state,
-        cart: state.cart.map(product =>
-          product.id === action.payload.id
-            ? {...product, quantity: action.payload.quantity}
-            : product,
-        ),
+        favorites: action.payload,
+      };
+    case 'UPDATE_USER_CART':
+      return {
+        ...state,
+        cart: action.payload,
       };
     case 'TOGGLE_FAVORITE':
       const productInFavorites = state.favorites.find(
         product => product.id === action.payload.id,
       );
-
-      if (productInFavorites) {
-        return {
-          ...state,
-          favorites: state.favorites.filter(
-            product => product.id !== action.payload.id,
-          ),
-        };
-      } else {
-        return {
-          ...state,
-          favorites: [...state.favorites, action.payload],
-        };
-      }
+      return productInFavorites
+        ? {
+            ...state,
+            favorites: state.favorites.filter(
+              product => product.id !== action.payload.id,
+            ),
+          }
+        : {
+            ...state,
+            favorites: [...state.favorites, action.payload],
+          };
     case 'SEARCH_PRODUCT':
       const searchTerm = action.payload.toLowerCase();
       const filteredProducts = state.products.filter(
@@ -129,18 +64,53 @@ const productReducer = (state, action) => {
       );
       return {
         ...state,
-        products: filteredProducts,
+        filteredProducts,
       };
     case 'FILTER_OFFERS':
       const offerProducts = state.products.filter(product => product.onOffer);
       return {
         ...state,
-        products: offerProducts,
+        filteredProducts: offerProducts,
       };
-    case 'CLEAR_CART':
+    case 'SELECT_PRODUCT':
       return {
         ...state,
-        cart: [],
+        selectedProduct: action.payload,
+      };
+    case 'ADD_TO_CART':
+      const productId = action.payload.id;
+      return {
+        ...state,
+        cart: {
+          ...state.cart,
+          [productId]: {
+            product: productId,
+            quantity: (state.cart[productId]?.quantity || 0) + 1,
+          },
+        },
+      };
+    case 'REMOVE_FROM_CART':
+      const {[action.payload.id]: _, ...updatedCart} = state.cart;
+      return {
+        ...state,
+        cart: updatedCart,
+      };
+    case 'UPDATE_CART_IN_FIREBASE':
+      return {
+        ...state,
+        cart: action.payload,
+      };
+    case 'UPDATE_QUANTITY':
+      const updatedQuantityCart = {
+        ...state.cart,
+        [action.payload.id]: {
+          ...state.cart[action.payload.id],
+          quantity: action.payload.quantity,
+        },
+      };
+      return {
+        ...state,
+        cart: updatedQuantityCart,
       };
     case 'ADD_COMMENT':
       return {
@@ -149,16 +119,21 @@ const productReducer = (state, action) => {
           product.id === action.payload.productId
             ? {
                 ...product,
-                comments: [
-                  ...product.comments,
-                  {
-                    id: product.comments.length + 1,
-                    text: action.payload.comment,
-                  },
-                ],
+                comments: Array.isArray(product.comments)
+                  ? [...product.comments, action.payload.comment]
+                  : [action.payload.comment],
               }
             : product,
         ),
+        selectedProduct:
+          state.selectedProduct?.id === action.payload.productId
+            ? {
+                ...state.selectedProduct,
+                comments: Array.isArray(state.selectedProduct.comments)
+                  ? [...state.selectedProduct.comments, action.payload.comment]
+                  : [action.payload.comment],
+              }
+            : state.selectedProduct,
       };
     default:
       return state;
@@ -167,59 +142,213 @@ const productReducer = (state, action) => {
 
 export const ProductProvider = ({children}) => {
   const [state, dispatch] = useReducer(productReducer, initialState);
+  const {user} = useContext(AuthContext);
+
+  useEffect(() => {
+    const fetchProducts = async () => {
+      try {
+        const productsCollection = await firebase.db
+          .collection('product')
+          .get();
+        const products = productsCollection.docs.map(doc => ({
+          id: doc.id,
+          title: doc.data().title || '',
+          description: doc.data().description || '',
+          category: doc.data().category || '',
+          price: doc.data().price || 0,
+          offerPrice: doc.data().offerPrice || 0,
+          onOffer: doc.data().onOffer || false,
+          images: doc.data().images || '',
+          features: Array.isArray(doc.data().features)
+            ? doc.data().features
+            : [],
+          comments: doc.data().comments || [],
+        }));
+        dispatch({type: 'FETCH_PRODUCTS_SUCCESS', payload: products});
+      } catch (error) {
+        console.error('Error al cargar productos:', error);
+        dispatch({type: 'FETCH_PRODUCTS_ERROR', payload: error.message});
+      }
+    };
+
+    const fetchUserCart = async () => {
+      if (user) {
+        try {
+          const userRef = firebase.db.collection('user').doc(user.id);
+          const userDoc = await userRef.get();
+
+          if (userDoc.exists) {
+            const userCart = userDoc.data().cart || {};
+            dispatch({type: 'UPDATE_USER_CART', payload: userCart});
+          }
+        } catch (error) {
+          console.error('Error al cargar el carrito del usuario:', error);
+        }
+      }
+    };
+
+    const fetchUserFavorites = async () => {
+      if (user) {
+        try {
+          const userRef = firebase.db.collection('user').doc(user.id);
+          const userDoc = await userRef.get();
+
+          if (userDoc.exists) {
+            const userFavorites = userDoc.data().favorites || [];
+            dispatch({
+              type: 'UPDATE_USER_FAVORITES',
+              payload: userFavorites,
+            });
+          }
+        } catch (error) {
+          console.error('Error al cargar los favoritos del usuario:', error);
+        }
+      }
+    };
+
+    fetchProducts();
+    fetchUserCart();
+    fetchUserFavorites();
+  }, [user]);
+
+  const toggleFavorite = async product => {
+    try {
+      const userId = user?.id;
+      if (!userId) throw new Error('User not authenticated');
+
+      const userRef = firebase.db.collection('user').doc(userId);
+      const userDoc = await userRef.get();
+      const userFavorites = userDoc.exists
+        ? userDoc.data().favorites || []
+        : [];
+
+      let updatedFavorites;
+      if (userFavorites.includes(product.id)) {
+        updatedFavorites = userFavorites.filter(favId => favId !== product.id);
+      } else {
+        updatedFavorites = [...userFavorites, product.id];
+      }
+
+      await userRef.update({favorites: updatedFavorites});
+      dispatch({type: 'TOGGLE_FAVORITE', payload: product});
+    } catch (error) {
+      console.error('Error al actualizar favoritos:', error);
+    }
+  };
+
+  const addComment = async (productId, comment) => {
+    try {
+      const productRef = firebase.db.collection('product').doc(productId);
+      const newCommentId = Date.now();
+
+      const doc = await productRef.get();
+      const currentComments = doc.data().comments || [];
+
+      const newComment = {
+        id: newCommentId,
+        text: comment,
+      };
+
+      await productRef.update({comments: [...currentComments, newComment]});
+      dispatch({
+        type: 'ADD_COMMENT',
+        payload: {productId, comment: newComment},
+      });
+    } catch (error) {
+      console.error('Error al añadir comentario:', error);
+    }
+  };
 
   const selectProduct = product => {
     dispatch({type: 'SELECT_PRODUCT', payload: product});
   };
 
-  const addToCart = product => {
-    dispatch({type: 'ADD_TO_CART', payload: product});
+  const addToCartAndFirebase = async product => {
+    try {
+      const userId = user?.id;
+      if (!userId) throw new Error('User not authenticated');
+
+      dispatch({type: 'ADD_TO_CART', payload: product});
+
+      const userRef = firebase.db.collection('user').doc(userId);
+      const userDoc = await userRef.get();
+      const currentCart = userDoc.exists ? userDoc.data().cart || {} : {};
+
+      const updatedCart = {
+        ...currentCart,
+        [product.id]: {
+          product: product.id,
+          quantity: (currentCart[product.id]?.quantity || 0) + 1,
+        },
+      };
+
+      await userRef.update({cart: updatedCart});
+      dispatch({type: 'UPDATE_CART_IN_FIREBASE', payload: updatedCart});
+    } catch (error) {
+      console.error('Error adding product to cart:', error);
+    }
   };
 
-  const removeFromCart = product => {
-    dispatch({type: 'REMOVE_FROM_CART', payload: product});
+  const removeFromCartAndFirebase = async product => {
+    try {
+      const userId = user?.id;
+      if (!userId) throw new Error('User not authenticated');
+
+      dispatch({type: 'REMOVE_FROM_CART', payload: product});
+
+      const userRef = firebase.db.collection('user').doc(userId);
+      const userDoc = await userRef.get();
+      const currentCart = userDoc.exists ? userDoc.data().cart || {} : {};
+
+      const {[product.id]: _, ...updatedCart} = currentCart;
+      await userRef.update({cart: updatedCart});
+      dispatch({type: 'UPDATE_CART_IN_FIREBASE', payload: updatedCart});
+    } catch (error) {
+      console.error('Error removing product from cart:', error);
+    }
   };
 
-  const updateQuantity = (product, quantity) => {
-    dispatch({type: 'UPDATE_QUANTITY', payload: {id: product.id, quantity}});
-  };
+  const updateQuantityAndFirebase = async (product, quantity) => {
+    try {
+      const userId = user?.id;
+      if (!userId) throw new Error('User not authenticated');
 
-  const toggleFavorite = product => {
-    dispatch({type: 'TOGGLE_FAVORITE', payload: product});
-  };
+      dispatch({type: 'UPDATE_QUANTITY', payload: {id: product.id, quantity}});
 
-  const searchProduct = term => {
-    dispatch({type: 'SEARCH_PRODUCT', payload: term});
-  };
+      const userRef = firebase.db.collection('user').doc(userId);
+      const userDoc = await userRef.get();
+      const currentCart = userDoc.exists ? userDoc.data().cart || {} : {};
 
-  const filterOffers = () => {
-    dispatch({type: 'FILTER_OFFERS'});
-  };
+      const updatedCart = {
+        ...currentCart,
+        [product.id]: {product: product.id, quantity},
+      };
 
-  const clearCart = () => {
-    dispatch({type: 'CLEAR_CART'});
-  };
-
-  const addComment = (productId, comment) => {
-    dispatch({type: 'ADD_COMMENT', payload: {productId, comment}});
+      await userRef.update({cart: updatedCart});
+      dispatch({type: 'UPDATE_CART_IN_FIREBASE', payload: updatedCart});
+    } catch (error) {
+      console.error('Error updating product quantity:', error);
+    }
   };
 
   return (
     <ProductContext.Provider
       value={{
-        products: state.products,
+        products: state.filteredProducts,
         selectedProduct: state.selectedProduct,
         cart: state.cart,
         favorites: state.favorites,
+        loading: state.loading,
+        error: state.error,
         selectProduct,
-        addToCart,
-        removeFromCart,
-        updateQuantity,
+        addToCart: addToCartAndFirebase,
+        removeFromCart: removeFromCartAndFirebase,
+        updateQuantity: updateQuantityAndFirebase,
         toggleFavorite,
-        searchProduct,
-        filterOffers,
-        clearCart,
         addComment,
+        searchProduct: term =>
+          dispatch({type: 'SEARCH_PRODUCT', payload: term}),
+        filterOffers: () => dispatch({type: 'FILTER_OFFERS'}),
       }}>
       {children}
     </ProductContext.Provider>

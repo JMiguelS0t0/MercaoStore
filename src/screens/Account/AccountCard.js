@@ -12,7 +12,7 @@ const AccountCard = ({iconName, title, onPress, solid = false}) => {
         <Icon
           name={iconName}
           type="font-awesome-5"
-          color="#fff"
+          color="#000"
           size={30}
           solid={solid}
           containerStyle={accountScreenStyles.iconContainer}

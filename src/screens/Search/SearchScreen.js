@@ -1,4 +1,4 @@
-import React, {useState, useEffect, useContext} from 'react';
+import React, {useState, useEffect, useContext, useCallback} from 'react';
 import {View, Text} from 'react-native';
 import {SearchBar, Button} from '@rneui/themed';
 import searchScreenStyles from '../../styles/screens/Search/SearchScreenStyles';
@@ -22,25 +22,30 @@ const SearchScreen = () => {
   const navigation = useNavigation();
   const {searchProduct} = useContext(ProductContext);
 
-  const handleCategoryPress = category => {
-    navigation.navigate('ProductsList', {category: category.title});
-  };
+  const handleCategoryPress = useCallback(
+    category => {
+      navigation.navigate('ProductsList', {category: category.title});
+    },
+    [navigation],
+  );
 
-  const handleOffersPress = () => {
+  const handleOffersPress = useCallback(() => {
     navigation.navigate('ProductsList', {category: 'Offers', offersOnly: true});
-  };
+  }, [navigation]);
+
+  const handleSearchSubmit = useCallback(() => {
+    if (search.trim()) {
+      searchProduct(search);
+      navigation.navigate('ProductsList', {category: search});
+    }
+  }, [search, searchProduct, navigation]);
 
   useEffect(() => {
     return () => {
       setSearch('');
       searchProduct('');
     };
-  }, [searchProduct]);
-
-  const handleSearchSubmit = () => {
-    searchProduct(search);
-    navigation.navigate('ProductsList', {category: search});
-  };
+  }, []);
 
   return (
     <View style={searchScreenStyles.container}>
