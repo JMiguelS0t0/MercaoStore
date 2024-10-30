@@ -14,11 +14,13 @@ const CartItem = ({item}) => {
     return null;
   }
 
+  const price = product.onOffer ? product.offerPrice : product.price;
+
   return (
     <View style={globalStyles.itemContainer}>
       <Image source={{uri: product.images}} style={globalStyles.productImage} />
       <View style={globalStyles.productInfoContainer}>
-        <ProductHeader title={product.title} price={product.price} />
+        <ProductHeader title={product.title} price={`USD $${price}`} />
         <Text style={globalStyles.productQuantity}>
           Cantidad: {item.quantity}
         </Text>

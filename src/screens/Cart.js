@@ -1,16 +1,15 @@
-import React, {useContext, useCallback} from 'react';
-import {View, Text, FlatList} from 'react-native';
+import React, { useContext, useCallback } from 'react';
+import { View, Text, FlatList } from 'react-native';
 import CartStyles from '../styles/screens/CartStyles';
 import CartFooter from '../components/Cart/CartFooter';
 import CartItem from '../components/Cart/CartItem';
-import {ProductContext} from '../context/ProductContext';
+import { ProductContext } from '../context/ProductContext';
 
 const Cart = () => {
-  const {cart} = useContext(ProductContext);
-
+  const { cart } = useContext(ProductContext);
   const cartItems = Object.values(cart || {});
 
-  const renderItem = useCallback(({item}) => <CartItem item={item} />, []);
+  const renderItem = useCallback(({ item }) => <CartItem item={item} />, []);
 
   return (
     <View style={CartStyles.container}>

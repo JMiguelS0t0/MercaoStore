@@ -10,15 +10,22 @@ const ProfileSection = () => {
 
   console.log('ProfileSection - Loaded userProfile:', userProfile);
 
+  const getValidImageSource = image => {
+    return image && image !== 'null' && image !== '' ? {uri: image} : undefined;
+  };
+
   return (
     <View style={accountScreenStyles.pfpStyle}>
       <Avatar
         size="large"
         rounded
+        source={getValidImageSource(userProfile?.image)}
         title={
-          userProfile?.username
-            ? userProfile.username.charAt(0).toUpperCase()
-            : 'U'
+          !userProfile?.image ||
+          userProfile.image === 'null' ||
+          userProfile.image === ''
+            ? userProfile?.name?.charAt(0).toUpperCase() || 'U'
+            : ''
         }
         containerStyle={globalStyles.avatar}
       />

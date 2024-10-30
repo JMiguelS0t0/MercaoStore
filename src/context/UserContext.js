@@ -12,6 +12,7 @@ const initialState = {
     email: '',
     birthday: '',
     address: '',
+    image: '',
   },
 };
 
@@ -59,7 +60,7 @@ export const UserProvider = ({children}) => {
     if (!user) {
       dispatch({
         type: 'UPDATE_USER_PROFILE',
-        payload: {name: '', email: '', birthday: '', address: ''},
+        payload: {name: '', email: '', birthday: '', address: '', image: ''},
       });
       return;
     }
@@ -78,6 +79,7 @@ export const UserProvider = ({children}) => {
             email: userProfileData.email || '',
             birthday: userProfileData.birthday || '',
             address: userProfileData.address || '',
+            image: userProfileData.image || '',
           },
         });
       } else {

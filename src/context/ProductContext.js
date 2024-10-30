@@ -35,6 +35,11 @@ const productReducer = (state, action) => {
         ...state,
         favorites: action.payload,
       };
+    case 'UPDATE_USER_CART':
+      return {
+        ...state,
+        cart: action.payload,
+      };
     case 'TOGGLE_FAVORITE':
       const productInFavorites = state.favorites.find(
         product => product.id === action.payload.id,
@@ -59,7 +64,7 @@ const productReducer = (state, action) => {
       );
       return {
         ...state,
-        filteredProducts: filteredProducts,
+        filteredProducts,
       };
     case 'FILTER_OFFERS':
       const offerProducts = state.products.filter(product => product.onOffer);
@@ -80,7 +85,7 @@ const productReducer = (state, action) => {
           ...state.cart,
           [productId]: {
             product: productId,
-            quantity: (state.cart[productId]?.quantity || 0) + 1, // Incrementa la cantidad o la establece en 1
+            quantity: (state.cart[productId]?.quantity || 0) + 1,
           },
         },
       };
@@ -145,29 +150,20 @@ export const ProductProvider = ({children}) => {
         const productsCollection = await firebase.db
           .collection('product')
           .get();
-
-        const products = productsCollection.docs.map(doc => {
-          const data = doc.data();
-          const comments = data.comments
-            ? Array.isArray(data.comments)
-              ? data.comments
-              : [data.comments]
-            : [];
-
-          return {
-            id: doc.id,
-            title: data.title || '',
-            description: data.description || '',
-            category: data.category || '',
-            price: data.price || 0,
-            offerPrice: data.offerPrice || 0,
-            onOffer: data.onOffer || false,
-            images: data.images || '',
-            features: Array.isArray(data.features) ? data.features : [],
-            comments: comments,
-          };
-        });
-
+        const products = productsCollection.docs.map(doc => ({
+          id: doc.id,
+          title: doc.data().title || '',
+          description: doc.data().description || '',
+          category: doc.data().category || '',
+          price: doc.data().price || 0,
+          offerPrice: doc.data().offerPrice || 0,
+          onOffer: doc.data().onOffer || false,
+          images: doc.data().images || '',
+          features: Array.isArray(doc.data().features)
+            ? doc.data().features
+            : [],
+          comments: doc.data().comments || [],
+        }));
         dispatch({type: 'FETCH_PRODUCTS_SUCCESS', payload: products});
       } catch (error) {
         console.error('Error al cargar productos:', error);
@@ -175,7 +171,21 @@ export const ProductProvider = ({children}) => {
       }
     };
 
-    fetchProducts();
+    const fetchUserCart = async () => {
+      if (user) {
+        try {
+          const userRef = firebase.db.collection('user').doc(user.id);
+          const userDoc = await userRef.get();
+
+          if (userDoc.exists) {
+            const userCart = userDoc.data().cart || {};
+            dispatch({type: 'UPDATE_USER_CART', payload: userCart});
+          }
+        } catch (error) {
+          console.error('Error al cargar el carrito del usuario:', error);
+        }
+      }
+    };
 
     const fetchUserFavorites = async () => {
       if (user) {
@@ -185,82 +195,41 @@ export const ProductProvider = ({children}) => {
 
           if (userDoc.exists) {
             const userFavorites = userDoc.data().favorites || [];
-
-            if (userFavorites.length === 0) {
-              dispatch({
-                type: 'UPDATE_USER_FAVORITES',
-                payload: [],
-              });
-              return;
-            }
-
-            const favoriteProducts = await Promise.all(
-              userFavorites.map(async favoriteId => {
-                const productDoc = await firebase.db
-                  .collection('product')
-                  .doc(favoriteId)
-                  .get();
-
-                if (productDoc.exists) {
-                  return {
-                    id: productDoc.id,
-                    ...productDoc.data(),
-                  };
-                }
-                return null;
-              }),
-            );
-
-            const validProducts = favoriteProducts.filter(
-              product => product !== null,
-            );
-
             dispatch({
               type: 'UPDATE_USER_FAVORITES',
-              payload: validProducts,
+              payload: userFavorites,
             });
           }
         } catch (error) {
           console.error('Error al cargar los favoritos del usuario:', error);
-          dispatch({
-            type: 'UPDATE_USER_FAVORITES',
-            payload: [],
-          });
         }
       }
     };
 
+    fetchProducts();
+    fetchUserCart();
     fetchUserFavorites();
   }, [user]);
 
   const toggleFavorite = async product => {
     try {
       const userId = user?.id;
-
-      if (!userId) {
-        throw new Error('User not authenticated');
-      }
+      if (!userId) throw new Error('User not authenticated');
 
       const userRef = firebase.db.collection('user').doc(userId);
       const userDoc = await userRef.get();
+      const userFavorites = userDoc.exists
+        ? userDoc.data().favorites || []
+        : [];
 
-      if (!userDoc.exists) {
-        throw new Error('User not found in database');
-      }
-
-      const userFavorites = userDoc.data().favorites || [];
       let updatedFavorites;
-
       if (userFavorites.includes(product.id)) {
         updatedFavorites = userFavorites.filter(favId => favId !== product.id);
       } else {
         updatedFavorites = [...userFavorites, product.id];
       }
 
-      await userRef.update({
-        favorites: updatedFavorites,
-      });
-
+      await userRef.update({favorites: updatedFavorites});
       dispatch({type: 'TOGGLE_FAVORITE', payload: product});
     } catch (error) {
       console.error('Error al actualizar favoritos:', error);
@@ -273,34 +242,20 @@ export const ProductProvider = ({children}) => {
       const newCommentId = Date.now();
 
       const doc = await productRef.get();
-      const productData = doc.data();
-      const currentComments = productData.comments || [];
-
-      const commentsArray = Array.isArray(currentComments)
-        ? currentComments
-        : [currentComments].filter(Boolean);
+      const currentComments = doc.data().comments || [];
 
       const newComment = {
         id: newCommentId,
         text: comment,
       };
 
-      await productRef.update({
-        comments: [...commentsArray, newComment],
-      });
-
+      await productRef.update({comments: [...currentComments, newComment]});
       dispatch({
         type: 'ADD_COMMENT',
-        payload: {
-          productId,
-          comment: newComment,
-        },
+        payload: {productId, comment: newComment},
       });
-
-      return newComment;
     } catch (error) {
       console.error('Error al añadir comentario:', error);
-      throw error;
     }
   };
 
@@ -311,18 +266,14 @@ export const ProductProvider = ({children}) => {
   const addToCartAndFirebase = async product => {
     try {
       const userId = user?.id;
-      if (!userId) {
-        throw new Error('User not authenticated');
-      }
-
-      console.log('Producto agregado al carrito:', product);
+      if (!userId) throw new Error('User not authenticated');
 
       dispatch({type: 'ADD_TO_CART', payload: product});
 
       const userRef = firebase.db.collection('user').doc(userId);
       const userDoc = await userRef.get();
-
       const currentCart = userDoc.exists ? userDoc.data().cart || {} : {};
+
       const updatedCart = {
         ...currentCart,
         [product.id]: {
@@ -332,7 +283,6 @@ export const ProductProvider = ({children}) => {
       };
 
       await userRef.update({cart: updatedCart});
-
       dispatch({type: 'UPDATE_CART_IN_FIREBASE', payload: updatedCart});
     } catch (error) {
       console.error('Error adding product to cart:', error);
@@ -342,18 +292,15 @@ export const ProductProvider = ({children}) => {
   const removeFromCartAndFirebase = async product => {
     try {
       const userId = user?.id;
-      if (!userId) {
-        throw new Error('User not authenticated');
-      }
+      if (!userId) throw new Error('User not authenticated');
 
       dispatch({type: 'REMOVE_FROM_CART', payload: product});
 
       const userRef = firebase.db.collection('user').doc(userId);
       const userDoc = await userRef.get();
-
       const currentCart = userDoc.exists ? userDoc.data().cart || {} : {};
-      const {[product.id]: _, ...updatedCart} = currentCart;
 
+      const {[product.id]: _, ...updatedCart} = currentCart;
       await userRef.update({cart: updatedCart});
       dispatch({type: 'UPDATE_CART_IN_FIREBASE', payload: updatedCart});
     } catch (error) {
@@ -364,16 +311,14 @@ export const ProductProvider = ({children}) => {
   const updateQuantityAndFirebase = async (product, quantity) => {
     try {
       const userId = user?.id;
-      if (!userId) {
-        throw new Error('User not authenticated');
-      }
+      if (!userId) throw new Error('User not authenticated');
 
       dispatch({type: 'UPDATE_QUANTITY', payload: {id: product.id, quantity}});
 
       const userRef = firebase.db.collection('user').doc(userId);
       const userDoc = await userRef.get();
-
       const currentCart = userDoc.exists ? userDoc.data().cart || {} : {};
+
       const updatedCart = {
         ...currentCart,
         [product.id]: {product: product.id, quantity},
@@ -384,22 +329,6 @@ export const ProductProvider = ({children}) => {
     } catch (error) {
       console.error('Error updating product quantity:', error);
     }
-  };
-
-  const removeFromCart = product => {
-    dispatch({type: 'REMOVE_FROM_CART', payload: product});
-  };
-
-  const updateQuantity = (product, quantity) => {
-    dispatch({type: 'UPDATE_QUANTITY', payload: {id: product.id, quantity}});
-  };
-
-  const searchProduct = term => {
-    dispatch({type: 'SEARCH_PRODUCT', payload: term});
-  };
-
-  const filterOffers = () => {
-    dispatch({type: 'FILTER_OFFERS'});
   };
 
   return (
@@ -417,8 +346,9 @@ export const ProductProvider = ({children}) => {
         updateQuantity: updateQuantityAndFirebase,
         toggleFavorite,
         addComment,
-        searchProduct,
-        filterOffers,
+        searchProduct: term =>
+          dispatch({type: 'SEARCH_PRODUCT', payload: term}),
+        filterOffers: () => dispatch({type: 'FILTER_OFFERS'}),
       }}>
       {children}
     </ProductContext.Provider>

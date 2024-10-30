@@ -35,7 +35,7 @@ const PriceSection = memo(({selectedProduct, isFavorite, toggleFavorite}) => (
 const FeaturesSection = memo(({features = []}) => (
   <View style={detailStyles.section}>
     <Text style={detailStyles.sectionTitle}>Features:</Text>
-    {features && features.length > 0 ? (
+    {features.length > 0 ? (
       features.map((feature, index) => (
         <Text key={index} style={detailStyles.sectionText}>
           • {feature}
@@ -59,7 +59,7 @@ const DescriptionSection = memo(({description}) => (
 const CommentsSection = memo(({comments = []}) => (
   <View style={detailStyles.section}>
     <Text style={detailStyles.sectionTitle}>Comments:</Text>
-    {Array.isArray(comments) && comments.length > 0 ? (
+    {comments.length > 0 ? (
       <ScrollView horizontal showsHorizontalScrollIndicator={false}>
         {comments.map((comment, index) => (
           <Card
@@ -82,6 +82,7 @@ const Detail = () => {
     useContext(UserContext);
   const [newComment, setNewComment] = useState('');
   const [isModalVisible, setIsModalVisible] = useState(false);
+  const [isCartModalVisible, setIsCartModalVisible] = useState(false);
   const [localComments, setLocalComments] = useState([]);
   const [isLoading, setIsLoading] = useState(true);
 
@@ -131,7 +132,8 @@ const Detail = () => {
   }, [addComment, newComment, selectedProduct]);
 
   const handleAddToCart = useCallback(() => {
-    addToCart(selectedProduct); // Ahora utiliza `addToCartAndFirebase` desde el contexto
+    addToCart(selectedProduct);
+    setIsCartModalVisible(true);
   }, [addToCart, selectedProduct]);
 
   if (isLoading) {
@@ -207,6 +209,13 @@ const Detail = () => {
         title="Comment Added"
         message="Your comment has been successfully added!"
         onClose={() => setIsModalVisible(false)}
+      />
+
+      <CustomModal
+        visible={isCartModalVisible}
+        title="Added to Cart"
+        message="The product has been successfully added to your cart!"
+        onClose={() => setIsCartModalVisible(false)}
       />
     </ScrollView>
   );
