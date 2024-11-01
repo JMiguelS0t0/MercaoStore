@@ -9,6 +9,71 @@ import CustomInput from '../../reusable/CustomInput';
 import CustomModal from '../../reusable/CustomModal';
 import IconRow from '../Payment/IconRow';
 
+const RatingSection = memo(({selectedProduct, addRating}) => {
+  const {userRatings, addUserRating} = useContext(UserContext);
+  const [rating, setRating] = useState(0);
+  const [hasRated, setHasRated] = useState(false);
+
+  useEffect(() => {
+    const existingRating = userRatings.find(
+      r => r.product === selectedProduct.id,
+    );
+    if (existingRating) {
+      setRating(existingRating.rating);
+      setHasRated(true);
+    }
+  }, [selectedProduct.id, userRatings]);
+
+  const handleRating = async selectedRating => {
+    try {
+      if (!hasRated) {
+        await addRating(selectedProduct.id, selectedRating);
+
+        await addUserRating(selectedProduct.id, selectedRating);
+
+        setRating(selectedRating);
+        setHasRated(true);
+      }
+    } catch (error) {
+      console.error('Error saving rating:', error);
+    }
+  };
+
+  return (
+    <View style={detailStyles.section}>
+      <Text style={detailStyles.sectionTitle}>Rating:</Text>
+      <View style={detailStyles.ratingContainer}>
+        <Text style={detailStyles.averageRating}>
+          Average:{' '}
+          {selectedProduct.averageRating?.toFixed(1) || 'No ratings yet'}
+        </Text>
+        <View style={detailStyles.starsContainer}>
+          {[1, 2, 3, 4, 5].map(star => (
+            <Pressable
+              key={star}
+              onPress={() => handleRating(star)}
+              disabled={hasRated}>
+              <Icon
+                name="star"
+                type="font-awesome-5"
+                solid={star <= (hasRated ? rating : 0)}
+                color={star <= (hasRated ? rating : 0) ? '#7353b6' : '#D3D3D3'}
+                size={30}
+                containerStyle={detailStyles.starIcon}
+              />
+            </Pressable>
+          ))}
+        </View>
+        {hasRated && (
+          <Text style={detailStyles.ratedMessage}>
+            Thanks for rating this product!
+          </Text>
+        )}
+      </View>
+    </View>
+  );
+});
+
 const PriceSection = memo(({selectedProduct, isFavorite, toggleFavorite}) => (
   <View style={detailStyles.priceContainer}>
     <Text style={detailStyles.price}>
@@ -77,7 +142,8 @@ const CommentsSection = memo(({comments = []}) => (
 ));
 
 const Detail = () => {
-  const {selectedProduct, addToCart, addComment} = useContext(ProductContext);
+  const {selectedProduct, addToCart, addComment, addRating} =
+    useContext(ProductContext);
   const {favorites, addToFavorites, removeFromFavorites} =
     useContext(UserContext);
   const [newComment, setNewComment] = useState('');
@@ -85,6 +151,7 @@ const Detail = () => {
   const [isCartModalVisible, setIsCartModalVisible] = useState(false);
   const [localComments, setLocalComments] = useState([]);
   const [isLoading, setIsLoading] = useState(true);
+  const {userRatings} = useContext(UserContext);
 
   useEffect(() => {
     if (selectedProduct) {
@@ -120,7 +187,7 @@ const Detail = () => {
         };
         await addComment(selectedProduct.id, newComment);
         setLocalComments(prevComments => [
-          ...(prevComments || []),
+          ...(Array.isArray(prevComments) ? prevComments : []),
           newCommentObj,
         ]);
         setNewComment('');
@@ -191,6 +258,9 @@ const Detail = () => {
         buttonStyle={[globalStyles.buttonStyle, detailStyles.borderButton]}
         onPress={handleAddToCart}
       />
+      <Divider style={globalStyles.dividerStyle} />
+
+      <RatingSection selectedProduct={selectedProduct} addRating={addRating} />
       <Divider style={globalStyles.dividerStyle} />
 
       <CommentsSection comments={localComments} />

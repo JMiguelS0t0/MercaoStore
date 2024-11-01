@@ -15,5 +15,7 @@ class Firebase {
 }
 
 const firebase = new Firebase();
+export const db = firebase.db;
+export const storage = app.storage();
 
 export default firebase;

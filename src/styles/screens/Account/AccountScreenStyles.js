@@ -79,6 +79,12 @@ const accountScreenStyles = StyleSheet.create({
     alignItems: 'center',
     padding: 20,
   },
+  upload: {
+    color: '#000',
+    fontFamily: 'Poppins-Regular',
+    fontSize: 12,
+    marginBottom: 10,
+  },
 });
 
 export default accountScreenStyles;
