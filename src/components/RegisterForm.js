@@ -27,19 +27,29 @@ const RegisterForm = () => {
   const [errors, setErrors] = useState({});
   const [isDatePickerVisible, setIsDatePickerVisible] = useState(false);
   const [selectedDate, setSelectedDate] = useState(new Date());
+  const [isLoading, setIsLoading] = useState(false);
 
-  const handleChange = useCallback((name, value) => {
-    setFormData(prevState => ({
-      ...prevState,
-      [name]: value,
-    }));
-  }, []);
+  const handleChange = useCallback(
+    (name, value) => {
+      setFormData(prevState => ({
+        ...prevState,
+        [name]: value,
+      }));
+      if (errors[name]) {
+        setErrors(prev => ({...prev, [name]: null}));
+      }
+    },
+    [errors],
+  );
 
-  const handleRegister = useCallback(() => {
+  const validateForm = useCallback(() => {
     const errorMessages = {};
     let valid = true;
 
-    if (formData.username.length > 10) {
+    if (!formData.username.trim()) {
+      errorMessages.username = 'El nombre de usuario es requerido';
+      valid = false;
+    } else if (formData.username.trim().length > 10) {
       errorMessages.username =
         'El nombre de usuario no puede tener más de 10 caracteres';
       valid = false;
@@ -47,52 +57,77 @@ const RegisterForm = () => {
 
     const passwordRegex =
       /^(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{8,}$/;
-    if (!passwordRegex.test(formData.password)) {
+    if (!formData.password) {
+      errorMessages.password = 'La contraseña es requerida';
+      valid = false;
+    } else if (!passwordRegex.test(formData.password)) {
       errorMessages.password =
         'La contraseña debe tener al menos 8 caracteres, 1 mayúscula, 1 caracter especial y números.';
       valid = false;
     }
 
     const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-    if (!emailRegex.test(formData.email)) {
+    if (!formData.email.trim()) {
+      errorMessages.email = 'El correo electrónico es requerido';
+      valid = false;
+    } else if (!emailRegex.test(formData.email.trim())) {
       errorMessages.email = 'El correo electrónico no es válido';
       valid = false;
     }
 
-    const birthDate = new Date(formData.birthday);
-    const currentDate = new Date();
-    const age = currentDate.getFullYear() - birthDate.getFullYear();
-    if (age < 18 || age > 50) {
-      errorMessages.birthday =
-        'No está en el rango de edad para crear la cuenta (18-50 años).';
+    if (!formData.birthday) {
+      errorMessages.birthday = 'La fecha de nacimiento es requerida';
       valid = false;
+    } else {
+      const birthDate = moment(formData.birthday, 'DD/MM/YYYY');
+      const age = moment().diff(birthDate, 'years');
+      if (age < 18 || age > 50) {
+        errorMessages.birthday =
+          'No está en el rango de edad para crear la cuenta (18-50 años).';
+        valid = false;
+      }
     }
 
-    if (formData.address.length > 30) {
-      errorMessages.address =
-        'La dirección no puede tener más de 30 caracteres';
-      valid = false;
-    }
-
-    if (!formData.country || !formData.department || !formData.city) {
+    if (
+      !formData.country?.trim() ||
+      !formData.department?.trim() ||
+      !formData.city?.trim()
+    ) {
       errorMessages.location =
         'Debe escribir un país, departamento y ciudad válidos';
       valid = false;
     }
 
-    setErrors(errorMessages);
+    if (formData.address?.trim().length > 30) {
+      errorMessages.address =
+        'La dirección no puede tener más de 30 caracteres';
+      valid = false;
+    }
 
-    if (valid) {
-      register({...formData});
-      Alert.alert('Registro exitoso', 'Usuario registrado exitosamente');
-      navigation.navigate('Home');
-    } else {
+    setErrors(errorMessages);
+    return valid;
+  }, [formData]);
+
+  const handleRegister = useCallback(async () => {
+    if (!validateForm()) {
       Alert.alert(
         'Error en el registro',
         'Por favor, revise los campos marcados con errores.',
       );
+      return;
     }
-  }, [formData, register, navigation]);
+
+    setIsLoading(true);
+    try {
+      const result = await register({...formData});
+      Alert.alert('Registro exitoso', 'Usuario registrado exitosamente');
+      navigation.navigate('Login');
+    } catch (error) {
+      Alert.alert('Error en el registro', error.message);
+    } finally {
+      setIsLoading(false);
+    }
+  }, [formData, register, navigation, validateForm]);
 
   const handleBack = useCallback(() => {
     navigation.navigate('Login');
@@ -129,6 +164,7 @@ const RegisterForm = () => {
             buttonStyle={registerFormStyles.backButton}
             titleStyle={registerFormStyles.backButtonText}
             style={registerFormStyles.backButton}
+            disabled={isLoading}
           />
         </View>
         <Image
@@ -147,6 +183,7 @@ const RegisterForm = () => {
           value={formData.username}
           onChangeText={value => handleChange('username', value)}
           errorMessage={errors.username}
+          disabled={isLoading}
         />
         <CustomInput
           placeholder="Password"
@@ -156,6 +193,7 @@ const RegisterForm = () => {
           value={formData.password}
           onChangeText={value => handleChange('password', value)}
           errorMessage={errors.password}
+          disabled={isLoading}
         />
         <CustomInput
           placeholder="Email"
@@ -165,9 +203,10 @@ const RegisterForm = () => {
           value={formData.email}
           onChangeText={value => handleChange('email', value)}
           errorMessage={errors.email}
+          disabled={isLoading}
         />
 
-        <Pressable onPress={showDatePicker}>
+        <Pressable onPress={showDatePicker} disabled={isLoading}>
           <CustomInput
             placeholder="Birthday"
             iconName="calendar"
@@ -197,6 +236,7 @@ const RegisterForm = () => {
           value={formData.country}
           onChangeText={value => handleChange('country', value)}
           errorMessage={errors.location}
+          disabled={isLoading}
         />
         <CustomInput
           placeholder="Department"
@@ -205,6 +245,7 @@ const RegisterForm = () => {
           value={formData.department}
           onChangeText={value => handleChange('department', value)}
           errorMessage={errors.location}
+          disabled={isLoading}
         />
         <CustomInput
           placeholder="City"
@@ -213,6 +254,7 @@ const RegisterForm = () => {
           value={formData.city}
           onChangeText={value => handleChange('city', value)}
           errorMessage={errors.location}
+          disabled={isLoading}
         />
         <CustomInput
           placeholder="Address"
@@ -221,12 +263,14 @@ const RegisterForm = () => {
           value={formData.address}
           onChangeText={value => handleChange('address', value)}
           errorMessage={errors.address}
+          disabled={isLoading}
         />
 
         <Button
-          title="REGISTER"
+          title={isLoading ? 'REGISTRANDO...' : 'REGISTER'}
           buttonStyle={[globalStyles.buttonStyle, globalStyles.borderButton]}
           onPress={handleRegister}
+          disabled={isLoading}
         />
       </View>
     </View>
