@@ -29,7 +29,6 @@ const ProfileSection = () => {
   const selectImage = () => {
     launchImageLibrary({mediaType: 'photo'}, response => {
       if (response.didCancel) {
-        console.log('El usuario canceló la selección de imagen');
       } else if (response.errorMessage) {
         console.error('Error al seleccionar imagen:', response.errorMessage);
       } else if (response.assets && response.assets.length > 0) {
@@ -42,25 +41,20 @@ const ProfileSection = () => {
   const uploadImage = async uri => {
     try {
       setIsUploading(true);
-      console.log('Iniciando subida de imagen...');
 
       const response = await fetch(uri);
       const blob = await response.blob();
 
       const storage = app.storage();
-      console.log('Storage inicializado:', storage ? 'Sí' : 'No');
 
       const filename = `UserProfile/${
         userProfile?.email || 'user'
       }-${Date.now()}.jpg`;
       const storageRef = storage.ref().child(filename);
-      console.log('Referencia de storage creada:', filename);
 
       const uploadTask = await storageRef.put(blob);
-      console.log('Imagen subida correctamente');
 
       const downloadURL = await storageRef.getDownloadURL();
-      console.log('URL de descarga obtenida:', downloadURL);
 
       await updateUserProfile({image: downloadURL});
 
@@ -87,14 +81,14 @@ const ProfileSection = () => {
             !userProfile?.image ||
             userProfile.image === 'null' ||
             userProfile.image === ''
-              ? userProfile?.name?.charAt(0).toUpperCase() || 'U'
+              ? userProfile?.username?.charAt(0).toUpperCase() || 'U'
               : ''
           }
           containerStyle={globalStyles.avatar}
         />
       </TouchableOpacity>
       <Text style={accountScreenStyles.text}>
-        {userProfile?.name || 'Guest'}
+        {userProfile?.username || 'Guest'}
       </Text>
       <Text style={accountScreenStyles.subtitles}>
         {userProfile?.email || 'No email'}

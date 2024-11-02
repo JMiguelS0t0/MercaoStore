@@ -33,7 +33,6 @@ const userReducer = (state, action) => {
       const updatedFavorites = state.favorites.filter(
         item => item.firebaseId !== action.payload,
       );
-      console.log('Removing favorite with ID:', action.payload);
       return {
         ...state,
         favorites: updatedFavorites,
@@ -52,6 +51,11 @@ const userReducer = (state, action) => {
       return {...state, userRatings: action.payload};
     case 'ADD_USER_RATING':
       return {...state, userRatings: [...state.userRatings, action.payload]};
+    case 'ADD_PURCHASE':
+      return {
+        ...state,
+        purchases: [...state.purchases, action.payload],
+      };
     default:
       return state;
   }
@@ -76,7 +80,6 @@ export const UserProvider = ({children}) => {
 
       if (userDoc.exists) {
         const userProfileData = userDoc.data();
-        console.log('User profile loaded:', userProfileData);
         dispatch({
           type: 'UPDATE_USER_PROFILE',
           payload: {
@@ -88,7 +91,6 @@ export const UserProvider = ({children}) => {
           },
         });
       } else {
-        console.log('User document does not exist');
       }
     } catch (error) {
       console.error('Error loading user profile:', error);
@@ -110,7 +112,6 @@ export const UserProvider = ({children}) => {
         payload: profileData,
       });
 
-      console.log('Perfil del usuario actualizado:', profileData);
     } catch (error) {
       console.error('Error al actualizar el perfil del usuario:', error);
     }
@@ -190,7 +191,6 @@ export const UserProvider = ({children}) => {
         }),
       );
 
-      console.log('Loaded user ratings from Firebase:', userRatings);
       dispatch({type: 'SET_USER_RATINGS', payload: userRatings});
     } catch (error) {
       console.error('Error loading user ratings:', error);
@@ -223,7 +223,6 @@ export const UserProvider = ({children}) => {
         });
       }
 
-      console.log('Saved user rating to Firebase:', {productId, rating});
 
       dispatch({
         type: 'ADD_USER_RATING',
@@ -251,7 +250,6 @@ export const UserProvider = ({children}) => {
       );
 
       if (alreadyFavorite) {
-        console.log('El producto ya está en favoritos:', firebaseId);
         return;
       }
 
@@ -272,7 +270,6 @@ export const UserProvider = ({children}) => {
         });
       }
 
-      console.log('Producto agregado a favoritos en Firebase:', firebaseId);
     } catch (error) {
       console.error('Error adding to favorites:', error);
     }
@@ -290,7 +287,6 @@ export const UserProvider = ({children}) => {
         throw new Error('No firebaseId provided');
       }
 
-      console.log('Removing item with firebaseId:', firebaseId);
 
       dispatch({type: 'REMOVE_FROM_FAVORITES', payload: firebaseId});
 
@@ -308,14 +304,42 @@ export const UserProvider = ({children}) => {
             favorites: updatedFavorites,
           });
 
-          console.log(
-            'Producto eliminado de favoritos en Firebase:',
-            firebaseId,
-          );
+
         }
       }
     } catch (error) {
       console.error('Error removing from favorites:', error);
+    }
+  };
+
+  const addPurchase = async newPurchase => {
+    if (!user) {
+      console.error('No user is logged in');
+      return;
+    }
+
+    try {
+      const userRef = firebase.db.collection('user').doc(user.id);
+
+      const userDoc = await userRef.get();
+      const currentPurchases = userDoc.exists
+        ? userDoc.data().purchases || []
+        : [];
+
+      const updatedPurchases = [...currentPurchases, newPurchase];
+
+      await userRef.update({
+        purchases: updatedPurchases,
+      });
+
+      dispatch({
+        type: 'ADD_PURCHASE',
+        payload: newPurchase,
+      });
+
+    } catch (error) {
+      console.error('Error adding purchase:', error);
+      throw error;
     }
   };
 
@@ -331,6 +355,8 @@ export const UserProvider = ({children}) => {
         dispatch,
         addUserRating,
         userRatings: state.userRatings,
+        user,
+        addPurchase,
       }}>
       {children}
     </UserContext.Provider>

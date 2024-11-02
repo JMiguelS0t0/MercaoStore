@@ -130,7 +130,7 @@ const CommentsSection = memo(({comments = []}) => (
           <Card
             key={`comment-${comment.id || index}`}
             containerStyle={detailStyles.horizontalCardContainer}>
-            <Text style={detailStyles.cardTitle}>Comment:</Text>
+            <Text style={detailStyles.cardTitle}>{comment.username}:</Text>
             <Text style={detailStyles.cardText}>{comment.text}</Text>
           </Card>
         ))}
@@ -144,14 +144,13 @@ const CommentsSection = memo(({comments = []}) => (
 const Detail = () => {
   const {selectedProduct, addToCart, addComment, addRating} =
     useContext(ProductContext);
-  const {favorites, addToFavorites, removeFromFavorites} =
+  const {favorites, addToFavorites, removeFromFavorites, user, userRatings} =
     useContext(UserContext);
   const [newComment, setNewComment] = useState('');
   const [isModalVisible, setIsModalVisible] = useState(false);
   const [isCartModalVisible, setIsCartModalVisible] = useState(false);
   const [localComments, setLocalComments] = useState([]);
   const [isLoading, setIsLoading] = useState(true);
-  const {userRatings} = useContext(UserContext);
 
   useEffect(() => {
     if (selectedProduct) {
@@ -184,8 +183,9 @@ const Detail = () => {
         const newCommentObj = {
           id: Date.now(),
           text: newComment,
+          username: user.username,
         };
-        await addComment(selectedProduct.id, newComment);
+        await addComment(selectedProduct.id, newComment, user.username);
         setLocalComments(prevComments => [
           ...(Array.isArray(prevComments) ? prevComments : []),
           newCommentObj,
@@ -196,7 +196,7 @@ const Detail = () => {
         console.error('Error al agregar comentario:', error);
       }
     }
-  }, [addComment, newComment, selectedProduct]);
+  }, [addComment, newComment, selectedProduct, user.username]);
 
   const handleAddToCart = useCallback(() => {
     addToCart(selectedProduct);

@@ -17,7 +17,7 @@ const EditAccount = () => {
   const {userProfile, updateUserProfile} = useContext(UserContext);
   const navigation = useNavigation();
   const [formData, setFormData] = useState({
-    name: '',
+    username: '',
     email: '',
     birthday: '',
     address: '',
@@ -29,7 +29,7 @@ const EditAccount = () => {
   useEffect(() => {
     if (user) {
       setFormData({
-        name: userProfile.name || user.name || '',
+        username: userProfile.username || user.username || '',
         email: userProfile.email || user.email || '',
         birthday: userProfile.birthday || user.birthday || '',
         address: userProfile.address || user.address || '',
@@ -43,6 +43,10 @@ const EditAccount = () => {
     }
   }, [user, userProfile]);
 
+  const getValidImageSource = image => {
+    return image && image !== 'null' && image !== '' ? {uri: image} : undefined;
+  };
+
   const handleInputChange = useCallback((field, value) => {
     setFormData(prevData => ({
       ...prevData,
@@ -50,10 +54,17 @@ const EditAccount = () => {
     }));
   }, []);
 
-  const handleSaveChanges = useCallback(() => {
-    updateUserProfile(formData);
-    setIsModalVisible(true);
-  }, [formData, updateUserProfile]);
+  const handleSaveChanges = useCallback(async () => {
+    try {
+      await updateUserProfile({
+        ...formData,
+        image: userProfile?.image || null,
+      });
+      setIsModalVisible(true);
+    } catch (error) {
+      console.error('Error saving profile changes:', error);
+    }
+  }, [formData, updateUserProfile, userProfile?.image]);
 
   const handleCloseModal = useCallback(() => {
     setIsModalVisible(false);
@@ -81,17 +92,25 @@ const EditAccount = () => {
         <Avatar
           size="large"
           rounded
-          title={formData.name ? formData.name.charAt(0).toUpperCase() : 'J'}
+          source={getValidImageSource(userProfile?.image)}
+          title={
+            !userProfile?.image ||
+            userProfile.image === 'null' ||
+            userProfile.image === ''
+              ? formData.username?.charAt(0).toUpperCase() || 'U'
+              : ''
+          }
           containerStyle={globalStyles.avatar}
         />
       </View>
 
       <View style={accountScreenStyles.formContainer}>
         <CustomInput
-          placeholder="Full Name"
+          placeholder="Username"
           iconName="user"
-          value={formData.name}
-          onChangeText={value => handleInputChange('name', value)}
+          value={formData.username}
+          onChangeText={value => handleInputChange('username', value)}
+          maxLength={10}
           containerStyle={[
             globalStyles.backgroundInput,
             globalStyles.inputStyles,

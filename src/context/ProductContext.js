@@ -271,7 +271,7 @@ export const ProductProvider = ({children}) => {
     }
   };
 
-  const addComment = async (productId, comment) => {
+  const addComment = async (productId, comment, username) => {
     try {
       const productRef = firebase.db.collection('product').doc(productId);
       const newCommentId = Date.now();
@@ -284,6 +284,7 @@ export const ProductProvider = ({children}) => {
       const newComment = {
         id: newCommentId,
         text: comment,
+        username: username,
       };
 
       await productRef.update({comments: [...currentComments, newComment]});
@@ -393,6 +394,18 @@ export const ProductProvider = ({children}) => {
     }
   };
 
+  const clearCart = async () => {
+    try {
+      dispatch({type: 'UPDATE_USER_CART', payload: {}});
+      if (user && user.id) {
+        const userRef = firebase.db.collection('user').doc(user.id);
+        await userRef.update({cart: {}});
+      }
+    } catch (error) {
+      console.error('Error al limpiar el carrito:', error);
+    }
+  };
+
   return (
     <ProductContext.Provider
       value={{
@@ -412,6 +425,7 @@ export const ProductProvider = ({children}) => {
           dispatch({type: 'SEARCH_PRODUCT', payload: term}),
         filterOffers: () => dispatch({type: 'FILTER_OFFERS'}),
         addRating,
+        clearCart,
       }}>
       {children}
     </ProductContext.Provider>

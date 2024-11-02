@@ -68,7 +68,6 @@ export const AuthProvider = ({children}) => {
           id: doc.id,
           ...doc.data(),
         }));
-        console.log('Usuarios cargados:', users);
       } catch (error) {
         console.error('Error al cargar usuarios:', error);
       }

@@ -10,13 +10,14 @@ import CustomModal from '../../reusable/CustomModal';
 import {useNavigation, useRoute} from '@react-navigation/native';
 import {ProductContext} from '../../context/ProductContext';
 import {PurchasesContext} from '../../context/PurchaseContext';
+import {UserContext} from '../../context/UserContext';
 import LogoSection from '../Layout/LogoSection';
 
 const PaymentForm = () => {
   const navigation = useNavigation();
   const route = useRoute();
-  const {clearCart, cart} = useContext(ProductContext);
-  const {addPurchase} = useContext(PurchasesContext);
+  const {clearCart, cart, products} = useContext(ProductContext);
+  const {addPurchase} = useContext(UserContext);
 
   const [formData, setFormData] = useState({
     fullName: '',
@@ -37,6 +38,27 @@ const PaymentForm = () => {
     }));
   }, []);
 
+  const formatPurchaseData = (item, quantity = 1) => {
+    const estimatedDays = Math.floor(Math.random() * 14) + 1;
+    const progress = Math.random() * 0.8 + 0.1;
+
+    const unitPrice = item.onOffer ? item.offerPrice : item.price;
+    const totalPrice = unitPrice * quantity + 15;
+
+    return {
+      id: item.id,
+      title: item.title,
+      price: `US$ ${totalPrice.toFixed(2)}`,
+      image: item.images,
+      progressTitle: `Arrive in ${estimatedDays} ${
+        estimatedDays === 1 ? 'day' : 'days'
+      }`,
+      progress: progress,
+      purchaseDate: moment().format('DD/MM/YYYY'),
+      quantity: quantity,
+    };
+  };
+
   const handleCompletePayment = useCallback(() => {
     const {fullName, cardNumber, cvv, expiryDate} = formData;
     if (!fullName || !cardNumber || !cvv || !expiryDate) {
@@ -46,30 +68,43 @@ const PaymentForm = () => {
     }
   }, [formData]);
 
-  const handleConfirmPayment = useCallback(() => {
-    if (product) {
-      addPurchase({
-        ...product,
-        progressTitle: 'Processing',
-        progress: 0.1,
-      });
-    } else {
-      cart.forEach(product => {
-        addPurchase({
-          ...product,
-          progressTitle: 'Processing',
-          progress: 0.1,
-        });
-      });
+  const handleConfirmPayment = useCallback(async () => {
+    try {
+      if (product) {
+        const purchaseData = formatPurchaseData(product);
+        await addPurchase(purchaseData);
+      } else {
+        const cartPurchases = await Promise.all(
+          Object.entries(cart).map(async ([productId, cartItem]) => {
+            const productDetails = products.find(p => p.id === productId);
+            if (productDetails) {
+              return formatPurchaseData(productDetails, cartItem.quantity);
+            }
+          }),
+        );
+
+        const validPurchases = cartPurchases.filter(Boolean);
+        await Promise.all(
+          validPurchases.map(purchase => addPurchase(purchase)),
+        );
+      }
+
+      if (clearCart) {
+        await clearCart();
+      }
+
+      setIsModalVisible(false);
+      setTimeout(() => {
+        navigation.navigate('Home');
+      }, 100);
+    } catch (error) {
+      console.error('Error processing payment:', error);
+      Alert.alert(
+        'Error',
+        'There was an error processing your payment. Please try again.',
+      );
     }
-
-    clearCart();
-    setIsModalVisible(false);
-
-    setTimeout(() => {
-      navigation.navigate('Purchases');
-    }, 100);
-  }, [addPurchase, cart, clearCart, navigation, product]);
+  }, [addPurchase, cart, clearCart, navigation, product, products]);
 
   const handleCancelPayment = useCallback(() => {
     navigation.goBack();
