@@ -19,7 +19,7 @@ const CartFooter = () => {
       <View style={CartStyles.subtotalContainer}>
         <Text style={CartStyles.subtotalText}>Subtotal</Text>
         <Text style={CartStyles.subtotalPrice}>
-          US$ {cartSubtotal.toFixed(2)}
+          US$ {(cartSubtotal ?? 0).toFixed(2)}
         </Text>
       </View>
       <Button
