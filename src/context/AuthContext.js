@@ -42,6 +42,7 @@ const authReducer = (state, action) => {
         ...state,
         isAuthenticated: true,
         user: action.payload,
+        users: [...state.users, action.payload],
         loading: false,
         error: null,
       };
@@ -50,6 +51,12 @@ const authReducer = (state, action) => {
         ...state,
         isAuthenticated: false,
         error: action.payload,
+        loading: false,
+      };
+    case 'SET_USERS':
+      return {
+        ...state,
+        users: action.payload,
         loading: false,
       };
     default:
@@ -64,10 +71,28 @@ export const AuthProvider = ({children}) => {
     const loadUsers = async () => {
       try {
         const usersCollection = await firebase.db.collection('user').get();
-        const users = usersCollection.docs.map(doc => ({
-          id: doc.id,
-          ...doc.data(),
-        }));
+        const users = usersCollection.docs.map(doc => {
+          const data = doc.data();
+          return {
+            id: doc.id,
+            username: data.username,
+            email: data.email,
+            birthday: data.birthday,
+            country: data.country,
+            department: data.department,
+            city: data.city,
+            address: data.address,
+            favorites: data.favorites || [],
+            createdAt: data.createdAt,
+          };
+        });
+
+        dispatch({
+          type: 'SET_USERS',
+          payload: users,
+        });
+
+        console.log('Usuarios cargados:', users);
       } catch (error) {
         console.error('Error al cargar usuarios:', error);
       }
@@ -104,7 +129,7 @@ export const AuthProvider = ({children}) => {
         throw new Error('El nombre de usuario ya está registrado');
       }
 
-      const newUser = {
+      const userData = {
         username: credentials.username,
         email: credentials.email,
         password: credentials.password,
@@ -114,17 +139,29 @@ export const AuthProvider = ({children}) => {
         city: credentials.city || null,
         address: credentials.address || null,
         favorites: [],
-        createdAt: firebase.firebase.firestore.FieldValue.serverTimestamp(),
       };
 
-      const userDocRef = await usersRef.add(newUser);
+      const docRef = await usersRef.add(userData);
+
+      const safeUser = {
+        id: docRef.id,
+        username: userData.username,
+        email: userData.email,
+        birthday: userData.birthday,
+        country: userData.country,
+        department: userData.department,
+        city: userData.city,
+        address: userData.address,
+        favorites: userData.favorites,
+        createdAt: userData.createdAt,
+      };
 
       dispatch({
         type: 'REGISTER_SUCCESS',
-        payload: {id: userDocRef.id, ...newUser},
+        payload: safeUser,
       });
 
-      return {success: true, userId: userDocRef.id};
+      return {success: true, userId: docRef.id};
     } catch (error) {
       dispatch({
         type: 'REGISTER_ERROR',
@@ -191,6 +228,7 @@ export const AuthProvider = ({children}) => {
         user: state.user,
         error: state.error,
         loading: state.loading,
+        users: state.users,
       }}>
       {children}
     </AuthContext.Provider>
