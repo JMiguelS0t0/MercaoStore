@@ -6,7 +6,7 @@ const IconButton = ({iconName, type, onPress, containerStyle}) => (
     onPress={onPress}
     buttonStyle={{backgroundColor: 'transparent'}}
     containerStyle={containerStyle}
-    icon={<Icon name={iconName} type={type} color="#beb5c5" size={20} />}
+    icon={<Icon name={iconName} type={type} color="#000" size={20} />}
   />
 );
 

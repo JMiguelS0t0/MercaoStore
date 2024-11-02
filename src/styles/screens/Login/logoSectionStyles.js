@@ -5,6 +5,8 @@ const logoSectionStyles = StyleSheet.create({
     flex: 6,
     justifyContent: 'center',
     alignItems: 'center',
+    backgroundColor: '#120b34',
+    width: '100%',
   },
   logo: {
     width: 200,

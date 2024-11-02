@@ -1,10 +1,10 @@
-import React from 'react';
+import React, {useCallback} from 'react';
 import {FlatList} from 'react-native';
 import CardItem from './CardItem';
 import CardStyles from '../../styles/components/cardStyles';
 
 const Cards = ({products}) => {
-  const renderItem = ({item}) => <CardItem item={item} />;
+  const renderItem = useCallback(({item}) => <CardItem item={item} />, []);
 
   return (
     <FlatList
@@ -18,4 +18,4 @@ const Cards = ({products}) => {
   );
 };
 
-export default Cards;
+export default React.memo(Cards);

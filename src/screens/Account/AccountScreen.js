@@ -1,4 +1,4 @@
-import React, {useContext} from 'react';
+import React, {useContext, useCallback} from 'react';
 import {View} from 'react-native';
 import {useNavigation} from '@react-navigation/native';
 import accountScreenStyles from '../../styles/screens/Account/AccountScreenStyles';
@@ -10,10 +10,10 @@ const AccountScreen = () => {
   const navigation = useNavigation();
   const {logout} = useContext(AuthContext);
 
-  const handleLogout = () => {
+  const handleLogout = useCallback(() => {
     logout();
     navigation.navigate('Login');
-  };
+  }, [logout, navigation]);
 
   return (
     <View style={accountScreenStyles.container}>

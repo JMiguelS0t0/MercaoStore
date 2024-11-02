@@ -1,4 +1,4 @@
-import React, {useContext, useState, useEffect} from 'react';
+import React, {useContext, useState, useEffect, useCallback} from 'react';
 import {Text, View, ScrollView, Pressable} from 'react-native';
 import {useNavigation} from '@react-navigation/native';
 import globalStyles from '../../styles/globalStyles';
@@ -17,20 +17,19 @@ const EditAccount = () => {
   const {userProfile, updateUserProfile} = useContext(UserContext);
   const navigation = useNavigation();
   const [formData, setFormData] = useState({
-    name: '',
+    username: '',
     email: '',
     birthday: '',
     address: '',
   });
   const [isModalVisible, setIsModalVisible] = useState(false);
-
   const [isDatePickerVisible, setIsDatePickerVisible] = useState(false);
   const [selectedDate, setSelectedDate] = useState(new Date());
 
   useEffect(() => {
     if (user) {
       setFormData({
-        name: userProfile.name || user.name || '',
+        username: userProfile.username || user.username || '',
         email: userProfile.email || user.email || '',
         birthday: userProfile.birthday || user.birthday || '',
         address: userProfile.address || user.address || '',
@@ -44,33 +43,47 @@ const EditAccount = () => {
     }
   }, [user, userProfile]);
 
-  const handleInputChange = (field, value) => {
-    setFormData({
-      ...formData,
+  const getValidImageSource = image => {
+    return image && image !== 'null' && image !== '' ? {uri: image} : undefined;
+  };
+
+  const handleInputChange = useCallback((field, value) => {
+    setFormData(prevData => ({
+      ...prevData,
       [field]: value,
-    });
-  };
+    }));
+  }, []);
 
-  const handleSaveChanges = () => {
-    updateUserProfile(formData);
-    setIsModalVisible(true);
-  };
+  const handleSaveChanges = useCallback(async () => {
+    try {
+      await updateUserProfile({
+        ...formData,
+        image: userProfile?.image || null,
+      });
+      setIsModalVisible(true);
+    } catch (error) {
+      console.error('Error saving profile changes:', error);
+    }
+  }, [formData, updateUserProfile, userProfile?.image]);
 
-  const handleCloseModal = () => {
+  const handleCloseModal = useCallback(() => {
     setIsModalVisible(false);
     navigation.goBack();
-  };
+  }, [navigation]);
 
-  const showDatePicker = () => {
+  const showDatePicker = useCallback(() => {
     setIsDatePickerVisible(true);
-  };
+  }, []);
 
-  const handleDateConfirm = date => {
+  const handleDateConfirm = useCallback(date => {
     setSelectedDate(date);
     const formattedDate = moment(date).format('DD/MM/YYYY');
-    setFormData({...formData, birthday: formattedDate});
+    setFormData(prevData => ({
+      ...prevData,
+      birthday: formattedDate,
+    }));
     setIsDatePickerVisible(false);
-  };
+  }, []);
 
   return (
     <ScrollView contentContainerStyle={globalStyles.containerScroll}>
@@ -79,17 +92,25 @@ const EditAccount = () => {
         <Avatar
           size="large"
           rounded
-          title={formData.name ? formData.name.charAt(0).toUpperCase() : 'J'}
+          source={getValidImageSource(userProfile?.image)}
+          title={
+            !userProfile?.image ||
+            userProfile.image === 'null' ||
+            userProfile.image === ''
+              ? formData.username?.charAt(0).toUpperCase() || 'U'
+              : ''
+          }
           containerStyle={globalStyles.avatar}
         />
       </View>
 
       <View style={accountScreenStyles.formContainer}>
         <CustomInput
-          placeholder="Full Name"
+          placeholder="Username"
           iconName="user"
-          value={formData.name}
-          onChangeText={value => handleInputChange('name', value)}
+          value={formData.username}
+          onChangeText={value => handleInputChange('username', value)}
+          maxLength={10}
           containerStyle={[
             globalStyles.backgroundInput,
             globalStyles.inputStyles,

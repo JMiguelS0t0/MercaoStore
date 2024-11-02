@@ -9,7 +9,7 @@ const accountScreenStyles = StyleSheet.create({
     fontSize: 20,
     fontFamily: 'Poppins-Bold',
     marginBottom: 15,
-    color: '#fff',
+    color: '#000',
   },
   pfpStyle: {
     alignItems: 'center',
@@ -17,13 +17,13 @@ const accountScreenStyles = StyleSheet.create({
   },
   text: {
     fontSize: 20,
-    color: '#fff',
+    color: '#000',
     marginBottom: 5,
     fontFamily: 'Poppins-SemiBold',
   },
   subtitles: {
     fontSize: 13,
-    color: '#f5f5f5',
+    color: '#000',
     marginBottom: 20,
     fontFamily: 'Poppins-Regular',
   },
@@ -46,7 +46,7 @@ const accountScreenStyles = StyleSheet.create({
   },
   cardText: {
     fontSize: 14,
-    color: '#fff',
+    color: '#000',
     textAlign: 'center',
     fontFamily: 'Poppins-Regular',
   },
@@ -61,6 +61,11 @@ const accountScreenStyles = StyleSheet.create({
     flexDirection: 'row',
     justifyContent: 'center',
     width: '200%',
+    shadowColor: '#000',
+    shadowOffset: {width: 0, height: 2},
+    shadowOpacity: 0.25,
+    shadowRadius: 3.84,
+    elevation: 5,
   },
   cardLogout: {
     flexDirection: 'row',
@@ -69,10 +74,16 @@ const accountScreenStyles = StyleSheet.create({
     height: 100,
   },
   cardButton: {
-    backgroundColor: 'transparent',
+    backgroundColor: '#fff',
     width: '100%',
     alignItems: 'center',
     padding: 20,
+  },
+  upload: {
+    color: '#000',
+    fontFamily: 'Poppins-Regular',
+    fontSize: 12,
+    marginBottom: 10,
   },
 });
 

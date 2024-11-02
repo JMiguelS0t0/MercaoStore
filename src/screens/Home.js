@@ -1,4 +1,4 @@
-import React, {useContext} from 'react';
+import React, {useContext, useMemo} from 'react';
 import {View, StyleSheet} from 'react-native';
 import NavBar from '../components/Layout/NavBar';
 import HeaderApp from '../components/Layout/HeaderApp';
@@ -8,10 +8,12 @@ import {ProductContext} from '../context/ProductContext';
 const Home = () => {
   const {products} = useContext(ProductContext);
 
+  const memoizedProducts = useMemo(() => products, [products]);
+
   return (
     <View style={styles.container}>
       <HeaderApp />
-      <Cards products={products} />
+      <Cards products={memoizedProducts} />
       <NavBar />
     </View>
   );
@@ -20,7 +22,7 @@ const Home = () => {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: 'transparent',
+    backgroundColor: '#f5f5f5',
   },
 });
 

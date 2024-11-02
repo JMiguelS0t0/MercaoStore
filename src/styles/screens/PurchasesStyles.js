@@ -17,6 +17,17 @@ const purchasesStyles = StyleSheet.create({
     flex: 1,
     justifyContent: 'center',
   },
+  errorText: {
+    color: 'red',
+    textAlign: 'center',
+    fontSize: 16,
+  },
+  emptyText: {
+    textAlign: 'center',
+    fontSize: 16,
+    color: '#666',
+    marginTop: 20,
+  },
 });
 
 export default purchasesStyles;

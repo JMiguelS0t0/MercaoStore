@@ -1,4 +1,4 @@
-import React, {useContext, useEffect, useState} from 'react';
+import React, {useContext, useMemo} from 'react';
 import {View, Text} from 'react-native';
 import Cards from '../../components/Product/Cards';
 import {ProductContext} from '../../context/ProductContext';
@@ -11,21 +11,19 @@ const ProductsListScreen = () => {
   const route = useRoute();
   const {category, offersOnly} = route.params;
 
-  const [filteredProducts, setFilteredProducts] = useState([]);
+  const filteredProducts = useMemo(() => {
+    if (!products || products.length === 0) return [];
 
-  useEffect(() => {
-    let filtered;
     if (offersOnly) {
-      filtered = products.filter(product => product.onOffer === true);
-    } else {
-      filtered = products.filter(
-        product =>
-          product.category.toLowerCase() === category.toLowerCase() ||
-          product.title.toLowerCase().includes(category.toLowerCase()),
-      );
+      return products.filter(product => product.onOffer === true);
     }
-    setFilteredProducts(filtered);
-  }, [category, offersOnly, products]);
+
+    return products.filter(
+      product =>
+        product.category.toLowerCase() === category.toLowerCase() ||
+        product.title.toLowerCase().includes(category.toLowerCase()),
+    );
+  }, [products, category, offersOnly]);
 
   return (
     <View style={globalStyles.container}>

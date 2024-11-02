@@ -1,4 +1,4 @@
-import React, {useState, useContext} from 'react';
+import React, {useState, useContext, useCallback} from 'react';
 import {View, Image, Text, Alert, Pressable} from 'react-native';
 import CustomInput from '../reusable/CustomInput';
 import {Button, Icon} from '@rneui/themed';
@@ -12,23 +12,34 @@ import moment from 'moment';
 const RegisterForm = () => {
   const navigation = useNavigation();
   const {register} = useContext(AuthContext);
-  const [username, setUsername] = useState('');
-  const [password, setPassword] = useState('');
-  const [email, setEmail] = useState('');
-  const [birthday, setBirthday] = useState('');
-  const [country, setCountry] = useState('');
-  const [department, setDepartment] = useState('');
-  const [city, setCity] = useState('');
-  const [address, setAddress] = useState('');
+
+  const [formData, setFormData] = useState({
+    username: '',
+    password: '',
+    email: '',
+    birthday: '',
+    country: '',
+    department: '',
+    city: '',
+    address: '',
+  });
+
   const [errors, setErrors] = useState({});
   const [isDatePickerVisible, setIsDatePickerVisible] = useState(false);
   const [selectedDate, setSelectedDate] = useState(new Date());
 
-  const handleRegister = () => {
+  const handleChange = useCallback((name, value) => {
+    setFormData(prevState => ({
+      ...prevState,
+      [name]: value,
+    }));
+  }, []);
+
+  const handleRegister = useCallback(() => {
     const errorMessages = {};
     let valid = true;
 
-    if (username.length > 10) {
+    if (formData.username.length > 10) {
       errorMessages.username =
         'El nombre de usuario no puede tener más de 10 caracteres';
       valid = false;
@@ -36,36 +47,34 @@ const RegisterForm = () => {
 
     const passwordRegex =
       /^(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{8,}$/;
-    if (!passwordRegex.test(password)) {
+    if (!passwordRegex.test(formData.password)) {
       errorMessages.password =
         'La contraseña debe tener al menos 8 caracteres, 1 mayúscula, 1 caracter especial y números.';
       valid = false;
     }
 
     const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-    if (!emailRegex.test(email)) {
+    if (!emailRegex.test(formData.email)) {
       errorMessages.email = 'El correo electrónico no es válido';
       valid = false;
     }
 
-    const birthDate = new Date(birthday);
+    const birthDate = new Date(formData.birthday);
     const currentDate = new Date();
-    const minAge = 18;
-    const maxAge = 50;
     const age = currentDate.getFullYear() - birthDate.getFullYear();
-    if (age < minAge || age > maxAge) {
+    if (age < 18 || age > 50) {
       errorMessages.birthday =
         'No está en el rango de edad para crear la cuenta (18-50 años).';
       valid = false;
     }
 
-    if (address.length > 30) {
+    if (formData.address.length > 30) {
       errorMessages.address =
         'La dirección no puede tener más de 30 caracteres';
       valid = false;
     }
 
-    if (country === '' || department === '' || city === '') {
+    if (!formData.country || !formData.department || !formData.city) {
       errorMessages.location =
         'Debe escribir un país, departamento y ciudad válidos';
       valid = false;
@@ -74,16 +83,7 @@ const RegisterForm = () => {
     setErrors(errorMessages);
 
     if (valid) {
-      register({
-        name: username,
-        email,
-        password,
-        birthday,
-        country,
-        department,
-        city,
-        address,
-      });
+      register({...formData});
       Alert.alert('Registro exitoso', 'Usuario registrado exitosamente');
       navigation.navigate('Home');
     } else {
@@ -92,24 +92,27 @@ const RegisterForm = () => {
         'Por favor, revise los campos marcados con errores.',
       );
     }
-  };
+  }, [formData, register, navigation]);
 
-  const handleBack = () => {
+  const handleBack = useCallback(() => {
     navigation.navigate('Login');
-  };
+  }, [navigation]);
 
-  const showDatePicker = () => {
+  const showDatePicker = useCallback(() => {
     setIsDatePickerVisible(true);
-  };
+  }, []);
 
-  const handleDateConfirm = date => {
-    setSelectedDate(date);
-    setBirthday(moment(date).format('DD/MM/YYYY'));
-    setIsDatePickerVisible(false);
-  };
+  const handleDateConfirm = useCallback(
+    date => {
+      setSelectedDate(date);
+      handleChange('birthday', moment(date).format('DD/MM/YYYY'));
+      setIsDatePickerVisible(false);
+    },
+    [handleChange],
+  );
 
   return (
-    <View style={{flex: 1}}>
+    <View style={{flex: 1, backgroundColor: '#583f8c'}}>
       <View style={registerFormStyles.header}>
         <View style={registerFormStyles.headerLeft}>
           <Button
@@ -129,7 +132,7 @@ const RegisterForm = () => {
           />
         </View>
         <Image
-          source={require('../assets/Mercao.png')}
+          source={require('../assets/MercaoStore.png')}
           style={globalStyles.smallLogo}
         />
       </View>
@@ -141,8 +144,8 @@ const RegisterForm = () => {
           placeholder="Username"
           iconName="user"
           containerStyle={globalStyles.backgroundInput}
-          value={username}
-          onChangeText={setUsername}
+          value={formData.username}
+          onChangeText={value => handleChange('username', value)}
           errorMessage={errors.username}
         />
         <CustomInput
@@ -150,8 +153,8 @@ const RegisterForm = () => {
           iconName="key"
           secureTextEntry
           containerStyle={globalStyles.backgroundInput}
-          value={password}
-          onChangeText={setPassword}
+          value={formData.password}
+          onChangeText={value => handleChange('password', value)}
           errorMessage={errors.password}
         />
         <CustomInput
@@ -159,8 +162,8 @@ const RegisterForm = () => {
           iconName="envelope"
           keyboardType="email-address"
           containerStyle={globalStyles.backgroundInput}
-          value={email}
-          onChangeText={setEmail}
+          value={formData.email}
+          onChangeText={value => handleChange('email', value)}
           errorMessage={errors.email}
         />
 
@@ -169,7 +172,7 @@ const RegisterForm = () => {
             placeholder="Birthday"
             iconName="calendar"
             containerStyle={[{width: '100%'}, globalStyles.backgroundInput]}
-            value={birthday}
+            value={formData.birthday}
             errorMessage={errors.birthday}
             editable={false}
           />
@@ -191,32 +194,32 @@ const RegisterForm = () => {
           placeholder="Country"
           iconName="map-marker-alt"
           containerStyle={globalStyles.backgroundInput}
-          value={country}
-          onChangeText={setCountry}
+          value={formData.country}
+          onChangeText={value => handleChange('country', value)}
           errorMessage={errors.location}
         />
         <CustomInput
           placeholder="Department"
           iconName="map-marker-alt"
           containerStyle={globalStyles.backgroundInput}
-          value={department}
-          onChangeText={setDepartment}
+          value={formData.department}
+          onChangeText={value => handleChange('department', value)}
           errorMessage={errors.location}
         />
         <CustomInput
           placeholder="City"
           iconName="map-marker-alt"
           containerStyle={globalStyles.backgroundInput}
-          value={city}
-          onChangeText={setCity}
+          value={formData.city}
+          onChangeText={value => handleChange('city', value)}
           errorMessage={errors.location}
         />
         <CustomInput
           placeholder="Address"
           iconName="crosshairs"
           containerStyle={globalStyles.backgroundInput}
-          value={address}
-          onChangeText={setAddress}
+          value={formData.address}
+          onChangeText={value => handleChange('address', value)}
           errorMessage={errors.address}
         />
 

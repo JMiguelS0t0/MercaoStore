@@ -27,7 +27,7 @@ const detailStyles = StyleSheet.create({
   },
   title: {
     fontSize: 22,
-    color: '#fff',
+    color: '#000',
     textAlign: 'center',
     fontFamily: 'Poppins-Regular',
   },
@@ -39,7 +39,7 @@ const detailStyles = StyleSheet.create({
   },
   price: {
     fontSize: 20,
-    color: '#fff',
+    color: '#000',
     textAlign: 'left',
     fontFamily: 'Poppins-Regular',
   },
@@ -48,14 +48,14 @@ const detailStyles = StyleSheet.create({
   },
   sectionTitle: {
     fontSize: 18,
-    color: '#fff',
+    color: '#000',
     marginBottom: 5,
     textAlign: 'center',
     fontFamily: 'Poppins-Bold',
   },
   sectionText: {
     fontSize: 16,
-    color: '#fff',
+    color: '#000',
     textAlign: 'left',
     fontFamily: 'Poppins-Regular',
   },
@@ -80,7 +80,7 @@ const detailStyles = StyleSheet.create({
     zIndex: 1,
   },
   horizontalCardContainer: {
-    backgroundColor: '#120b34',
+    backgroundColor: '#fff',
     borderColor: 'rgba(255, 255, 255, 0.4)',
     borderWidth: 1,
     borderRadius: 10,
@@ -91,14 +91,14 @@ const detailStyles = StyleSheet.create({
   },
   cardTitle: {
     fontSize: 15,
-    color: '#fff',
+    color: '#000',
     textAlign: 'left',
     marginBottom: 5,
     fontFamily: 'Poppins-Bold',
   },
   cardText: {
     fontSize: 14,
-    color: '#fff',
+    color: '#000',
     textAlign: 'left',
     fontFamily: 'Poppins-Regular',
   },
@@ -109,6 +109,27 @@ const detailStyles = StyleSheet.create({
     marginVertical: 10,
     width: '100%',
     backgroundColor: '#7b5bbd',
+  },
+  ratingContainer: {
+    alignItems: 'center',
+    marginVertical: 10,
+  },
+  starsContainer: {
+    flexDirection: 'row',
+    justifyContent: 'center',
+    marginVertical: 10,
+  },
+  starIcon: {
+    marginHorizontal: 5,
+  },
+  averageRating: {
+    fontSize: 16,
+    marginBottom: 5,
+  },
+  ratedMessage: {
+    color: '#7b5bbd',
+    marginTop: 5,
+    fontSize: 14,
   },
 });
 

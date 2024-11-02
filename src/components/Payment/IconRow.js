@@ -1,4 +1,4 @@
-import React from 'react';
+import React, {useCallback} from 'react';
 import {View, Pressable, Text} from 'react-native';
 import {Icon} from '@rneui/themed';
 import PaymentStyles from '../../styles/screens/Payment/PaymentStyles';
@@ -7,10 +7,12 @@ import {useNavigation} from '@react-navigation/native';
 const IconRow = ({selectedProduct}) => {
   const navigation = useNavigation();
 
-  const handlePaymentMethodPress = method => {
-    console.log(`Selected payment method: ${method}`);
-    navigation.navigate('PaymentForm', {product: selectedProduct});
-  };
+  const handlePaymentMethodPress = useCallback(
+    method => {
+      navigation.navigate('PaymentForm', {product: selectedProduct});
+    },
+    [navigation, selectedProduct],
+  );
 
   return (
     <View>
@@ -23,7 +25,7 @@ const IconRow = ({selectedProduct}) => {
           <Icon
             name="credit-card"
             type="font-awesome-5"
-            color="#fff"
+            color="#000"
             size={24}
           />
         </Pressable>
@@ -31,13 +33,13 @@ const IconRow = ({selectedProduct}) => {
         <Pressable
           style={PaymentStyles.iconStyle}
           onPress={() => handlePaymentMethodPress('Paypal')}>
-          <Icon name="paypal" type="font-awesome" color="#fff" size={24} />
+          <Icon name="paypal" type="font-awesome" color="#000" size={24} />
         </Pressable>
 
         <Pressable
           style={PaymentStyles.iconStyle}
           onPress={() => handlePaymentMethodPress('Apple Pay')}>
-          <Icon name="apple-pay" type="font-awesome-5" color="#fff" size={24} />
+          <Icon name="apple-pay" type="font-awesome-5" color="#000" size={24} />
         </Pressable>
       </View>
     </View>

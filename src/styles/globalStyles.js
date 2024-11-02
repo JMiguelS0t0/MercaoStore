@@ -7,7 +7,6 @@ const globalStyles = StyleSheet.create({
     borderRadius: 50,
     marginRight: '4%',
   },
-
   smallLogo: {
     width: 90,
     height: 90,
@@ -42,7 +41,7 @@ const globalStyles = StyleSheet.create({
     borderTopRightRadius: 30,
   },
   backgroundInput: {
-    backgroundColor: '#120b34',
+    backgroundColor: '#fff',
   },
   borderButton: {
     backgroundColor: '#7b5bbd',
@@ -60,26 +59,31 @@ const globalStyles = StyleSheet.create({
     alignItems: 'flex-start',
     padding: 10,
     marginBottom: 10,
-    backgroundColor: '#120b34',
+    backgroundColor: '#fff',
     borderRadius: 20,
+    shadowColor: '#000',
+    shadowOffset: {width: 0, height: 2},
+    shadowOpacity: 0.25,
+    shadowRadius: 3.84,
+    elevation: 5,
   },
   productInfoContainer: {
     flex: 1,
     marginLeft: 10,
   },
   productText: {
-    color: '#fff',
+    color: '#000',
     fontSize: 14,
     fontFamily: 'Poppins-Regular',
   },
   productName: {
-    color: '#fff',
+    color: '#000',
     fontSize: 16,
     maxWidth: '50%',
     fontFamily: 'Poppins-Bold',
   },
   productPrice: {
-    color: '#fff',
+    color: '#000',
     fontSize: 16,
     maxWidth: '50%',
     fontFamily: 'Poppins-Regular',

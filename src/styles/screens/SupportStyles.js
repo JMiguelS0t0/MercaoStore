@@ -9,12 +9,12 @@ const supportStyles = StyleSheet.create({
     fontSize: 30,
     fontFamily: 'Poppins-Bold',
     marginBottom: 15,
-    color: '#fff',
+    color: '#000',
   },
   formContainer: {
     paddingHorizontal: 20,
     width: '100%',
-    alignItems: 'center', // Alinea el contenido al centro
+    alignItems: 'center',
   },
   buttonContainer: {
     alignItems: 'center',
@@ -29,13 +29,14 @@ const supportStyles = StyleSheet.create({
     height: 100,
     textAlignVertical: 'top',
     padding: 10,
-    color: '#fff',
+    color: '#000',
     borderRadius: 10,
     marginBottom: 20,
     borderWidth: 1,
     width: '100%',
-    maxWidth: '95%', 
+    maxWidth: '95%',
     fontFamily: 'Poppins-Regular',
+    borderColor: '#beb5c5',
   },
 });
 
