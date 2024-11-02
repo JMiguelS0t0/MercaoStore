@@ -7,6 +7,7 @@ export const UserContext = createContext();
 const initialState = {
   favorites: [],
   purchases: [],
+  userRatings: [],
   userProfile: {
     name: '',
     email: '',
@@ -32,7 +33,6 @@ const userReducer = (state, action) => {
       const updatedFavorites = state.favorites.filter(
         item => item.firebaseId !== action.payload,
       );
-      console.log('Removing favorite with ID:', action.payload);
       return {
         ...state,
         favorites: updatedFavorites,
@@ -46,6 +46,15 @@ const userReducer = (state, action) => {
       return {
         ...state,
         userProfile: {...state.userProfile, ...action.payload},
+      };
+    case 'SET_USER_RATINGS':
+      return {...state, userRatings: action.payload};
+    case 'ADD_USER_RATING':
+      return {...state, userRatings: [...state.userRatings, action.payload]};
+    case 'ADD_PURCHASE':
+      return {
+        ...state,
+        purchases: [...state.purchases, action.payload],
       };
     default:
       return state;
@@ -71,7 +80,6 @@ export const UserProvider = ({children}) => {
 
       if (userDoc.exists) {
         const userProfileData = userDoc.data();
-        console.log('User profile loaded:', userProfileData);
         dispatch({
           type: 'UPDATE_USER_PROFILE',
           payload: {
@@ -83,7 +91,6 @@ export const UserProvider = ({children}) => {
           },
         });
       } else {
-        console.log('User document does not exist');
       }
     } catch (error) {
       console.error('Error loading user profile:', error);
@@ -105,15 +112,15 @@ export const UserProvider = ({children}) => {
         payload: profileData,
       });
 
-      console.log('User profile updated:', profileData);
     } catch (error) {
-      console.error('Error updating user profile:', error);
+      console.error('Error al actualizar el perfil del usuario:', error);
     }
   };
 
   useEffect(() => {
     loadUserProfile();
     loadUserFavorites();
+    loadUserRatings();
   }, [user]);
 
   const loadUserFavorites = async () => {
@@ -165,7 +172,67 @@ export const UserProvider = ({children}) => {
   useEffect(() => {
     loadUserProfile();
     loadUserFavorites();
+    loadUserRatings();
   }, [user]);
+
+  const loadUserRatings = async () => {
+    if (!user) return;
+    try {
+      const userRef = firebase.db.collection('user').doc(user.id);
+      const userDoc = await userRef.get();
+
+      const ratings =
+        userDoc.exists && userDoc.data().ratings ? userDoc.data().ratings : {};
+
+      const userRatings = Object.entries(ratings).map(
+        ([productId, rating]) => ({
+          product: productId,
+          rating: rating,
+        }),
+      );
+
+      dispatch({type: 'SET_USER_RATINGS', payload: userRatings});
+    } catch (error) {
+      console.error('Error loading user ratings:', error);
+    }
+  };
+
+  const addUserRating = async (productId, rating) => {
+    if (!user) return;
+
+    try {
+      const userRef = firebase.db.collection('user').doc(user.id);
+
+      const userDoc = await userRef.get();
+
+      if (!userDoc.exists) {
+        await userRef.set({
+          ratings: {
+            [productId]: rating,
+          },
+        });
+      } else {
+        const userData = userDoc.data();
+        const updatedRatings = {
+          ...(userData.ratings || {}),
+          [productId]: rating,
+        };
+
+        await userRef.update({
+          ratings: updatedRatings,
+        });
+      }
+
+
+      dispatch({
+        type: 'ADD_USER_RATING',
+        payload: {product: productId, rating},
+      });
+    } catch (error) {
+      console.error('Error saving user rating:', error);
+      throw error;
+    }
+  };
 
   const addToFavorites = async item => {
     try {
@@ -183,7 +250,6 @@ export const UserProvider = ({children}) => {
       );
 
       if (alreadyFavorite) {
-        console.log('El producto ya está en favoritos:', firebaseId);
         return;
       }
 
@@ -204,7 +270,6 @@ export const UserProvider = ({children}) => {
         });
       }
 
-      console.log('Producto agregado a favoritos en Firebase:', firebaseId);
     } catch (error) {
       console.error('Error adding to favorites:', error);
     }
@@ -222,7 +287,6 @@ export const UserProvider = ({children}) => {
         throw new Error('No firebaseId provided');
       }
 
-      console.log('Removing item with firebaseId:', firebaseId);
 
       dispatch({type: 'REMOVE_FROM_FAVORITES', payload: firebaseId});
 
@@ -240,14 +304,42 @@ export const UserProvider = ({children}) => {
             favorites: updatedFavorites,
           });
 
-          console.log(
-            'Producto eliminado de favoritos en Firebase:',
-            firebaseId,
-          );
+
         }
       }
     } catch (error) {
       console.error('Error removing from favorites:', error);
+    }
+  };
+
+  const addPurchase = async newPurchase => {
+    if (!user) {
+      console.error('No user is logged in');
+      return;
+    }
+
+    try {
+      const userRef = firebase.db.collection('user').doc(user.id);
+
+      const userDoc = await userRef.get();
+      const currentPurchases = userDoc.exists
+        ? userDoc.data().purchases || []
+        : [];
+
+      const updatedPurchases = [...currentPurchases, newPurchase];
+
+      await userRef.update({
+        purchases: updatedPurchases,
+      });
+
+      dispatch({
+        type: 'ADD_PURCHASE',
+        payload: newPurchase,
+      });
+
+    } catch (error) {
+      console.error('Error adding purchase:', error);
+      throw error;
     }
   };
 
@@ -261,6 +353,10 @@ export const UserProvider = ({children}) => {
         removeFromFavorites,
         updateUserProfile,
         dispatch,
+        addUserRating,
+        userRatings: state.userRatings,
+        user,
+        addPurchase,
       }}>
       {children}
     </UserContext.Provider>

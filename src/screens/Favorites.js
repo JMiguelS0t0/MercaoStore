@@ -11,7 +11,6 @@ const Favorites = () => {
 
   const handleRemoveFavorite = useCallback(
     item => {
-      console.log('Removing favorite item:', item);
       if (item.firebaseId) {
         removeFromFavorites(item.firebaseId);
       } else {

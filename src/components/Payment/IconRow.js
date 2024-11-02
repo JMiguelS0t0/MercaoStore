@@ -9,7 +9,6 @@ const IconRow = ({selectedProduct}) => {
 
   const handlePaymentMethodPress = useCallback(
     method => {
-      console.log(`Selected payment method: ${method}`);
       navigation.navigate('PaymentForm', {product: selectedProduct});
     },
     [navigation, selectedProduct],

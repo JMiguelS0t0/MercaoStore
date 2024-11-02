@@ -110,6 +110,27 @@ const detailStyles = StyleSheet.create({
     width: '100%',
     backgroundColor: '#7b5bbd',
   },
+  ratingContainer: {
+    alignItems: 'center',
+    marginVertical: 10,
+  },
+  starsContainer: {
+    flexDirection: 'row',
+    justifyContent: 'center',
+    marginVertical: 10,
+  },
+  starIcon: {
+    marginHorizontal: 5,
+  },
+  averageRating: {
+    fontSize: 16,
+    marginBottom: 5,
+  },
+  ratedMessage: {
+    color: '#7b5bbd',
+    marginTop: 5,
+    fontSize: 14,
+  },
 });
 
 export default detailStyles;

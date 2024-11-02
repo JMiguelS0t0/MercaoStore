@@ -135,6 +135,39 @@ const productReducer = (state, action) => {
               }
             : state.selectedProduct,
       };
+    case 'ADD_RATING':
+      return {
+        ...state,
+        products: state.products.map(product =>
+          product.id === action.payload.productId
+            ? {
+                ...product,
+                ratings: Array.isArray(product.ratings)
+                  ? [...product.ratings, action.payload.rating]
+                  : [action.payload.rating],
+                averageRating: Array.isArray(product.ratings)
+                  ? (product.ratings.reduce((a, b) => a + b, 0) +
+                      action.payload.rating) /
+                    (product.ratings.length + 1)
+                  : action.payload.rating,
+              }
+            : product,
+        ),
+        selectedProduct:
+          state.selectedProduct?.id === action.payload.productId
+            ? {
+                ...state.selectedProduct,
+                ratings: Array.isArray(state.selectedProduct.ratings)
+                  ? [...state.selectedProduct.ratings, action.payload.rating]
+                  : [action.payload.rating],
+                averageRating: Array.isArray(state.selectedProduct.ratings)
+                  ? (state.selectedProduct.ratings.reduce((a, b) => a + b, 0) +
+                      action.payload.rating) /
+                    (state.selectedProduct.ratings.length + 1)
+                  : action.payload.rating,
+              }
+            : state.selectedProduct,
+      };
     default:
       return state;
   }
@@ -163,6 +196,8 @@ export const ProductProvider = ({children}) => {
             ? doc.data().features
             : [],
           comments: doc.data().comments || [],
+          ratings: doc.data().ratings || [],
+          averageRating: doc.data().averageRating || 0,
         }));
         dispatch({type: 'FETCH_PRODUCTS_SUCCESS', payload: products});
       } catch (error) {
@@ -236,17 +271,20 @@ export const ProductProvider = ({children}) => {
     }
   };
 
-  const addComment = async (productId, comment) => {
+  const addComment = async (productId, comment, username) => {
     try {
       const productRef = firebase.db.collection('product').doc(productId);
       const newCommentId = Date.now();
 
       const doc = await productRef.get();
-      const currentComments = doc.data().comments || [];
+      const currentComments = Array.isArray(doc.data().comments)
+        ? doc.data().comments
+        : [];
 
       const newComment = {
         id: newCommentId,
         text: comment,
+        username: username,
       };
 
       await productRef.update({comments: [...currentComments, newComment]});
@@ -331,6 +369,43 @@ export const ProductProvider = ({children}) => {
     }
   };
 
+  const addRating = async (productId, rating) => {
+    try {
+      const productRef = firebase.db.collection('product').doc(productId);
+      const doc = await productRef.get();
+      const currentRatings = Array.isArray(doc.data().ratings)
+        ? doc.data().ratings
+        : [];
+      const newRatings = [...currentRatings, rating];
+      const averageRating =
+        newRatings.reduce((a, b) => a + b, 0) / newRatings.length;
+
+      await productRef.update({
+        ratings: newRatings,
+        averageRating: averageRating,
+      });
+
+      dispatch({
+        type: 'ADD_RATING',
+        payload: {productId, rating},
+      });
+    } catch (error) {
+      console.error('Error al añadir calificación:', error);
+    }
+  };
+
+  const clearCart = async () => {
+    try {
+      dispatch({type: 'UPDATE_USER_CART', payload: {}});
+      if (user && user.id) {
+        const userRef = firebase.db.collection('user').doc(user.id);
+        await userRef.update({cart: {}});
+      }
+    } catch (error) {
+      console.error('Error al limpiar el carrito:', error);
+    }
+  };
+
   return (
     <ProductContext.Provider
       value={{
@@ -349,6 +424,8 @@ export const ProductProvider = ({children}) => {
         searchProduct: term =>
           dispatch({type: 'SEARCH_PRODUCT', payload: term}),
         filterOffers: () => dispatch({type: 'FILTER_OFFERS'}),
+        addRating,
+        clearCart,
       }}>
       {children}
     </ProductContext.Provider>
