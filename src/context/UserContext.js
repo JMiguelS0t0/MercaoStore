@@ -7,6 +7,7 @@ export const UserContext = createContext();
 const initialState = {
   favorites: [],
   purchases: [],
+  userRatings: [],
   userProfile: {
     name: '',
     email: '',
@@ -47,6 +48,10 @@ const userReducer = (state, action) => {
         ...state,
         userProfile: {...state.userProfile, ...action.payload},
       };
+    case 'SET_USER_RATINGS':
+      return {...state, userRatings: action.payload};
+    case 'ADD_USER_RATING':
+      return {...state, userRatings: [...state.userRatings, action.payload]};
     default:
       return state;
   }
@@ -105,15 +110,16 @@ export const UserProvider = ({children}) => {
         payload: profileData,
       });
 
-      console.log('User profile updated:', profileData);
+      console.log('Perfil del usuario actualizado:', profileData);
     } catch (error) {
-      console.error('Error updating user profile:', error);
+      console.error('Error al actualizar el perfil del usuario:', error);
     }
   };
 
   useEffect(() => {
     loadUserProfile();
     loadUserFavorites();
+    loadUserRatings();
   }, [user]);
 
   const loadUserFavorites = async () => {
@@ -165,7 +171,69 @@ export const UserProvider = ({children}) => {
   useEffect(() => {
     loadUserProfile();
     loadUserFavorites();
+    loadUserRatings();
   }, [user]);
+
+  const loadUserRatings = async () => {
+    if (!user) return;
+    try {
+      const userRef = firebase.db.collection('user').doc(user.id);
+      const userDoc = await userRef.get();
+
+      const ratings =
+        userDoc.exists && userDoc.data().ratings ? userDoc.data().ratings : {};
+
+      const userRatings = Object.entries(ratings).map(
+        ([productId, rating]) => ({
+          product: productId,
+          rating: rating,
+        }),
+      );
+
+      console.log('Loaded user ratings from Firebase:', userRatings);
+      dispatch({type: 'SET_USER_RATINGS', payload: userRatings});
+    } catch (error) {
+      console.error('Error loading user ratings:', error);
+    }
+  };
+
+  const addUserRating = async (productId, rating) => {
+    if (!user) return;
+
+    try {
+      const userRef = firebase.db.collection('user').doc(user.id);
+
+      const userDoc = await userRef.get();
+
+      if (!userDoc.exists) {
+        await userRef.set({
+          ratings: {
+            [productId]: rating,
+          },
+        });
+      } else {
+        const userData = userDoc.data();
+        const updatedRatings = {
+          ...(userData.ratings || {}),
+          [productId]: rating,
+        };
+
+        await userRef.update({
+          ratings: updatedRatings,
+        });
+      }
+
+      console.log('Saved user rating to Firebase:', {productId, rating});
+
+      dispatch({
+        type: 'ADD_USER_RATING',
+        payload: {product: productId, rating},
+      });
+    } catch (error) {
+      console.error('Error saving user rating:', error);
+      throw error;
+    }
+  };
 
   const addToFavorites = async item => {
     try {
@@ -261,6 +329,8 @@ export const UserProvider = ({children}) => {
         removeFromFavorites,
         updateUserProfile,
         dispatch,
+        addUserRating,
+        userRatings: state.userRatings,
       }}>
       {children}
     </UserContext.Provider>
